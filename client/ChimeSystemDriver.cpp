@@ -744,6 +744,82 @@ bool ChimeSystemDriver::LinkChimeSectors(ChimeSector *sec1, int doorNum, ChimeSe
     return true;
 }
 
+/***************************************************************************
+/*
+/* Get the graphical engine ready for a menu
+/*
+/***************************************************************************/
+bool ChimeSystemDriver::SetupMenu() {
+	
+  //disable all movement
+  Stop3D();
+
+  //just in case there was one before this that wasn't wiped
+  WipePopupMenu();
+
+  return true;
+}
+
+
+/****************************************************************************
+/*
+/* Bring up the menu for the door
+/*
+/****************************************************************************/
+bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
+
+  char name[500];
+
+  //do all the preliminary steps needed for menu creation
+  SetupMenu(); 
+
+  char *doorUrl;
+  reqAtSec = currentSector;	
+  reqAtDoor  = doorNum;
+  doorUrl = reqAtSec->GetDoorUrl(doorNum);
+  strcpy(reqRoomUrl, doorUrl);
+
+  // Create a menu for all test dialogs we implement
+  menu = new csMenu (app, csmfs3D, 0);
+  csMenu *submenu = new csMenu (NULL);
+
+  if (doorUrl != NULL) {	 
+	  strcpy(name, "Link to: ");
+	  strcat(name, reqRoomUrl);
+	  (void)new csMenuItem (menu, name, -1);
+	  submenu = new csMenu (NULL);
+
+  }
+
+  (void)new csMenuItem (menu, "~Open this link", DOOR_OPEN_LINK);
+  (void)new csMenuItem (menu, "~Link this somewhere else", DOOR_LINK_SOMEWHERE_ELSE);
+
+  menu->SetPos (screenPoint.x - 3, FrameHeight - (screenPoint.y - 3));
+  menu_drawn = true;
+  
+  return true;
+}
+
+/**************************************************************************
+/* 
+/*        Open the indicated door
+/*
+/**************************************************************************/
+bool ChimeSystemDriver::OpenDoor(int doorNum) {
+	char *doorUrl;
+
+	if (reqAtDoor != -1 && reqAtSec != NULL) {
+		doorUrl = reqAtSec->GetDoorUrl(doorNum);
+		strcpy(reqRoomUrl, doorUrl);
+		comm.SubscribeRoom(doorUrl, info->GetUsername());
+		comm.GetRoom(doorUrl);
+		return true;
+	}
+
+	else
+		return false;
+}
+
 //*************************************************************************
 //*
 //* Function responsible for handling Right mouse button click
@@ -769,14 +845,10 @@ bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
 
   if(currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum))
   {
-	  char *doorUrl;
-	  reqAtSec = currentSector;
-	  reqAtDoor  = doorNum;
-	  doorUrl = reqAtSec->GetDoorUrl(doorNum);
-	  strcpy(reqRoomUrl, doorUrl);
-	  comm.SubscribeRoom(doorUrl, info->GetUsername());
-	  comm.GetRoom(doorUrl);
-	  return true;
+	  csVector2   screenPoint;
+	  screenPoint.x = Event.Mouse.x;
+	  screenPoint.y = FrameHeight - Event.Mouse.y - 1;
+	  BringUpDoorMenu(doorNum, screenPoint);
 	  //FIXIT Remove this debug code
 	 /* if(!strcmp(doorUrl, "www.google.com"))
 			ReadRoom(google);
@@ -848,23 +920,23 @@ bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
   }
 
     (void)new csMenuItem (menu, "~Editing Options", submenu);
-    (void)new csMenuItem (submenu, "~Edit with Default App", POPUP_EDIT_WITH_DEFAULT_APP);
-    (void)new csMenuItem (submenu, "~Select App", POPUP_SELECT_APP);
+    (void)new csMenuItem (submenu, "~Edit with Default App", OBJECT_EDIT_WITH_DEFAULT_APP);
+    (void)new csMenuItem (submenu, "~Select App", OBJECT_SELECT_APP);
 
   submenu = new csMenu (NULL);
   (void)new csMenuItem (menu, "~Moving Options", submenu);
-    (void)new csMenuItem (submenu, "Carry", POPUP_CARRY);
-    (void)new csMenuItem (submenu, "Drop", POPUP_DROP);
-	 (void)new csMenuItem (submenu, "Delete", POPUP_DELETE);
-    (void)new csMenuItem (submenu, "Undelete", POPUP_UNDELETE);
+    (void)new csMenuItem (submenu, "Carry", OBJECT_CARRY);
+    (void)new csMenuItem (submenu, "Drop", OBJECT_DROP);
+	 (void)new csMenuItem (submenu, "Delete", OBJECT_DELETE);
+    (void)new csMenuItem (submenu, "Undelete", OBJECT_UNDELETE);
 
   submenu = new csMenu (NULL);
   (void)new csMenuItem (menu, "~Security", submenu);
-    (void)new csMenuItem (submenu, "Increase", POPUP_INCREASE_SECURITY);
-    (void)new csMenuItem (submenu, "Decrease", POPUP_DECREASE_SECURITY);
+    (void)new csMenuItem (submenu, "Increase", OBJECT_INCREASE_SECURITY);
+    (void)new csMenuItem (submenu, "Decrease", OBJECT_DECREASE_SECURITY);
   
   submenu = new csMenu (NULL);
-  (void)new csMenuItem (menu, "~Properties", POPUP_PROPERTIES);
+  (void)new csMenuItem (menu, "~Properties", OBJECT_PROPERTIES);
    
   csMenuItem *mi = new csMenuItem (menu, "~Quit\tQ", cscmdQuit);
 
@@ -909,19 +981,20 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
       switch (Event.Command.Code)
       {
 	    //Edit with Default App Selected
-        case POPUP_EDIT_WITH_DEFAULT_APP:
-		case POPUP_SELECT_APP:
-		case POPUP_CARRY:
-		case POPUP_DROP:
-		case POPUP_DELETE:
-		case POPUP_UNDELETE:
-		case POPUP_INCREASE_SECURITY:
-		case POPUP_DECREASE_SECURITY:
-		case POPUP_PROPERTIES:
-		  WipePopupMenu();
-		  return true;
+        case OBJECT_EDIT_WITH_DEFAULT_APP:
+		case OBJECT_SELECT_APP:
+		case OBJECT_CARRY:
+		case OBJECT_DROP:
+		case OBJECT_DELETE:
+		case OBJECT_UNDELETE:
+		case OBJECT_INCREASE_SECURITY:
+		case OBJECT_DECREASE_SECURITY:
+		case OBJECT_PROPERTIES:
+		case DOOR_OPEN_LINK:
+		case DOOR_LINK_SOMEWHERE_ELSE:
+			WipePopupMenu();
+			break;
 	  }
-
   }
 
   return false;

@@ -52,16 +52,20 @@ class InfoStorer;
 #endif
 
 //popup menu options
-#define POPUP_EDIT_WITH_DEFAULT_APP 88801
-#define POPUP_SELECT_APP 88802
-#define POPUP_CARRY 88803
-#define POPUP_DROP 88804
-#define POPUP_DELETE 88805
-#define POPUP_UNDELETE 88806
-#define POPUP_INCREASE_SECURITY 88807
-#define POPUP_DECREASE_SECURITY 88808
-#define POPUP_PROPERTIES 88809
+#define OBJECT_EDIT_WITH_DEFAULT_APP 88801
+#define OBJECT_SELECT_APP 88802
+#define OBJECT_CARRY 88803
+#define OBJECT_DROP 88804
+#define OBJECT_DELETE 88805
+#define OBJECT_UNDELETE 88806
+#define OBJECT_INCREASE_SECURITY 88807
+#define OBJECT_DECREASE_SECURITY 88808
+#define OBJECT_PROPERTIES 88809
 
+
+//define popup menu options for the door
+#define DOOR_OPEN_LINK 88901
+#define DOOR_LINK_SOMEWHERE_ELSE 88902
 
 class ChimeSystemDriver: public SysSystemDriver
 {
@@ -192,6 +196,15 @@ private:
 
 	//when a talk message has been received
 	bool ReceivedTalkMessage(const char *username, const char* ip, const char* msg);
+
+	//bring up the door menu
+	bool BringUpDoorMenu(int doorNum, csVector2 screenpoint);
+	
+	//open the door
+	bool OpenDoor(int doorNum);
+
+	//setup a menu
+	bool SetupMenu();
 
 
 public:
