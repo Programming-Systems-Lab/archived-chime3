@@ -13,6 +13,7 @@
 #include "csengine/engine.h"
 #include "csengine/collider.h"
 
+
 #define LEFT	0
 #define RIGHT	4
 #define FRONT	8
@@ -34,10 +35,14 @@
 
 class csSector;
 class csEngine;
+class ChimeSystemDriver;
+
 struct iCollideSystem;
 
 #define MAX_DOOR	20		//Maximum number of doors in the sector
 #define MAX_URL		200		//Maximum length of a url
+
+
 class ChimeSector
 {
 	char roomUrl[MAX_URL];				//Url represented by this sector

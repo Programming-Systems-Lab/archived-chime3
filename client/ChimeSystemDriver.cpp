@@ -19,6 +19,7 @@
 #include "ChimeApp.h"
 #include "ChimeSystemDriver.h"
 #include "ChimeWorldView.h"
+#include "ChimeSector.h"
 
 #include "csengine/engine.h"
 #include "csengine/csview.h"

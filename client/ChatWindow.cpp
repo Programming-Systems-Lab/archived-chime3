@@ -46,19 +46,18 @@ ChatWindow::ChatWindow(csComponent *iParent)
   nb->AddPrimaryTab (page, "~Local Users", "Users in Current Room");
 
    //add a listbox
-  csListBox *page1_lb = new csListBox (page, CSLBS_VSCROLL, cslfsThinRect);
-  page1_lb->SetSize (nb->bound.Width(), nb->bound.Height());
-  
-  
+  local_users_lb = new csListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  local_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
+   
   //create the second page
   page = new csDialog (nb);
   nb->AddPrimaryTab (page, "~Global Users", "All Users of Chime");
   page->SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Blue_D);
 
    //add a listbox
-  csListBox *page2_lb = new csListBox (page, CSLBS_VSCROLL, cslfsThinRect);
-  page2_lb->SetSize (nb->bound.Width(), nb->bound.Height());
-  
+  global_users_lb = new csListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  global_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
+
   last_ID = 0;
   (void*) new ChatAreaItem(chat_area, "", last_ID);
   //(void*) new ChatAreaItem(chat_area, "Hello are you there this is a test. Maybe separating by chars wasn not the best idea", last_ID);
@@ -92,6 +91,53 @@ void ChatWindow::SubmitMessage(const char* msg) {
 	new ChatAreaItem(chat_area, msg, last_ID);
 }
 	
+
+//add local users to the chat window
+void ChatWindow::AddLocalUsers(csStrVector *user_list) {
+	for (int i = 0; i < user_list->Length(); i++) {
+		AddLocalUser(user_list->Get(i));
+	}
+}
+
+
+//add a user to the local list
+void ChatWindow::AddLocalUser(char *userID) {
+	(void) new csListBoxItem (local_users_lb, userID, 0, cslisEmphasized);
+	AddGlobalUser(userID);
+}
+
+//add global users to the chat window
+void ChatWindow::AddGlobalUsers(csStrVector *user_list) {
+	for (int i = 0; i < user_list->Length(); i++) {
+		AddGlobalUser(user_list->Get(i));
+	}
+}
+
+//add a user to the global list
+void ChatWindow::AddGlobalUser(char *userID) {
+	(void) new csListBoxItem (global_users_lb, userID, 0, cslisEmphasized);
+}
+
+//delete a local user
+void ChatWindow::DeleteLocalUser(char *userID) {
+	csListBoxItem* to_delete = (csListBoxItem*) local_users_lb -> ForEachItem(DeleteMe, userID, true);
+	local_users_lb->Delete(to_delete);
+}
+
+//delete a global user
+void ChatWindow::DeleteGlobalUser(char *userID) {
+	csListBoxItem* to_delete = (csListBoxItem*) global_users_lb -> ForEachItem(DeleteMe, userID, true);
+	global_users_lb->Delete(to_delete);
+}
+
+
+//to delete or not to delete
+bool ChatWindow::DeleteMe(csComponent *item, void *userID) {
+	if (strcmp(item->GetText(), (const char*) userID) == 0)
+		return true;
+	else
+		return false;
+}
 
 //the chat area used for chatting
 ChatArea::ChatArea(int chars_per_line, csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_DEFAULTVALUE, iFrameStyle=cslfsThickRect ) {

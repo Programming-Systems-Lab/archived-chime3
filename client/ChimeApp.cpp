@@ -12,6 +12,7 @@
 
 #include "ChimeSystemDriver.h"
 #include "ChimeWorldView.h"
+#include "ChimeSector.h"
 
 // Scroll bar class default palette
 static int palette_CsfEdit[] =
@@ -105,7 +106,8 @@ bool ChimeApp::Initialize (const char *iConfigName)
   w->Hide();
 
   //put in a chat window
-  (void) new ChatWindow(this);
+  chatWindow = new ChatWindow(this);
+  chatWindow->AddLocalUsers(((ChimeSystemDriver*)System)->GetCurChimeSector()->GetUserList());
 
   //put in a history window
   historyWindow = new HistoryWindow(this);

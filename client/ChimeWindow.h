@@ -165,6 +165,9 @@ public:
 
 
 //Chat Dialog
+#define LOCAL_USER 0;
+#define GLOBAL_USER 1;
+
 class ChatWindow : public AlwaysVisibleWindow
 
 {
@@ -172,6 +175,8 @@ class ChatWindow : public AlwaysVisibleWindow
   csInputLine *user_msg_line;
   ChatArea *chat_area;
   int last_ID;
+  csListBox *local_users_lb;
+  csListBox *global_users_lb;
 
   //void gui ();
 
@@ -181,6 +186,13 @@ public:
   virtual ~ChatWindow ();
   virtual bool HandleEvent (iEvent &Event);
   void SubmitMessage(const char* msg);
+  void AddLocalUsers(csStrVector *users);
+  void AddGlobalUsers(csStrVector *users);
+  void AddLocalUser(char *userID);
+  void AddGlobalUser(char *userID);
+  void DeleteLocalUser(char *userID);
+  void DeleteGlobalUser(char *userID);
+  static bool DeleteMe(csComponent *item, void *userID);
   //virtual bool Initialize (const char *iConfigName);
 
 };

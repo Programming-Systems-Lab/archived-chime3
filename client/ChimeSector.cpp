@@ -3,7 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 #include "cssysdef.h"
 #include "cssys/system.h"
+#include "ChimeSystemDriver.h"
 #include "ChimeSector.h"
+
 
 #include "csengine/sector.h"
 #include "csengine/engine.h"
@@ -1331,6 +1333,11 @@ bool ChimeSector::AddUser(char *userID)
 {
 	if(!userID) return false;
 
+	if (System && ((ChimeSystemDriver*)System)->GetApp() && 
+			 ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
+		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->AddLocalUser(userID);
+	}
+
 	char *tmp = new char[strlen(userID)+1];
 	strcpy(tmp, userID);
 	userList.Push(tmp);
@@ -1341,6 +1348,11 @@ bool ChimeSector::AddUser(char *userID)
 bool ChimeSector::deleteUser(char *userID)
 {
 	if(!userID) return false;
+
+	if (System && ((ChimeSystemDriver*)System)->GetApp() 
+			&&  ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
+		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->DeleteLocalUser(userID);
+	}
 
 	char *user = NULL;
 	for(int i = 0; i < userList.Length(); i++)

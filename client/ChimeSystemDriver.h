@@ -27,12 +27,14 @@ class csView;
 class ClientComm;
 class chimeComm;
 class ChimeSystemDriver;
+class ChimeSector;
+struct iCollideSystem;
 
 #include "ChimeApp.h"
 #include "ChimeWindow.h"
 #include "ChimeComm.h"
 #include "comm_client/ClientComm.h"
-#include "ChimeSector.h"
+//#include "ChimeSector.h"
 
 //changes the number of sectors that need to be opened to delete a sector
 #define NUM_SECT 100
@@ -42,6 +44,10 @@ class ChimeSystemDriver;
 #define CONNECTOR 1
 #define COMPONENT 2
 #define USER 3
+
+#ifndef MAX_URL
+#define MAX_URL		200		//Maximum length of a url
+#endif
 
 //popup menu options
 #define POPUP_EDIT_WITH_DEFAULT_APP 88801
@@ -192,6 +198,9 @@ public:
 	
 	//tell ChimeSystemDriver where to find the app
 	void ChimeSystemDriver::setCSApp(ChimeApp *app);
+
+	//get the App associated with this system
+	ChimeApp* ChimeSystemDriver::GetApp() { return app; };
 
 	//set the coordinate convertor
 	void ChimeSystemDriver::setCoordinateConvertor(csComponent *Parent);

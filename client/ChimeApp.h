@@ -23,6 +23,9 @@ public:
   //pointer to the history window
   HistoryWindow *historyWindow;
 
+  //pointer to the chat window
+  ChatWindow *chatWindow;
+
   //encapsulate all the engine views
   csVector engine_views;
 
