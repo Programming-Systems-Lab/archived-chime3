@@ -6,13 +6,13 @@
 --------------------Configuration: chimeClient - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSP7FB.tmp" with contents
+Creating temporary file "C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP1C4.tmp" with contents
 [
 /nologo /MT /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR"Debug/" /Fp"Debug/chimeClient.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\pslroot\psl\chime\client90\ChimeSystemDriver.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSP7FB.tmp" 
-Creating temporary file "C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSP7FC.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP1C4.tmp" 
+Creating temporary file "C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP1C5.tmp" with contents
 [
 Cache.lib urlmon.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsgeom.lib libcsgfx.lib csparser.lib libcssys.lib libcsutil.lib libcstool.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /verbose /incremental:yes /pdb:"Debug/chimeClient.pdb" /machine:I386 /nodefaultlib:"libcmt.lib" /out:"Debug/chimeClient.exe" /pdbtype:sept 
 .\Debug\AICacheController.obj
@@ -44,7 +44,7 @@ Cache.lib urlmon.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.li
 .\Debug\UDPServer.obj
 .\Debug\VEMWindow.obj
 ]
-Creating command line "link.exe @C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSP7FC.tmp"
+Creating command line "link.exe @C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP1C5.tmp"
 <h3>Output Window</h3>
 Compiling...
 ChimeSystemDriver.cpp

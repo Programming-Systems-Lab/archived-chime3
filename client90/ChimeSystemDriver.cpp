@@ -1460,7 +1460,7 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 
 		objPos = selectedMesh->GetMovable()->GetPosition() - offset;
 
-//		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
+		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
 
 	}
 	else
