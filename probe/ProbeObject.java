@@ -1,8 +1,11 @@
+package psl.chime.probe;
+import java.io.*;
+import java.lang.*;
 
 public class ProbeObject {
-	public static int COMPARE_DATA = 0;
-	public static int COMPARE_METADATA = 1;
-	public static int COMPARE_LENGTH = 2;
+	public static final int COMPARE_DATA = 0;
+	public static final int COMPARE_METADATA = 1;
+	public static final int COMPARE_LENGTH = 2;
 
 
 	private String metadata;
@@ -26,8 +29,8 @@ public class ProbeObject {
 			this.data = md5.toDigest(data);
 	}
 
-	void setData(DataInputStream ds) {
-		br = new BufferedReader(new InputStreamReader(ds));
+	void setData(DataInputStream ds) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(ds));
 		String temp;
 		while((temp = br.readLine()) != null)
 			data = data + temp + "\n";
@@ -67,20 +70,29 @@ public class ProbeObject {
 	}
 
 	//compare this object to the other ProbeObject
-	boolean equals(ProbeObject pb, int flag) {
+	public boolean equals(ProbeObject pb, int flag) {
 		switch (flag) {
 
 		case COMPARE_METADATA:
-			if (getMetadata().equals(pb.getMetaData()))
+			if (getMetadata().equals(pb.getMetadata()))
 				return true;
+			else
+				return false;
+
 		case COMPARE_DATA:
 			if (getData().equals(pb.getData()))
 				return true;
+			else
+				return false;
+
 		case COMPARE_LENGTH:
 			if (getLength().equals(pb.getLength()))
 				return true;
-		}
+			else
+				return false;
+			}
+		return false;
 	}
-
 }
+
 

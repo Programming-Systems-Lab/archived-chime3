@@ -24,12 +24,13 @@ without express or implied warranty of any kind.
 These notices must be retained in any copies of any part of this
 documentation and/or software.
  */
+package psl.chime.probe;
 
 public class MD5 {
 	public static void main(String [] args) {
 	    System.out.println(new MD5().toDigest(args[0]));
 	}
-	
+
 	static final char[] HEX = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 	public String toDigest(String string) {
 		byte[] digest = toDigest(string.getBytes());
@@ -49,7 +50,7 @@ public class MD5 {
 		MD5Final(digest, context);
 		return digest;
 	}
-	
+
 	static final int S11 = 7;
 	static final int S12 = 12;
 	static final int S13 = 17;
@@ -73,7 +74,7 @@ public class MD5 {
 		for (int i = 1; i < PADDING.length; i++)
 			PADDING[i] = (byte)0;
 	}
-	
+
 	long fix(long l) {
 		return l & 0xffffffffl;
 	}
@@ -126,7 +127,7 @@ public class MD5 {
 		n[a] += n[b];
 		n[a] = fix(n[a]);
 	}
-	
+
 	class MD5_CTX {
 	  long[] state = new long[4];                                   /* state (ABCD) */
 	  long[] count = new long[2];        /* number of bits, modulo 2^64 (lsb first) */
@@ -210,7 +211,7 @@ public class MD5 {
 	  System.arraycopy(state, 0, buf, 0, 4);
 	  long[] x = new long[16];
 	  Decode(x, block, idx, 64);
-	  
+
 	  /* Round 1 */
 	  FF(buf, 0, 1, 2, 3, x[ 0], S11, 0xd76aa478l); /* 1 */
 	  FF(buf, 3, 0, 1, 2, x[ 1], S12, 0xe8c7b756l); /* 2 */
@@ -282,7 +283,7 @@ public class MD5 {
 	  II(buf, 3, 0, 1, 2, x[11], S42, 0xbd3af235l); /* 62 */
 	  II(buf, 2, 3, 0, 1, x[ 2], S43, 0x2ad7d2bbl); /* 63 */
 	  II(buf, 1, 2, 3, 0, x[ 9], S44, 0xeb86d391l); /* 64 */
-		
+
 		for (int i = 0; i < 4; i++)
 			state[i] = fix(state[i] + buf[i]);
 	}
@@ -320,7 +321,7 @@ public class MD5 {
 	  for (i = 0; i < len; i++)
 		 output[oidx + i] = input[iidx + i];
 	}
-	
+
 	int byte2int(byte b) {
 		if (b < 0)
 			return (int)b + 0x100;

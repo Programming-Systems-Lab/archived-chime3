@@ -4,11 +4,12 @@
  *
  */
 
-package psl.chime.frax;
+package psl.chime.probe;
 import java.lang.Class;
 import java.lang.reflect.*;
-import psl.chime.frax.fraxExceptions.*;
+import psl.chime.probe.probeExceptions.*;
 import psl.chime.sienautils.*;
+import java.util.*;
 
 public class ProbeProtLoader {
 
@@ -18,7 +19,6 @@ public class ProbeProtLoader {
 		classes = new Hashtable();
 	}
 
-
     /**
      * Load and run the protocol class.
      **/
@@ -26,13 +26,13 @@ public class ProbeProtLoader {
 
 	String prot = s.getProtocol();
 	String arg = s.getAddress();
-	String prot_class = ConfigReader.findInProtConf(prot);
+	ConfigObject cfg_obj = ConfigReader.findInProbeConf(prot);
 	ProbeClassLoader pcl = new ProbeClassLoader();
 
-	Class prot_CLASS = findClassInMemory(prot_class);
+	Class prot_CLASS = findClassInMemory(cfg_obj.getClassname());
 
-	if (!prot_CLASS)
-		prot_CLASS = pcl.loadClass(prot_class);
+	if (prot_CLASS == null)
+		prot_CLASS = pcl.loadClass(cfg_obj.getClassname());
 
 	boolean success = execProt(pcl, prot_CLASS, arg, s);
 
@@ -48,7 +48,7 @@ public class ProbeProtLoader {
 	 * Find the class in the hashtable
 	 **/
 	 private Class findClassInMemory(String prot_class) {
-		 return classes.get(prot_class);
+		 return (Class) classes.get(prot_class);
  	}
 
  	/**
@@ -73,13 +73,13 @@ public class ProbeProtLoader {
      * the plug class has loaded and executed successfully and no
      * exceptions were thrown
      **/
-    public synchronized boolean execProt(FRAXClassLoader fcl, Class protocol, Object object, SienaObject s) {
+    public synchronized boolean execProt(ProbeClassLoader pcl, Class protocol, Object object, SienaObject s) {
 	try {
 
 	    Object[] params = {object, s};
 	    System.out.println("The class of this object is: " + object.getClass());
 
-	    Object myinstance = fcl.instantiateClass(protocol, params);
+	    Object myinstance = pcl.instantiateClass(protocol, params);
 	    System.out.println("Object loaded was: " + myinstance.getClass());
 
 	    System.out.println(protocol.getMethod("processObject", null));

@@ -8,7 +8,7 @@ package psl.chime.probe.protocols.lfs;
 
 import java.lang.*;
 import java.io.*;
-import psl.chime.frax.protocols.ProbeProtocol;
+import psl.chime.probe.protocols.ProbeProtocol;
 import psl.chime.sienautils.*;
 
 public class LFSProtocol extends ProbeProtocol {

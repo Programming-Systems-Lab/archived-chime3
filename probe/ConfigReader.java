@@ -12,27 +12,19 @@ import java.util.*;
 
 public class ConfigReader {
 
-    public static String plug_conf = Constants.CONF_FILE;
+    public static String config_file = "probe.cfg";
 
 
     /**
-     * Helper method to which returns a string representing the plug
-     * class to use in order to deal with the current plug.
+     * Helper method to which returns a string representing the
+     * class to use in order to deal with the current protocol.
      * @params object - the plug to find (for example, html)
      */
-    public static String findConf(String object) throws EntryNotFoundException {
-	return findInConf(object, plug_conf);
+    public static ConfigObject findInProbeConf(String object) throws EntryNotFoundException {
+	return findInConf(object, config_file);
     }
 
 
-    /**
-     * Helper method which returns a string representing the protocol
-     * class to use when dealing with a user specified protocol
-     * @params object - the protocol to find like http
-     */
-    public static String findInProtConf(String object) throws EntryNotFoundException {
-	return findInConf(object, prot_conf);
-    }
 
 
 	/**
@@ -56,31 +48,31 @@ public class ConfigReader {
 	}
 
 
-	public Hashtable getAllProtocols() {
-		File cfg = findFile(file);
+	public Hashtable getAllProtocols() throws EntryNotFoundException {
+	try {
+		File cfg = findFile(config_file);
 		InputStream inn = new FileInputStream(cfg);
 		BufferedReader in = new BufferedReader(new InputStreamReader(inn));
 		String line;
-		Hashtable all_objects;
-		ConfigObject cfg;
+		Hashtable all_objects = new Hashtable();
 
 		 while((line = in.readLine()) != null) {
 
-			if (!line.startsWith("//") {
+			if (!line.startsWith("//")) {
 
 				StringTokenizer st = new StringTokenizer(line, "\t");
 
 				//should be 5 tokens - variable and value
 				if (st.countTokens() == 5) {
-					cfg.setProtName(st.nextToken().trim());
-					cfg.setProtClass(st.nextToken().trim());
-					cfg.setLookAtMetadata(st.nextToken().trim());
-					cfg.setLookAtData(st.nextToken().trim());
-					cfg.setLookAtLength(st.nextToken().trim());
-					all_objects.add(cfg);
+					ConfigObject cfg_obj = new ConfigObject();
+					cfg_obj.setProtocol(st.nextToken().trim());
+					cfg_obj.setClassname(st.nextToken().trim());
+					cfg_obj.setLookAtMetadata(st.nextToken().trim());
+					cfg_obj.setLookAtData(st.nextToken().trim());
+					cfg_obj.setLookAtLength(st.nextToken().trim());
+					all_objects.put(cfg_obj.getProtocol(), cfg_obj);
 				 }
 			}
-		}
 		}
 
 		if (inn != null)
@@ -95,9 +87,6 @@ public class ConfigReader {
 		    System.err.println("ConfigReader: " + e.getMessage());
 		    throw new EntryNotFoundException();
 		}
-
-		System.err.println("ConfigReader - EntryNotFound: ");
-		throw new EntryNotFoundException();
     }
 
 
@@ -107,17 +96,17 @@ public class ConfigReader {
      * and returns the class of the object which this config file
      * indicates should be loaded
      */
-    private static String findInConf(String prot, String file) throws EntryNotFoundException {
+    private static ConfigObject findInConf(String prot, String file) throws EntryNotFoundException {
 	try {
-	    File cfg = findFile(file);
-	    InputStream inn = new FileInputStream(cfg);
+	    File cfg_file = findFile(file);
+	    InputStream inn = new FileInputStream(cfg_file);
 	    BufferedReader in = new BufferedReader(new InputStreamReader(inn));
 	    String line;
-	    ConfigObject cfg;
+
 
 	    while((line = in.readLine()) != null) {
 
-			if (!line.startsWith("//") {
+			if (!line.startsWith("//")) {
 
 				StringTokenizer st = new StringTokenizer(line, "\t");
 
@@ -125,19 +114,18 @@ public class ConfigReader {
 				if (st.countTokens() == 5) {
 		 		   String read_variable = st.nextToken().trim();
 
-		 		   if (object.compareToIgnoreCase(read_variable) == 0) {
-					   cfg.setProtName(read_variable);
-					   cfg.setProtClass(st.nextToken().trim());
+		 		   if (prot.compareToIgnoreCase(read_variable) == 0) {
+					   ConfigObject cfg = new ConfigObject();
+					   cfg.setProtocol(read_variable);
+					   cfg.setClassname(st.nextToken().trim());
 					   cfg.setLookAtMetadata(st.nextToken().trim());
 					   cfg.setLookAtData(st.nextToken().trim());
 					   cfg.setLookAtLength(st.nextToken().trim());
 					   return cfg;
-		 		   }
-
-
-				}
-			}
-	    }
+				   }
+			   }
+		   }
+	   }
 
 	    if (inn != null)
 		inn.close();

@@ -8,6 +8,7 @@ package psl.chime.probe.protocols;
 import java.io.*;
 import java.lang.*;
 import psl.chime.sienautils.*;
+import psl.chime.probe.*;
 
 public abstract class ProbeProtocol {
 
@@ -26,7 +27,7 @@ public abstract class ProbeProtocol {
      */
     public boolean goProbe(String PROTOCOL_NAME, String OBJECT, Object[] pass_to_manager) {
 	ProbeManager pm = ProbeManager.getInstance();
-	pm.addToMonitor(PROTOCOL_NAME, OBJECT,  pass_to_manager);
+	pm.checkDifference(PROTOCOL_NAME, OBJECT,  pass_to_manager);
 	return true;
     }
 

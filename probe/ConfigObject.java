@@ -18,31 +18,31 @@ public class ConfigObject {
 	private String prot_load_class;
 
 	void setLookAtMetadata(String allow) {
-		if (allow.equals("y")
+		if (allow.equals("y"))
 			look_at_metadata = true;
 		else
 			look_at_metadata = false;
 	}
 
 	void setLookAtData(String allow) {
-		if (allow.equals("y")
+		if (allow.equals("y"))
 			look_at_data = true;
 		else
 			look_at_data = false;
 	}
 
 	void setLookAtLength(String allow) {
-		if (allow.equals("y")
+		if (allow.equals("y"))
 			look_at_length = true;
 		else
 			look_at_length = false;
 	}
 
-	void setProtName(String name) {
+	void setProtocol(String name) {
 		this_prot = name;
 	}
 
-	void setProtClass(String classname) {
+	void setClassname(String classname) {
 		prot_load_class = classname;
 	}
 
@@ -50,19 +50,19 @@ public class ConfigObject {
 			return look_at_metadata;
 	}
 
-	boolean LookAtData() {
+	boolean lookAtData() {
 			return look_at_data;
 	}
 
-	boolean LookAtLength() {
+	boolean lookAtLength() {
 			return look_at_length;
 	}
 
-	String getProtName() {
+	String getProtocol() {
 		return this_prot;
 	}
 
-	String getProtClass() {
+	String getClassname() {
 		return prot_load_class;
 	}
 }
