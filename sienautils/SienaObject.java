@@ -47,14 +47,30 @@ public class SienaObject {
      */
 
     public SienaObject(Notification not) {
-	setData(not.getAttribute("data").stringValue());
-	setUsername(not.getAttribute("username").stringValue());
-	setPassword(not.getAttribute("password").stringValue());
-	setFromComponent(not.getAttribute("from_component").stringValue());
-	setNeedAuth(not.getAttribute("auth").stringValue());
-	setAccess(not.getAttribute("access").stringValue());
-	setProtocol(not.getAttribute("prot").stringValue());
-	setAddress(not.getAttribute("address").stringValue());
+
+	if (not.getAttribute("data") != null)
+		setData(not.getAttribute("data").stringValue());
+
+	if (not.getAttribute("username") != null)
+		setUsername(not.getAttribute("username").stringValue());
+
+	if (not.getAttribute("password") != null)
+		setPassword(not.getAttribute("password").stringValue());
+
+	if (not.getAttribute("from_component") != null)
+		setFromComponent(not.getAttribute("from_component").stringValue());
+
+	if (not.getAttribute("auth") != null)
+		setNeedAuth(not.getAttribute("auth").stringValue());
+
+	if (not.getAttribute("access") != null)
+		setAccess(not.getAttribute("access").stringValue());
+
+	if (not.getAttribute("prot") != null)
+		setProtocol(not.getAttribute("prot").stringValue());
+
+	if (not.getAttribute("address") != null)
+		setAddress(not.getAttribute("address").stringValue());
 
 	if (not.getAttribute("method") != null)
 		setMethod(not.getAttribute("method").stringValue());
