@@ -289,7 +289,7 @@ public class EventTracer {
 		if (oldRoom != null && !oldRoom.equals("default")) {
 		    v = findRoomTuple(oldRoom);
 		    e.setMethod("s_leftRoom");
-		    e.setData(userIP + " " + oldRoom);
+		    e.setData(username + " " + userIP + " " + oldRoom);
 		    try {
 				e.publish();
 			} catch (Exception ex) {
@@ -324,7 +324,7 @@ public class EventTracer {
 
 		v = findRoomTuple(roomUrl);
 		e.setMethod("s_enteredRoom");
-		e.setData(userIP + " " + roomUrl);
+		e.setData(username + " " + userIP + " " + roomUrl);
 
 		try {
 			e.publish();
@@ -397,14 +397,15 @@ public class EventTracer {
 
 		    try {
 			if (v!=null) {
-			    for (int idx=0; idx<v.size(); idx++) {
-				roommate = ((RoomTuple)v.elementAt(idx)).getUser();
-				if (!roommate.equals(user)) {
-				    e.setUsername(roommate);
-				    e.setData(user + " " + oldRoom);
+			    //for (int idx=0; idx<v.size(); idx++) {
+				//roommate = ((RoomTuple)v.elementAt(idx)).getUser();
+				//if (!roommate.equals(user)) {
+				    //e.setUsername(roommate);
+				    e.setUsername(user);
+				    e.setData(user + " " + userIP + " " + oldRoom);
 				    e.publish();
-				}
-			    }
+				//}
+			    //}
 			}
 		    } catch (Exception ex) {
 			System.err.println(ex);

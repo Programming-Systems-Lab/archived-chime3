@@ -688,22 +688,22 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	hallway->SetAmbientColor(50,50,50);
 
 	//Prepare the whole room.
-	//room->Prepare (room);
+	room->Prepare (room);
 	room->InitLightMaps (false);
 	room->ShineLights ();
 	room->CreateLightMaps (System->G3D);
 
-	//connector1->Prepare (connector1);
+	connector1->Prepare (connector1);
 	connector1->InitLightMaps (false);
 	connector1->ShineLights ();
 	connector1->CreateLightMaps (System->G3D);
 
-	//connector2->Prepare (connector2);
+	connector2->Prepare (connector2);
 	connector2->InitLightMaps (false);
 	connector2->ShineLights ();
 	connector2->CreateLightMaps (System->G3D);
 
-	//hallway->Prepare (hallway);
+	hallway->Prepare (hallway);
 	hallway->InitLightMaps (false);
 	hallway->ShineLights ();
 	hallway->CreateLightMaps (System->G3D);
@@ -1237,7 +1237,7 @@ bool ChimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 		pList[i] = BuildWall(room, doorSize, curPos, FRONT, t, doorTxtSize);
 
 		//create a label on the wall above the door
-		CreateLabel(room, label_size, curPos, FRONT, csVector3(3,3,3));
+		//CreateLabel(room, label_size, curPos, FRONT, csVector3(3,3,3));
 
 
 		curPos.x += doorSize.x;
@@ -1398,6 +1398,16 @@ int ChimeSector::findType(const char *thing)
 //Add user name to the list of users in the sector
 bool ChimeSector::AddUser(char *username, char *ip_address)
 {
+	//don't do anything if the user is already there
+	for (int i = 0; i < userList.Length(); i++) {
+		char in_username[100];
+		char in_ip_address[100];
+		sscanf(userList.Get(i), "%s %s", in_username, in_ip_address);
+		if (strcmp(username, in_username) == 0)
+			return false;
+	}
+
+
 	UserIDType userID = MakeUserID(username, ip_address);
 
 	if(!userID) return false;

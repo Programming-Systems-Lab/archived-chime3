@@ -393,9 +393,9 @@ int SienaSubscriber::getMethod(char *string) {
 	else if (strstr(method, "s_roomInfo") != NULL)
 		return s_roomInfo;
 	else if (strstr(method, "s_enteredRoom") != NULL)
-		return s_roomInfo;
+		return s_enteredRoom;
 	else if (strstr(method, "s_leftRoom") != NULL)
-		return s_roomInfo;
+		return s_leftRoom;
 	else
 		return -1;
 }

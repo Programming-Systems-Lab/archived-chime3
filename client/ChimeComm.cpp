@@ -124,15 +124,16 @@ bool chimeComm::MoveUser(char *roomUrl, char *username, char *ip_address, float 
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
 
-	//Send signal to all the user in this room
+	//Send signal to all the users in this room
 	for(int i = 0 ; i < userList->Length(); i++)
 	{
 		char *to_username = strtok(userList->Get(i), " ");
 		char *to_ip_address = strtok(NULL, " ");
 
-		if (to_username != NULL && to_ip_address != NULL && 
-			!strcmp(to_ip_address, ip_address)) //don't send it to yourself
-		
+		if (to_username != NULL && to_ip_address != NULL 
+			&& strcmp(to_ip_address, ip_address) != 0) //don't send it to yourself
+			
+
 			client_comm->SendUDPFunction(to_ip_address, c_moveUser, command);
 	}
 	return true;

@@ -86,15 +86,15 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//strcpy(username, "denis");
 	//strcpy(userIP, getLocalIP());
 
-	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
+	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
+	//strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
-	strcat(testRoom, "suhit ninja User 192.168.1.102 1\n");
+	//strcat(testRoom, "suhit ninja User 192.168.1.102 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.suhit.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "navdeep mdl1 User 192.168.1.103 1\n");
+	//strcat(testRoom, "navdeep mdl1 User 192.168.1.103 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 /*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
@@ -334,7 +334,7 @@ void ChimeSystemDriver::UserMoved()
 //********************************************************************** 
 void ChimeSystemDriver::ResetLocalChatBuddies(ChimeSector *cur_sec) {
 	if (app && app->chatWindow) {
-		app->chatWindow->DeleteAllLocalUsers();
+		//app->chatWindow->DeleteAllLocalUsers();
 		app->chatWindow->AddLocalUsers(cur_sec->GetUserList());
 	}
 }
@@ -439,7 +439,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	// Initialise the procedural textures.
 	// we do it first because if a level is loaded it will erase everything 
 	// previously loaded into the engine.
-	InitProcTextures ();
+	//InitProcTextures ();
 
 	ReadRoom(testRoom);
 
@@ -448,8 +448,8 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	engine->Prepare ();
 
 	// Open the procedural textures after the main texture manager has been prepared
-	if (!OpenProcTextures ())
-		return false;
+	//if (!OpenProcTextures ())
+	//	return false;
 
 	return true;
 }
@@ -583,7 +583,7 @@ void ChimeSystemDriver::NextFrame ()
   static cs_time inactive_time = 0;
 
   // OK do the labeling thing
-  AnimateProcTextures (current_time, elapsed_time);
+  //AnimateProcTextures (current_time, elapsed_time);
 
   if( active )
   {
@@ -754,7 +754,7 @@ bool ChimeSystemDriver::LinkChimeSectors(ChimeSector *sec1, int doorNum, ChimeSe
 bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
 {
 
-	//Check if user clicked on one of the rooms
+  //Check if user clicked on one of the rooms
   csVector3 v;
   csVector2 p (Event.Mouse.x, FrameHeight-Event.Mouse.y);
   view->GetCamera ()->InvPerspective (p, 1, v);
@@ -830,6 +830,7 @@ bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
 
   //disable all movement
   Stop3D();
+  char name[50];
 
   //just in case there was one before this that wasn't wiped
   WipePopupMenu();
@@ -837,7 +838,16 @@ bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
   // Create a menu for all test dialogs we implement
   menu = new csMenu (app, csmfs3D, 0);
   csMenu *submenu = new csMenu (NULL);
-  (void)new csMenuItem (menu, "~Editing Options", submenu);
+
+  if (selectedMesh) {	 
+	  strcpy(name, "Name: ");
+	  strcat(name, selectedMesh->GetName());
+	  (void)new csMenuItem (menu, name, -1);
+	  submenu = new csMenu (NULL);
+
+  }
+
+    (void)new csMenuItem (menu, "~Editing Options", submenu);
     (void)new csMenuItem (submenu, "~Edit with Default App", POPUP_EDIT_WITH_DEFAULT_APP);
     (void)new csMenuItem (submenu, "~Select App", POPUP_SELECT_APP);
 
@@ -1767,7 +1777,10 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 			float x, y, z;
 
 			sscanf(params, "%s %s %s %f %f %f", username, ip_address, newRoomUrl, &x, &y, &z);
-			result = AddUser(newRoomUrl, username, ip_address, "mdl1", x, y, z);
+
+			//don't add me as a user
+			if (strcmp(username, info->GetUsername()) != 0)
+				result = AddUser(newRoomUrl, username, ip_address, "mdl1", 3, 0, 2);  //NEEDS TO BE FIXED - NOT HARDCODED
 
 			break;
 		}
@@ -2005,14 +2018,22 @@ bool ChimeSystemDriver::AddUser(char *roomUrl, char *username, char *ip_address,
 	userPos.y += y;
 	userPos.z += z;
 
-	iMeshWrapper *m = AddMeshObj(shape, username, room, userPos, 1);
+	//Add user to the userList for UDP communication
+	if(!sec->AddUser(username, ip_address))
+		return true;
+
+	char name[100];
+
+	strcpy(name, username);
+	strcat(name, " ");
+	strcat(name, ip_address);
+
+	iMeshWrapper *m = AddMeshObj(shape, name, room, userPos, 1);
 	if( !m ) return false;
 
-	//Add user to the userList for UDP communication
-	sec->AddUser(username, ip_address);
 
 	//Add collision detection
-	csMeshWrapper *sp = FindObject(room, username);
+	csMeshWrapper *sp = FindObject(room, name);
 	iPolygonMesh* mesh;
 	iMeshObject *s = sp->GetMeshObject();
 	mesh = QUERY_INTERFACE (s, iPolygonMesh);

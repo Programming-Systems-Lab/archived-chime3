@@ -38,6 +38,7 @@ class UserListBox : public csListBox
 public:
 	UserListBox(csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle);
 	GetID();  //Get the last ID
+	DeleteAll();
 };
 
 //this is an item that is present in the user list box

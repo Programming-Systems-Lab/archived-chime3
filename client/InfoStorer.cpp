@@ -23,11 +23,11 @@ InfoStorer::InfoStorer() {
   //set the ip address of this machine
   SetMyIPAddress(GetLocalIP());
 
-  *username = NULL;
+  strcpy(username, "");
 
-  *password = NULL;
+  strcpy(password, "");
 
-  *siena_location = NULL;
+  strcpy(siena_location, "");
 }
 
 ClientComm* InfoStorer::GetCommObject() {
@@ -40,12 +40,18 @@ void InfoStorer::SetCommObject(ClientComm* comm_object) {
 
 //get the username
 char* InfoStorer::GetUsername() {
-	return username;
+	if (strcmp(username, "") == 0) 
+		return NULL;
+	else
+		return username;
 }
 
 //get the password
 const char* InfoStorer::GetPassword() {
-	return password;
+	if (strcmp(password, "") == 0)
+		return NULL;
+	else
+		return password;
 }
 
 //return the port used to send chat commands
@@ -55,7 +61,10 @@ const int InfoStorer::GetChatPort() {
 
 //get the hostname of the siena
 const char* InfoStorer::GetSienaLocation() {
-	return siena_location;
+	if (strcmp(siena_location, "") == 0)
+		return NULL;
+	else
+		return siena_location;
 }
 
 //get the port on which Siena is listening

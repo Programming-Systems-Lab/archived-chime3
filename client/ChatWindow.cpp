@@ -36,27 +36,27 @@ ChatWindow::ChatWindow(csComponent *iParent)
   user_msg_line->SetRect (5, bound.Height() / 8 * 4 + py, bound.Width() - 10, bound.Height() / 8 * 4 + 3 * py);
 
   // Now create the notebook
-  csNotebook *nb = new csNotebook (d, CSNBS_TABPOS_TOP| CSNBS_PAGEFRAME | CSNBS_PAGEINFO);
+  nb = new csNotebook (d, CSNBS_TABPOS_TOP| CSNBS_PAGEFRAME | CSNBS_PAGEINFO);
   nb->SetRect (0, bound.Height() / 8 * 4 + 3 * py + py, bound.Width() - 10, bound.Height() -10);
 
   //create the page that is associated with each entry
-  csDialog *page = new csDialog (nb);
-  page -> SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Brown_L);
+  page1 = new csDialog (nb);
+  page1 -> SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Brown_L);
   
   //make the first tab called "Local Users"
-  nb->AddPrimaryTab (page, "~Local Users", "Users in Current Room");
+  nb->AddPrimaryTab (page1, "~Local Users", "Users in Current Room");
 
    //add a listbox
-  local_users_lb = new UserListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  local_users_lb = new UserListBox (page1, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
   local_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
    
   //create the second page
-  page = new csDialog (nb);
-  nb->AddPrimaryTab (page, "~Global Users", "All Users of Chime");
-  page->SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Blue_D);
+  page2 = new csDialog (nb);
+  nb->AddPrimaryTab (page2, "~Global Users", "All Users of Chime");
+  page2->SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Blue_D);
 
    //add a listbox
-  global_users_lb = new UserListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  global_users_lb = new UserListBox (page2, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
   global_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
 
   last_ID = 0;
@@ -150,6 +150,10 @@ void ChatWindow::ShowMessage(const char *username, const char* msg) {
 //*
 //**********************************************************************
 void ChatWindow::AddLocalUsers(csStrVector *user_list) {
+	
+	//first add yourself
+	//AddLocalUser(((ChimeApp*) app)->GetInfo()->GetUsername(), ((ChimeApp*)app)->GetInfo()->GetMyIPAddress());
+
 	for (int i = 0; i < user_list->Length(); i++) {
 		char username[100];
 		char ip_address[100];
@@ -413,6 +417,13 @@ UserListBox::UserListBox(csComponent *iParent, int iStyle, csListBoxFrameStyle i
 
 UserListBox::GetID() {
 	return last_ID++;
+}
+
+UserListBox::DeleteAll() {
+	csListBox::DeleteAll();
+	//Insert (new csComponent(this));
+
+	//csListBox::csListBox(parent, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
 }
 
 //this is an item that is present in the user list box

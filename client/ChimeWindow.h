@@ -151,6 +151,9 @@ class ChatWindow : public AlwaysVisibleWindow
   int last_ID;
   UserListBox *local_users_lb;
   UserListBox *global_users_lb;
+  csNotebook *nb;
+  csDialog *page1;
+  csDialog *page2;
 
   //void gui ();
 
