@@ -172,9 +172,6 @@ private:
 
 	//Draw a menu
 	bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint);
-	//Get rid of Popup menu
-	bool ChimeSystemDriver::WipePopupMenu();
-	
 
 	char testRoom[500], google[500], google2[500], google3[500];
 
@@ -203,9 +200,14 @@ private:
 	//will work if reqAtDoor has been set otherwise will not do anything
 	bool OpenDoor();
 
-	//setup a menu
+	//do all the necessary steps to setup the menu
 	bool SetupMenu();
 
+	//mark the menu to be deleted
+	bool MarkPopupMenuForDeletion();
+
+	//delete the popup menu
+	bool DeletePopupMenu();
 
 public:
 

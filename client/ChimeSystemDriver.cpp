@@ -58,6 +58,10 @@ ChimeSystemDriver::ChimeSystemDriver()
 	engine = NULL;
 	curSector = NULL;
 	currentSector = NULL;
+	
+	//the menu wasn't drawn
+	menu_drawn = false;
+	menu = NULL;
 
 	for(int i = 0; i < NUM_SECT; i++)
 	{
@@ -352,9 +356,6 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	
 	srand (time (NULL));
 
-	//the menu wasn't drawn
-	menu_drawn = false;
-
 	//Initialize basic things that crystal-space must need.
 	if (!superclass::Initialize (argc, argv, iConfigName))
 		return false;
@@ -580,6 +581,9 @@ void ChimeSystemDriver::NextFrame ()
 
   engine->NextFrame (current_time);
   
+  //if the menu shouldn't be drawn then get rid of it
+  DeletePopupMenu();
+
   static cs_time inactive_time = 0;
 
   // OK do the labeling thing
@@ -750,12 +754,16 @@ bool ChimeSystemDriver::LinkChimeSectors(ChimeSector *sec1, int doorNum, ChimeSe
 /*
 /***************************************************************************/
 bool ChimeSystemDriver::SetupMenu() {
-	
+
+  //just in case there was a popup menu
+  //mark it for deletion
+  MarkPopupMenuForDeletion();
+
+  //delete it since this will not be called from HandleEvent of the menu class
+  DeletePopupMenu();
+
   //disable all movement
   Stop3D();
-
-  //just in case there was one before this that wasn't wiped
-  WipePopupMenu();
 
   return true;
 }
@@ -903,12 +911,10 @@ void ChimeSystemDriver::SetHistoryWindow(HistoryWindow *historyWindow) {
 //************************************************************************
 bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
 
-  //disable all movement
-  Stop3D();
   char name[50];
 
-  //just in case there was one before this that wasn't wiped
-  WipePopupMenu();
+  //setup everything to create a new popup menu
+  SetupMenu();
 
   // Create a menu for all test dialogs we implement
   menu = new csMenu (app, csmfs3D, 0);
@@ -954,14 +960,15 @@ bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
 
 //*************************************************************************
 //*
-//* Get rid of Popup menu
+//* Because of various stack returns we need to first mark the Popup menu
+//* for deletion and it will be deleted either when the user tries to open
+//* a new popup menu or when next frame is called and the menu is marked
+//* for deletion
 //*
 //************************************************************************
-bool ChimeSystemDriver::WipePopupMenu()
+bool ChimeSystemDriver::MarkPopupMenuForDeletion()
 {
 	if (menu_drawn) {
-		//this->SendCommand(cscmdClose);
-		//menu->Close();
 		menu_drawn = false;
 		Start3D();
 		return true;
@@ -969,6 +976,23 @@ bool ChimeSystemDriver::WipePopupMenu()
 	} else 
 		return false;
 	
+}
+
+
+//****************************************************************************
+//*
+//* Delete the popup menu and free all the memory that was occupied by
+//* whichever popup menu was on the screen last
+//*
+//*****************************************************************************
+bool ChimeSystemDriver::DeletePopupMenu() 
+{
+	if (!menu_drawn && menu != NULL) {
+		menu -> Close();
+		menu = NULL;
+		return true;
+	} else
+		return false;
 }
 
 //*************************************************************************
@@ -999,11 +1023,13 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
 		case OBJECT_PROPERTIES:
 		case DOOR_OPEN_LINK:
 			OpenDoor();
-			WipePopupMenu();
+			MarkPopupMenuForDeletion();
 			return true;
 
 		case DOOR_LINK_SOMEWHERE_ELSE:
-			WipePopupMenu();
+			SetupMenu();
+			(void)new GetObjectWindow(app);
+			//MarkPopupMenuForDeletion();
 			return true;
 	  }
   }
@@ -1321,7 +1347,11 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 		} 
 		else if (Event.Mouse.Button == 2)
 		{
-			WipePopupMenu();
+			//mark the popup menu for deletion
+			MarkPopupMenuForDeletion();
+
+			//deletes the popup menu if it exists
+			DeletePopupMenu();
 		}
 
 		break;
