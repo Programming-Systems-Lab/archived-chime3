@@ -127,11 +127,14 @@ public class HTMLPlug extends FRAXPlug {
      * so far the only components this knows about are links and images
      */
     public static class Buffer {
-	public static String links = new String();
-	public static String images = new String();
+	public static String links;
+	public static String images;
 	public static URL address;
 
 	public Buffer(String object) {
+		links = "";
+		images = "";
+
 	    try {
 		address = new URL(object);
 	    } catch (Exception e) {
