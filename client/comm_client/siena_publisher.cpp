@@ -92,6 +92,12 @@ char* SienaPublisher::getFunction(int func) {
 		return "c_deleteObject";
 	else if (func == c_disconnect) 
 		return "c_disconnect";
+	else if (func == c_leftRoom) 
+		return "c_leftRoom";
+	else if (func == c_subscribeRoom) 
+		return "c_subscribeRoom";
+	else if (func == c_unsubscribeRoom) 
+		return "c_unsubscribeRoom";
 
 	//server side methods
 	else if (func == s_moveObject)
@@ -106,10 +112,160 @@ char* SienaPublisher::getFunction(int func) {
 		return "s_changeClass";
 	else if (func == s_roomInfo)
 		return "s_roomInfo";
+	else if (func == s_enteredRoom)
+		return "s_enteredRoom";
+	else if (func == s_leftRoom)
+		return "s_leftRoom";
 	else
 		return NULL;
 }
 
+
+void SienaPublisher::subscribeRoom(char *room) {
+
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s address=\"%s\"", subscribeString, room); 
+		sprintf (subscribeString, "%s username !=\"%s\"}", subscribeString, username); 
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket(s);
+}
+
+void SienaPublisher::subscribeClient() {
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username); 
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket (s);
+}
+
+
+void SienaPublisher::subscribeMethod(char *method) {
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket (s);	
+}
+
+void SienaPublisher::unsubscribeRoom(char *room) {
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+	
+		closesocket (s);
+}
+
+void SienaPublisher::unsubscribeClient() {
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username); 
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket (s);
+}
 
 
 //method to publish an event onto siena bus

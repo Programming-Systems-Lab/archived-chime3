@@ -39,6 +39,12 @@ char* UDPClient::getFunction(int func) {
 		return "c_deleteObject";
 	else if (func == c_disconnect) 
 		return "c_disconnect";
+	else if (func == c_leftRoom) 
+		return "c_leftRoom";
+	else if (func == c_subscribeRoom) 
+		return "c_subscribeRoom";
+	else if (func == c_unsubscribeRoom) 
+		return "c_unsubscribeRoom";
 
 	//server side methods
 	else if (func == s_moveObject)
@@ -53,6 +59,10 @@ char* UDPClient::getFunction(int func) {
 		return "s_changeClass";
 	else if (func == s_roomInfo)
 		return "s_roomInfo";
+	else if (func == s_enteredRoom)
+		return "s_enteredRoom";
+	else if (func == s_leftRoom)
+		return "s_leftRoom";
 	else
 		return NULL;
 }

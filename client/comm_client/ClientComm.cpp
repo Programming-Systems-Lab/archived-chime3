@@ -71,6 +71,35 @@ DWORD WINAPI StartSienaSubscriber(LPVOID lParam)
 }
 
 
+//subscribe to a events in a room
+bool ClientComm::subscribeRoom(char *room) {
+	siena_publisher->subscribeRoom(room);
+	return true;
+}
+
+//subscribe to all events published by client
+bool ClientComm::subscribeClient() {
+	siena_publisher->subscribeClient();
+	return true;
+}
+
+//subscribe to all events of some method
+bool ClientComm::subscribeMethod(char *method) {
+	siena_publisher->subscribeMethod(method);
+	return true;
+}
+
+//unsubscribe from all events of some room
+bool ClientComm::unsubscribeRoom(char *room) {
+	siena_publisher->unsubscribeRoom(room);
+	return true;
+}
+
+//unsubscribe the client
+bool ClientComm::unsubscribeClient() {
+	siena_publisher->unsubscribeClient();
+	return true;
+}
 
 bool ClientComm::SendUDPFunction(char *ip_addr, int function, char *params) {
 	cl->sendMess(ip_addr, function, params);

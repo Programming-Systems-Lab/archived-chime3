@@ -156,6 +156,22 @@ public:
 	SienaPublisher(char *host, short port, char *username, char *password);
 	void publish(int function, char *params, char *address, char *prot);
 	char* getFunction(int func);
+
+	//subscribe to all events in a room
+	void subscribeRoom(char *room);
+
+	//subscribe to all events published by client
+	void subscribeClient();
+
+	//subscribe to all events of some method
+	void subscribeMethod(char *method);
+
+	//unsubscribe from all events of some room
+	void unsubscribeRoom(char *room);
+
+	//unsubscribe the client
+	void unsubscribeClient();
+
 };
 
 
@@ -172,6 +188,20 @@ class ClientComm {
 	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *nav);
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
+	   //subscribe to all events in a room
+	   bool subscribeRoom(char *room);
+
+	   //subscribe to all events published by client
+	   bool subscribeClient();
+
+	   //subscribe to all events of some method
+	   bool subscribeMethod(char *method);
+
+	   //unsubscribe from all events of some room
+	   bool unsubscribeRoom(char *room);
+
+	   //unsubscribe the client
+	   bool unsubscribeClient();
 
    private:
 	  int setLocalIP();

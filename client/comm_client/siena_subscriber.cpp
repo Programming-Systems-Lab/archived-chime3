@@ -70,6 +70,7 @@ void SienaSubscriber::subscribeRoom(char *room) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username); 
 		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
 		printf("Sending filter request: %s\n\n", subscribeString);
 
@@ -113,6 +114,8 @@ void SienaSubscriber::subscribeClient() {
 
 void SienaSubscriber::subscribeMethod(char *method) {
 		SOCKET s = createSendSocket();
+
+		char subscribeString [1000]; 
 		
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
@@ -125,7 +128,7 @@ void SienaSubscriber::subscribeMethod(char *method) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
 		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
@@ -140,6 +143,8 @@ void SienaSubscriber::subscribeMethod(char *method) {
 
 void SienaSubscriber::unsubscribeRoom(char *room) {
 		SOCKET s = createSendSocket();
+
+		char subscribeString [1000]; 
 
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
@@ -166,6 +171,8 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 
 void SienaSubscriber::unsubscribeClient() {
 		SOCKET s = createSendSocket();
+
+		char subscribeString [1000]; 
 
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
@@ -311,6 +318,12 @@ int SienaSubscriber::getMethod(char *string) {
 		return c_deleteObject;
 	else if (strstr(method, "c_disconnect") != NULL) 
 		return c_disconnect;
+	else if (strstr(method, "c_leftRoom") != NULL) 
+		return c_leftRoom;
+	else if (strstr(method, "c_unsubscribeRoom") != NULL) 
+		return c_unsubscribeRoom;
+	else if (strstr(method, "c_subscribeRoom") != NULL) 
+		return c_subscribeRoom;
 
 	//server side methods
 	else if (strstr(method, "s_moveObject") != NULL)
@@ -324,6 +337,10 @@ int SienaSubscriber::getMethod(char *string) {
 	else if (strstr(method, "s_changeClass") != NULL)
 		return s_changeClass;
 	else if (strstr(method, "s_roomInfo") != NULL)
+		return s_roomInfo;
+	else if (strstr(method, "s_enteredRoom") != NULL)
+		return s_roomInfo;
+	else if (strstr(method, "s_leftRoom") != NULL)
 		return s_roomInfo;
 	else
 		return -1;

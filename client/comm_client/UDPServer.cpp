@@ -84,6 +84,12 @@ int UDPServer::getMethod(char *method) {
 		return c_deleteObject;
 	else if (strstr(method, "c_disconnect") != NULL) 
 		return c_disconnect;
+	else if (strstr(method, "c_leftRoom") != NULL) 
+		return c_leftRoom;
+	else if (strstr(method, "c_subscribeRoom") != NULL) 
+		return c_disconnect;
+	else if (strstr(method, "c_unsubscribeRoom") != NULL) 
+		return c_disconnect;
 
 	//server side methods
 	else if (strstr(method, "s_moveObject") != NULL)
@@ -98,6 +104,10 @@ int UDPServer::getMethod(char *method) {
 		return s_changeClass;
 	else if (strstr(method, "s_roomInfo") != NULL)
 		return s_roomInfo;
+	else if (strstr(method, "s_enteredRoom") != NULL)
+		return s_enteredRoom;
+	else if (strstr(method, "s_leftRoom") != NULL)
+		return s_leftRoom;
 	else
 		return -1;
 }
