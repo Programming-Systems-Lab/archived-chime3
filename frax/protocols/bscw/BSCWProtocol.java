@@ -10,9 +10,11 @@ import java.net.*;
 import java.io.*;
 import psl.chime.frax.protocols.*;
 import psl.chime.frax.plugs.PlugStarter;
+import psl.chime.sienautils.*;
 
 public class BSCWProtocol extends FRAXProtocol {
 
+    SienaObject siena_obj;
     public static final String PROTOCOL_NAME = "BSCW";
     public String URLString = "";
     private String final_str;
@@ -26,8 +28,9 @@ public class BSCWProtocol extends FRAXProtocol {
      * make an internal representation of the
      * object so we can use it when processObject is called
      */
-    public BSCWProtocol(String object) {
-	this.URLString = object;
+    public BSCWProtocol(SienaObject s) {
+	this.siena_obj = s;
+	this.URLString = s.getAddress();
 	makeURIObj(URLString);
     }
 
@@ -59,7 +62,7 @@ public class BSCWProtocol extends FRAXProtocol {
 		return null;
 
 	    HTTPConnection con = new HTTPConnection(dest.toURL());
-	    con.setAllowUserInteraction(true);  //will allow UI for demo
+	    con.setAllowUserInteraction(false);  //will allow UI for demo
 	    rsp = con.Get(dest.getPath());
 	    NVPair[] test = con.getDefaultHeaders();
 
@@ -143,10 +146,19 @@ public class BSCWProtocol extends FRAXProtocol {
 
 	else {
 
+	    Long length;
+	    try {
+		length = new Long(getField(rsp, "Content-Length"));
+	    } catch (NumberFormatException e) {
+		System.err.println("The length can't be cast");
+		length = new Long(-1);
+
+	    }
+
 	    try {
 		String returning = rsp.getEffectiveURI().toString();
 
-		goPlug(PROTOCOL_NAME, returning, createParams());
+		goPlug(PROTOCOL_NAME, returning, makeParams(siena_obj, "", returnedInputStream, length));
 		return true;
 
 		//maybe the getEffective URI method will fail so have a backup
@@ -154,7 +166,8 @@ public class BSCWProtocol extends FRAXProtocol {
 
 		String returning = rsp.getOriginalURI().toString();
 
-		goPlug(PROTOCOL_NAME, returning, createParams());
+
+		goPlug(PROTOCOL_NAME, returning, makeParams(siena_obj, "", returnedInputStream, length));
 		return true;
 	    }
 	}
@@ -162,25 +175,6 @@ public class BSCWProtocol extends FRAXProtocol {
     }
 
 
-    /**
-     * Creates the parameters for goPlug
-     * can also use the function from FRAXProtocol but
-     * this was written before FRAXProtocol
-     */
-    private Object[] createParams() {
-	Object[] const_param = new Object[3];
-	const_param[0] = "";
-	const_param[1] = returnedInputStream;
-
-	try {
-	    const_param[2] = new Long(getField(rsp, "Content-Length"));
-	} catch (NumberFormatException e) {
-	    System.err.println("The length can't be cast");
-	    const_param[2] = new Long(-1);
-	    return const_param;
-	}
-	return const_param;
-    }
 
     /**
      * Helper method to find out a particular field of a
@@ -198,9 +192,11 @@ public class BSCWProtocol extends FRAXProtocol {
      * Test to see if the class loads and runs correctly
      */
     public static void main(String args[]) {
-	BSCWProtocol bs = new BSCWProtocol("http://mercer.psl.cs.columbia.edu/bscw/bscw.cgi");
-	bs.processObject();
-	System.exit(0);
+	/*
+	  BSCWProtocol bs = new BSCWProtocol("http://mercer.psl.cs.columbia.edu/bscw/bscw.cgi");
+	  bs.processObject();
+	  System.exit(0);
+	*/
     }
 }
 

@@ -27,15 +27,32 @@ public class FRAXPlugLoader {
 	if (xml_ret == null)
 	    throw new MethodNotFoundException();
 
-	//xml_ret = "<?xml version=\"1.0\"?>\n<MetaInfo createDate=\'" + System.currentTimeMillis() + "\'>\n" + xml_ret + "</MetaInfo>\n";
-	new SimpleDialog("FRAX SmartEvent", xml_ret);
+	//new SimpleDialog("FRAX SmartEvent", xml_ret);
 	System.err.println("^^^^^Publishing to Siena^^^^^");
-	//the siena server address is hardcoded here:
-	//in future version will be changed
-	PublishObject po = new PublishObject("senp://localhost:1111");
-	po.submit("FRAX", xml_ret);
+
+	//create the siena object to be published
+	SienaObject s = (SienaObject) constructor_args[3];
+	s = createSienaObject(s, xml_ret);
+	try {
+	    s.publish();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+
 
     }
+
+
+    /**
+     * Create the siena object to publish
+     */
+
+    private SienaObject createSienaObject(SienaObject obj, String xml_ret) {
+	obj.setData(xml_ret);
+	obj.setFromComponent("frax");
+	return obj;
+    }
+
 
     /**
      * Primarily for debugging purposes

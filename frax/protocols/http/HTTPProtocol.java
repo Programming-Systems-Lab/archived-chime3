@@ -1,5 +1,5 @@
- /*    
- * Copyright (c) 2001: The Trustees of Columbia University 
+ /*
+ * Copyright (c) 2001: The Trustees of Columbia University
  *    in the City of New York.  All Rights Reserved.
  *
  */
@@ -10,26 +10,28 @@ import HTTPClient.*;
 import java.net.*;
 import java.io.*;
 import psl.chime.frax.plugs.PlugStarter;
-
+import psl.chime.sienautils.*;
 
 
 public class HTTPProtocol extends FRAXProtocol  {
 
-    public static final String PROTOCOL_NAME = "HTTP"; 
+    SienaObject siena_obj;
+    public static final String PROTOCOL_NAME = "HTTP";
     public String URLString = "";
     private String final_str;
-    private DataInputStream returned; 
+    private DataInputStream returned;
     HTTPResponse rsp;
     URL dest;
     public String metaData;
-   
+
     /**
      * a general purpose consrtuctor to store an internal
      * representation of the data so we can be ready
      * when processObject is called
      */
-    public HTTPProtocol(String object) {
+    public HTTPProtocol(String object, SienaObject s) {
 	this.URLString = object;
+	this.siena_obj = s;
     }
 
     /**
@@ -43,24 +45,24 @@ public class HTTPProtocol extends FRAXProtocol  {
 	}
 	return dest;
     }
-    
+
 
     /**
-     * returns an HTTPResponse object associated with the 
+     * returns an HTTPResponse object associated with the
      * object that the user wishes to retrieve
      */
     private HTTPResponse getStream(String object) {
 
 	try {
 	    URL dest = makeURLObj(object);
-	    
+
 	    if (dest == null)
 		return null;
-	    
+
 	    HTTPConnection con = new HTTPConnection(dest);
-	    con.setAllowUserInteraction(true);
+	    con.setAllowUserInteraction(false);
 	    rsp = con.Get(dest.getPath());
-	    
+
 	    if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {
 		System.err.println("Received Error: "+rsp.getReasonLine());
 		System.err.println(new String(rsp.getData()));
@@ -69,7 +71,7 @@ public class HTTPProtocol extends FRAXProtocol  {
 		returned = new DataInputStream(rsp.getInputStream());
 		return rsp;
 	    }
-	    
+
 	} catch (IOException ioe) {
 	    System.err.println(ioe.toString());
 	    return null;
@@ -94,7 +96,7 @@ public class HTTPProtocol extends FRAXProtocol  {
 	else
 	    return url + "/";
     }
-	    
+
 
     /**
      * Attach index.html and see if we can resolve it
@@ -107,10 +109,10 @@ public class HTTPProtocol extends FRAXProtocol  {
 	else
 	    return url + "/index.html";
     }
-		
+
 
     /**
-     * The method which is called to get the object and 
+     * The method which is called to get the object and
      * call the appropriate plug
      */
     public boolean processObject() {
@@ -119,12 +121,12 @@ public class HTTPProtocol extends FRAXProtocol  {
 
 	//try the URL as specified
 	rsp = getStream(URLString);
-	
-	if (rsp == null) 
+
+	if (rsp == null)
 	    //try to attach index.html
 	    getStream(addIndexHtml(URLString));
-	
-	
+
+
 	if (rsp == null) {
 	    //try to get it as a directory
 	    String mydir = makeDir(URLString);
@@ -133,52 +135,62 @@ public class HTTPProtocol extends FRAXProtocol  {
 		isDir = true;
 	    }
 	}
-	
-	
+
+
 	//give up - no idea what this is
 	if (rsp == null)
 	    return false;
-	
+
 	else {
-	   
+
 	    metaData = generateMetaData(rsp);
-	  
+	    Long length;
+
+	    try {
+		length = new Long(getField(rsp, "Content-Length"));
+	    } catch (NumberFormatException e) {
+		System.err.println("The length can't be cast");
+		length = new Long(-1);
+	    }
+
 
 	    try {
 		String returning = rsp.getEffectiveURI().toString();
-
+		siena_obj.setAddress(returning);
 		if (!isDir && returning.endsWith("/"))
-		    goPlug(PROTOCOL_NAME, returning + "index.html", createParams());
-		else 
-		    goPlug(PROTOCOL_NAME, returning, createParams());
+		    goPlug(PROTOCOL_NAME, returning + "index.html",  makeParams(siena_obj, metaData, returned, length));
+		else
+		    goPlug(PROTOCOL_NAME, returning, makeParams(siena_obj, metaData, returned, length));
 		return true;
 
 		//maybe the getEffective URI method will fail so have a backup
 	    } catch (Exception e) {
 
 		String returning = rsp.getOriginalURI().toString();
-
+		siena_obj.setAddress(returning);
 		if (!isDir && returning.endsWith("/"))
-		    goPlug(PROTOCOL_NAME, returning + "index.html", createParams());
-		else 
-		    goPlug(PROTOCOL_NAME, returning, createParams());
-	
+		    goPlug(PROTOCOL_NAME, returning + "index.html", makeParams(siena_obj, metaData, returned, length));
+		else
+		    goPlug(PROTOCOL_NAME, returning, makeParams(siena_obj, metaData, returned, length));
+
 		return true;
 	    }
 	}
-	
+
     }
-	   
+
     /**
      * This was written before FRAXProtocol so this method
-     * is included but can be replaced with the generic one 
+     * is included but can be replaced with the generic one
      * from FRAXProtocol since we are extending it
      */
     private Object[] createParams() {
-	Object[] const_param = new Object[3];
+	Object[] const_param = new Object[4];
+
+	const_param[3] = siena_obj;
 	const_param[0] = metaData;
 	System.out.println("*********The metaData is: " + metaData);
-	
+
 	const_param[1] = returned;
 
 	try {
@@ -190,7 +202,7 @@ public class HTTPProtocol extends FRAXProtocol  {
 	}
 	return const_param;
     }
-    
+
     /**
      * returns a field which the user
      * has requested from the HTTPResponse which we got
@@ -202,9 +214,9 @@ public class HTTPProtocol extends FRAXProtocol  {
 	    return "";
 	}
     }
-    
 
-    /** 
+
+    /**
      * generates the XML stuff from the metadata that this protocol
      * has been able to acquire
      */
@@ -215,7 +227,7 @@ public class HTTPProtocol extends FRAXProtocol  {
 	} catch (Exception e) {
 	    System.err.println("can't get URL");
 	}
-	
+
 	temp = temp + "<Size>" + getField(rsp, "Content-Length") + "</Size>\n";
 	temp = temp + "<Expiration>" + getField(rsp, "Expires") + "</Expiration>\n";
 	temp = temp + "<Delivered>" + getField(rsp, "Date") + "</Delivered>\n";
@@ -223,16 +235,19 @@ public class HTTPProtocol extends FRAXProtocol  {
 	temp = temp + "<Last-Modified>" + getField(rsp, "Last-Modified") + "</Last-Modified>\n";
 
 	return temp;
-	
+
     }
-    
-    /** 
+
+    /**
      * testing routine
      */
     public static void main (String [] args) {
-	//HTTPProtocol hp = new HTTPProtocol("http://www.columbia.edu/~daa82/");
-	HTTPProtocol hp = new HTTPProtocol("http://www.nytimes.com/index.html");
-	hp.processObject();
+	/*
+	  //HTTPProtocol hp = new HTTPProtocol("http://www.columbia.edu/~daa82/");
+	  HTTPProtocol hp = new HTTPProtocol("http://www.nytimes.com/index.html");
+
+	  hp.processObject();
+	*/
     }
 }
-	    
+
