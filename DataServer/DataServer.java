@@ -439,7 +439,7 @@ public class DataServer {
 			//make sure to only show other users in the room - ignore myself...
 			if (!user.equals(current_user)) {
 
-				data += userIP + " mdl1 User User ";
+				data += user + " mdl1 User " + userIP + " ";
 
 				MovementTuple mv = et.findLastMovement(roomUrl, user);
 
