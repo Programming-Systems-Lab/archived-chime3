@@ -163,9 +163,13 @@ public class DataServer {
 
     // handle an event
     public void eventReceived(SienaObject e) {
-
 	String fromComponent = e.getFromComponent();
 	String method = e.getMethod();
+
+	System.err.println("DS New Events Received.");
+	System.err.println("from_component: " + fromComponent);
+	System.err.println("method: " + method);
+		
 	String protocol = e.getProtocol();
 	String data = e.getData();
 	StringTokenizer st;
@@ -368,9 +372,9 @@ public class DataServer {
 	    
 	    System.err.println("END OF DS METHOD CALL PROCESS");
 	}
-
+	
 	// CLIENT CALL
-	else if (e.getFromComponent().equals("client")) {
+	else if (fromComponent.equals("client")) {
 
 	    // method: c_getRoom
 	    if (method.equals("c_getRoom")) {
@@ -380,7 +384,7 @@ public class DataServer {
 		Vector v = findSourceTuple(protocol, data);
 
 		// query frax
-		if ( v.size() == 0 ) {
+		if ( v == null || v.size() == 0 ) {
 		    e.setFromComponent("data_server");
 		    e.setMethod("s_queryFrax");
 		    try {
@@ -391,7 +395,7 @@ public class DataServer {
 		    e.setFromComponent("client");
 		    e.setMethod("c_getRoom");
 
-		    eventReceived(e); // call the method again
+		    // eventReceived(e); // call the method again
 		} else {
 		    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
 		    v = findLinkTuple(tableName);
@@ -429,12 +433,13 @@ public class DataServer {
 		}
 		
 		System.err.println("END OF DS METHOD CALL PROCESS");
-	    }
-
-	    // method: c_addObject
-	    else if (method.equals("c_addObject")) {
 		
-		System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
+	}
+
+	// method: c_addObject
+	else if (method.equals("c_addObject")) {
+	    
+	    System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
 
 		st = new StringTokenizer(data, " ");
 		if (st.countTokens() < 5) {
@@ -464,7 +469,7 @@ public class DataServer {
 
 		// find the shape info about the object
 		Vector v = findSourceTuple(protocol, roomUrl);
-		if ( v.size() != 0 ) {
+		if ( v != null && v.size() != 0 ) {
 		    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
 		    v = findLinkTuple(tableName);
 		    if (v != null && v.size() != 0 ) {

@@ -187,9 +187,14 @@ public class EventTracer {
     // handle an event
     // handle an event
     public void eventReceived(SienaObject e) {
-
+	
 	String fromComponent = e.getFromComponent();
 	String method = e.getMethod();
+	
+	System.err.println("ET New Events Received.");
+	System.err.println("from_component: " + fromComponent );
+	System.err.println("method: " + method);
+
 	String protocol = e.getProtocol();
 	String data = e.getData();
 	StringTokenizer st = new StringTokenizer(data," ");
