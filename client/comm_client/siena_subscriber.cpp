@@ -72,7 +72,7 @@ void SienaSubscriber::subscribeRoom(char *room) {
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
-		if (send (s, subscribeString, 500, 0) == SOCKET_ERROR)
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
@@ -98,12 +98,40 @@ void SienaSubscriber::subscribeClient() {
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
-		if (send (s, subscribeString, 500, 0) == SOCKET_ERROR)
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
 
 		closesocket (s);
+}
+
+
+void SienaSubscriber::subscribeMethod(char *method) {
+		SOCKET s = createSendSocket();
+		
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+
+
+		// Create Filter
+		sprintf (subscribeString, "%s filter{", subscribeString);
+		sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		sprintf (subscribeString, "%s method=\"%s\"}", subscribeString, method);
+		printf("Sending filter request: %s\n\n", subscribeString);
+
+		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket (s);	
 }
 
 void SienaSubscriber::unsubscribeRoom(char *room) {
@@ -124,7 +152,7 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
-		if (send (s, subscribeString, 500, 0) == SOCKET_ERROR)
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
@@ -150,7 +178,7 @@ void SienaSubscriber::unsubscribeClient() {
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
-		if (send (s, subscribeString, 500, 0) == SOCKET_ERROR)
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
@@ -200,23 +228,58 @@ SOCKET SienaSubscriber::createSendSocket() {
 }
 
 
+void SienaSubscriber::formatResponse(char *string) {
+
+	char *data = strstr(string, "data");
+	printf("The first-first data is: %s\n", data);
+
+
+
+/*
+	if (strpbrk(string, "s_moveObject") != NULL)
+		nav->GetSienaFunction(s_moveObject, 
+	char *method = strtok(string, "method");
+	printf("The method string is %s", method);
+	method = strtok(method, "\"");
+	printf("The method string is %s", method);
+	sscanf(method, "%s\"", method);
+	printf("The method is: %s", method);
+	nav->GetSienaFunction(method);
+	*/
+}
+
+
+
 void SienaSubscriber::startServer() {
 
 	//make sure to subscribe the client
+	//don't think this is really necessary
 	subscribeClient();
 
+	//let's just subscribe the client to all the methods that he wants
+	subscribeMethod("s_moveObject");
+	subscribeMethod("s_moveUser");
+	subscribeMethod("s_addObject");
+	subscribeMethod("s_enteredRoom");
+	subscribeMethod("s_leftRoom");
+	subscribeMethod("s_deleteObject");
+	subscribeMethod("s_changeCLass");
+	subscribeMethod("s_roomInfo");
+
 	// Infinite loop to keep receiving events for the client 
-		while(1)
-		{
-			printf("\n\nListening...\n\n");
+	
 			if (listen (r, SOMAXCONN) == SOCKET_ERROR)
 			{
 				fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
 				closesocket (r);
 			}
 
+		
+	while(1)
+		{
 			SOCKET	remoteSocket;
 
+			printf("\n\nListening...\n\n");
 			remoteSocket = accept (r, NULL, NULL);
 
 			if (remoteSocket == INVALID_SOCKET)
@@ -225,18 +288,19 @@ void SienaSubscriber::startServer() {
 				closesocket (r);
 			}
 
-			char recvString [500]; 
-			
-			if (recv (remoteSocket, recvString, 500, 0) == SOCKET_ERROR)
+			char recvString [5000]; 
+			int length = 0;
+			if ((length = recv (remoteSocket, recvString, 5000, 0)) == SOCKET_ERROR)
 			{
 				fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
 				closesocket (r);
 				closesocket (remoteSocket);
 			}
 
-			if (recvString != NULL) 
-				nav->GetSienaFunction(recvString);
-				printf ("%s\n\n", recvString);
+			if (recvString != NULL)
+				recvString[length] = NULL;
+				formatResponse(recvString);
+				//printf ("%s\n\n", recvString);
 		}
 
 		

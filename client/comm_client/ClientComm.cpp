@@ -71,24 +71,24 @@ DWORD WINAPI StartSienaSubscriber(LPVOID lParam)
 
 
 
-bool ClientComm::SendUDPFunction(int function, char *params) {
-	cl->sendMess("192.168.1.100", "This is what I am sending");
+bool ClientComm::SendUDPFunction(char *function, char *params, char *ip_addr) {
+	cl->sendMess(ip_addr, function, params);
 	return true;
 }
 
-bool ClientComm::SendSienaFunction(int function, char *params, char *address, char *prot) {
-	siena_publisher->publish("testFunction", "something", "http://www.yahoo.com", "HTTP");
+bool ClientComm::SendSienaFunction(char *function, char *params, char *address, char *prot) {
+	siena_publisher->publish(function, params, address, prot);
 	return true;
 }
 
 int main(int argc, char *argv[])
 {
 	NavCallback *nav = new NavCallback();
-	ClientComm *comm = new ClientComm(9999, "astor.psl.cs.columbia.edu", 1234, "denis", "denis", nav);
+	ClientComm *comm = new ClientComm(9999, "localhost", 1234, "denis", "denis", nav);
 	while(1) {
 		//comm->SendUDPFunction(1, "testing");
-		comm->SendSienaFunction(1, "testing", "http://www.yahoo.com", "HTTP");
-		Sleep(100000);
+		comm->SendSienaFunction("c_connect", "testing", "http://www.yahoo.com", "HTTP");
+		Sleep(10000);
 	}
 	return 0;
 }

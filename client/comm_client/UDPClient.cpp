@@ -14,7 +14,7 @@ UDPClient::UDPClient(int _port) {
 }
 
 //this will send a message using this UDPClient
-void UDPClient::sendMess(char *host, char *msg) {
+void UDPClient::sendMess(char *host, char *function, char *params) {
 
 	//check for proper DLLs
    RetCode = WSAStartup(0x0101, &wsaData);
@@ -48,7 +48,8 @@ void UDPClient::sendMess(char *host, char *msg) {
 		closesocket (sock);
 	}
 	
-  
+	char msg [1000];
+	sprintf(msg, "%s(%s)", function, params); 
 	if (2 + strlen(msg)>500)
 	{
           printf("\nCan't send full messg: Truncating");
@@ -58,7 +59,7 @@ void UDPClient::sendMess(char *host, char *msg) {
 
 	printf("Sending: %s\n", msg);
 
-	if (send(sock, msg, 1000, 0) == SOCKET_ERROR)
+	if (send(sock, msg, strlen(msg), 0) == SOCKET_ERROR)
 	{
 		fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		closesocket (sock);

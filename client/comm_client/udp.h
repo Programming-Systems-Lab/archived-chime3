@@ -90,7 +90,7 @@ class UDPClient {
 
    public:
 	   UDPClient(int _port);
-	   void sendMess(char *IP_addr, char *msg);
+	   void sendMess(char *IP_addr, char *function, char *params);
 
 		//destructor
 	   ~UDPClient();
@@ -107,10 +107,14 @@ class SienaSubscriber {
 	SOCKET	r;
 	//SOCKADDR_IN saR, saS;
 
+private:
+	void formatResponse(char *string);
+
 public:
 	SienaSubscriber(char *host, short port, char *_username, NavCallback *_nav);
 	void subscribeRoom(char *room);
 	void subscribeClient();
+	void subscribeMethod(char *method);
 	void unsubscribeClient();
 	void unsubscribeRoom(char *room);
 	void startServer();
@@ -153,8 +157,8 @@ class ClientComm {
 
    public:
 	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, NavCallback *nav);
-	   bool SendUDPFunction(int function, char *params) ;
-	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
+	   bool SendUDPFunction(char *function, char *params, char *ip_addr) ;
+	   bool SendSienaFunction(char *function, char *params, char *address, char *prot);
 
    private:
 	  int setLocalIP();
