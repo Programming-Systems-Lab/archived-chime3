@@ -34,13 +34,16 @@ class ChimeSystemDriver;
 #include "comm_client/ClientComm.h"
 #include "ChimeSector.h"
 
-#define NUM_SECT 5
+//changes the number of sectors that need to be opened to delete a sector
+#define NUM_SECT 100
+
+//just types which we use
 #define CONTAINER 0
 #define CONNECTOR 1
 #define COMPONENT 2
 #define USER 3
 
-//menu options
+//popup menu options
 #define POPUP_EDIT_WITH_DEFAULT_APP 88801
 #define POPUP_SELECT_APP 88802
 #define POPUP_CARRY 88803
@@ -65,8 +68,8 @@ private:
 	ChimeApp *app;					//the app
 	char username[80];				//the username of the user using CHIME
 
-    csView      *view;			//View of the curSector.
-	csEngine* engine;			//Pointer to the Crystal-Space engine;
+    csView      *view;				//View of the curSector.
+	csEngine* engine;				//Pointer to the Crystal-Space engine;
 	ChimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
 	int curSector, nextSector;
 	char userID[80];
@@ -75,7 +78,7 @@ private:
 	csVector3 camAngle;			//Current camera orientation.
 	float SPEED;				//Camera movement speed factor
 
-	ChimeSector *currentSector; //
+	ChimeSector *currentSector;		//The current Sector being looked at
 
 	csMeshWrapper *selectedMesh;	//Currently selected mesh for movement.
 	bool meshSelected;
@@ -161,9 +164,13 @@ private:
 	//this is the class that we will use for all communication
 	ClientComm *comm_client;
 
-
 	//Convert the Coordinates from Local To Global Coordinates
 	bool ChimeSystemDriver::ConvertCoordinates(csVector2 *screenCoord);
+
+	//Mouse cursor stuff
+	int mousecursor;
+	void ChangeMouseCursor();
+
 
 public:
 

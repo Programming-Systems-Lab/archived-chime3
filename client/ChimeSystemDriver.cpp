@@ -1065,6 +1065,9 @@ bool ChimeSystemDriver::HandleKeyEvent (iEvent &Event)
 			return true;
 		}
 
+		if(Event.Key.Code == 'c') {
+			ChangeMouseCursor();
+		}
 
 
 //    view->GetCamera ()->Rotate (VEC_ROT_RIGHT, speed);
@@ -2061,4 +2064,23 @@ void ChimeSystemDriver::ShowError(const char *component, const char* error_msg) 
 	sprintf(tmp, "%s\n%s\n", component, error_msg);
 	Alert(tmp);
 	//Printf (MSG_WARNING, "%s\n%s\n", component, error_msg);
+}
+
+//*********************************************************************************
+//*
+//* Change the mouse cursor
+//*
+//*********************************************************************************
+void ChimeSystemDriver::ChangeMouseCursor() {
+	static csMouseCursorID mousecursors [] =
+	{
+		csmcNone, csmcArrow, csmcLens, csmcCross, csmcPen, csmcMove,
+		csmcSizeNWSE, csmcSizeNESW, csmcSizeNS, csmcSizeEW, csmcStop, csmcWait
+	};
+
+	if (!mousecursor) 
+		mousecursor = 1;
+
+	mousecursor = (mousecursor + 1) % (sizeof (mousecursors) / sizeof (int));
+    app->SetMouse (mousecursors [mousecursor]);
 }

@@ -189,6 +189,7 @@ class HistoryWindow : public csWindow
 private:
 	csListBox *lb;
 	int count;
+	csListBoxItem *last_item;
 
 	void InitCount() {
 		count = 1; };
@@ -215,6 +216,20 @@ public:
   virtual ~HistoryWindow ();
   virtual bool HandleEvent (iEvent &Event);
 
+};
+
+class ChatArea : public csListBox
+{
+
+public:
+	ChatArea (csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
+};
+
+class ChatAreaItem : public csListBoxItem
+{
+
+public:
+	ChatAreaItem( csComponent *iParent, const char *iText, int iID=0, csListBoxItemStyle iStyle=cslisNormal);
 };
 
 #endif //CHIME_WINDOW_H
