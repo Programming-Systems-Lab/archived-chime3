@@ -641,7 +641,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			location = objPos;
 		}
 
-		if(!strcmp(Class, "LINK"))
+		if(!strcmp(Class, "Connector"))
 		{
 			char *tmp = new char[strlen(objUrl)+1];
 			strcpy(tmp, objUrl);

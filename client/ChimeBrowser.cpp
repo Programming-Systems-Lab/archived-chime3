@@ -73,11 +73,11 @@ chimeBrowser::chimeBrowser()
 	strcpy(userID, "124.2.12.21");
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube txt txt 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
-	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
-	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
-	strcat(testRoom, "http://www.navy.mil/ stool LINK LINK 1\n");
-	strcat(testRoom, "http://www.philgross.com/ stool LINK LINK 1\n");
-	strcat(testRoom, "http://www.suhit.com/ stool LINK LINK 1\n");
+	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
+	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "http://www.suhit.com/ stool Connector Connector 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 /*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");

@@ -170,209 +170,10 @@ public class DataServer {
 	System.err.println("from_component: " + fromComponent);
 	System.err.println("method: " + method);
 
-	String protocol = e.getProtocol();
-	String data = e.getData();
-	StringTokenizer st;
 
 	// FRAX Call
 	if (fromComponent.equals("frax")) {
-
-	    System.err.println("DS METHOD CALL: FRAX");
-
-	    String type;
-	    Parser p = null;
-	    String token;
-
-	    try {
-		SAXBuilder builder = new SAXBuilder();
-		data = e.getData();
-		Document doc = builder.build( new StringReader(data) );
-		//Document doc = builder.build( new StringReader(xmlsample));
-		System.err.println("I just got this event:");
-		System.err.println(doc);
-		type = doc.getRootElement().getAttribute("type").getValue();
-
-		if (type.equals("dir")) {
-		    p = new DirParser(doc, data);
-		    //p = new DirParser(doc, xmlsample);
-		    SourceTuple t = p.parseDoc();
-
-		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    vem = VemNotif.getInstance();
-		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
-		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		    // create a table of links and images
-		    try {
-			String tableName = "table" + tupleID;
-			statement.executeQuery("create table " +
-					       tableName +
-					       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
-			data = t.getOpt()[2];
-			st = new StringTokenizer(data, " \n");
-			while ( st.hasMoreTokens() ) {
-			    token = st.nextToken();
-			    statement.executeQuery("insert into " +
-						   tableName +
-						   " values ('" +
-						   token +
-						   "', 'FILE', null, null, null, null)");
-			}
-
-			// invoke VEM with t.getUrl(), token
-			vem = VemNotif.getInstance();
-			vobj = vem.getShape(t.getProtocol(),t.getUrl());
-			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-			printTable(tableName);
-
-		    } catch(SQLException e1) {
-			if (e1.getErrorCode() != 0) {
-			    System.err.println("ERROR: FAILS TO CREATE TABLE");
-			    System.exit(1);
-			}
-			System.err.println(e1);
-		    } catch (Exception e2) {
-			System.err.println(e2);
-		    }
-
-		} else if (type.equals("html")) {
-
-		    p = new HtmlParser(doc,data);
-		    //p = new HtmlParser(doc,xmlsample);
-		    SourceTuple t = p.parseDoc();
-		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    vem = VemNotif.getInstance();
-		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
-		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		    // create a table of links and images
-		    try {
-			String tableName = "table" + tupleID;
-			statement.executeQuery("create table " +
-					       tableName +
-					       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
-			int idx1 = 0;
-			int idx2 = 0;
-			data = t.getOpt()[2];
-			System.err.println("get into loop");
-			System.err.println(data);
-			while ( idx2 < data.length() ) {
-			    idx1 = data.indexOf("<Source>", idx1)+8;
-			    idx2 = data.indexOf("</Source>", idx2);
-			    if (idx1>=data.length() || idx2>=data.length()
-				|| idx1<=7 || idx2 <=0)
-				break;
-
-				System.err.println("The index is: " + idx1 + " " + idx2);
-			    token = data.substring(idx1,idx2);
-			    statement.executeQuery("insert into " +
-						   tableName +
-						   " values ('" +
-						   token +
-						   "', 'IMAGE', null, null, null, null)");
-			    // invoke VEM with t.getUrl(), token
-			    vem = VemNotif.getInstance();
-			    vobj = vem.getLinkShape(t.getUrl(),token);
-			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
-
-			    System.err.println("one iteration " + idx1 + " " + idx2);
-			    idx2 = idx2 + 8; //advance the counter past the word "source"
-			}
-
-			System.err.println("out of loop");
-			data = t.getOpt()[4];
-			st = new StringTokenizer(data, " \n");
-			while ( st.hasMoreTokens() ) {
-
-			    token = st.nextToken();
-
-			    statement.executeQuery("insert into " +
-						   tableName +
-						   " values ('" +
-						   token +
-						   "', 'LINK', null, null, null, null)");
-			    // invoke VEM with t.getUrl(), token
-			    vem = VemNotif.getInstance();
-			    vobj = vem.getLinkShape(t.getUrl(),token);
-			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
-
-			}
-
-			printTable(tableName);
-
-		    } catch(SQLException e1) {
-			if (e1.getErrorCode() != 0) {
-			    System.err.println("ERROR: FAILS TO CREATE TABLE");
-			    System.exit(1);
-			}
-			System.err.println(e1);
-		    } catch (Exception e2) {
-			System.err.println(e2);
-		    }
-
-		} else if (type.equals("image")) {
-		    p = new ImageParser(doc);
-		    SourceTuple t = p.parseDoc();
-		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    vem = VemNotif.getInstance();
-		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
-		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		} else if (type.equals("txt")) {
-		    p = new TxtParser(doc);
-		    SourceTuple t = p.parseDoc();
-		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    vem = VemNotif.getInstance();
-		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
-		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		} else if (type.equals("other")) {
-		    p = new OtherParser(doc);
-		    SourceTuple t = p.parseDoc();
-		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    vem = VemNotif.getInstance();
-		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
-		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		} else {
-		    System.err.println("Type Not Found.");
-		}
-	    } catch (Exception ex) {
-		// check if bscw type
-		if (data != null) {
-		    if (-1 != data.indexOf("<BSCW>")) {
-			p = new BscwParser(data);
-			SourceTuple t = p.parseDoc();
-			addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
-			// invoke VEM with t.getProtocol(), t.getUrl()
-			vem = VemNotif.getInstance();
-			vobj = vem.getShape(t.getProtocol(),t.getUrl());
-
-			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-
-		    } else {
-			ex.printStackTrace();
-		    }
-		} else {
-		    ex.printStackTrace();
-		}
-	    }
-
-	    printTable("SOURCE");
-
-	    System.err.println("END OF DS METHOD CALL PROCESS");
+		handleEventFromFrax(e);
 	}
 
 	// CLIENT CALL
@@ -380,196 +181,432 @@ public class DataServer {
 
 	    // method: c_getRoom
 	    if (method.equals("c_getRoom")) {
-
-		System.err.println("DS METHOD CALL: CLIENT.C_GETROOM");
-		String roomUrl = data;
-
-		Vector v = findSourceTuple(protocol, roomUrl);
-
-		if (v == null)
-			System.err.println("The vector doesn't exist");
-		else
-			System.out.println("The vector size is: " + v.size());
-
-		// query frax
-		if ( v == null || v.size() == 0 ) {
-		    e.setFromComponent("data_server");
-		    e.setMethod("s_queryFrax");
-		    try {
-			e.publish();
-		    } catch (Exception ex) {
-			System.err.println(ex);
-		    }
-		    e.setFromComponent("client");
-		    e.setMethod("c_getRoom");
-
-			//eventReceived(e); // call the method again
-		} else {
-		    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
-		    v = findLinkTuple(tableName);
-		    if (v == null || v.size() == 0 ) {
-			e.setData(data + " 10 5 1 0\n");
-		    } else {
-			int ctr = v.size();
-			int length = 2* (ctr + 1);
-			if (length < 10)
-			    length = 10;
-			LinkTuple tmp;
-			int isDefault;
-			data += " 10 5 " + length + " " + ctr + "\n";
-			for (int i=0; i<ctr; i++) {
-			    tmp = ((LinkTuple)v.elementAt(i));
-			    data += tmp.getLink() + " " +
-				tmp.getShape() + " " +
-				tmp.getClasstype() + " " +
-				tmp.getSubtype() + " ";
-
-				MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
-
-				if (mv != null) {
-					isDefault = 0; //not the default
-					data += isDefault + " " +
-					mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
-				}
-
-				else {
-					isDefault = 1;
-					double x = 0;
-					double y = 0;
-					double z = 0;
-					data += isDefault + " " + x + " " + y + " " + z + "\n";
-				}
-			}
-			e.setData(data);
-		    }
-		    e.setFromComponent("data_server");
-		    e.setMethod("s_roomInfo");
-		    try {
-			e.publish();
-		    } catch (Exception ex) {
-			System.err.println(ex);
-		    }
+			handleGetRoomRequest(e);
 		}
 
-		System.err.println("END OF DS METHOD CALL PROCESS");
-
-	}
-
-	// method: c_addObject
-	else if (method.equals("c_addObject")) {
-
-	    System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
-
-		st = new StringTokenizer(data, " ");
-		if (st.countTokens() < 5) {
-		    System.err.println("c_addObject Call does not have enough tokens.");
-		    return;
+		// method: c_addObject
+		else if (method.equals("c_addObject")) {
+			handleAddObjectEvent(e);
 		}
-
-		String roomUrl = st.nextToken();
-		String objUrl = st.nextToken();
-		double x = 0;
-		double y = 0;
-		double z = 0;
-		try {
-		    x = Double.parseDouble(st.nextToken());
-		    y = Double.parseDouble(st.nextToken());
-		    z = Double.parseDouble(st.nextToken());
-		} catch (Exception ex) {
-		    System.err.println(ex);
-		    return;
-		}
-
-		// add an link tuple to the link table
-		addLinkTuple(protocol, roomUrl, objUrl, "LINK");
-
-		// add the movement tuple
-		et.addMovementTuple(roomUrl, objUrl, 0, 0, 0, x, y, z);
-
-		// find the shape info about the object
-		Vector v = findSourceTuple(protocol, roomUrl);
-		if ( v != null && v.size() != 0 ) {
-		    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
-		    v = findLinkTuple(tableName);
-		    if (v != null && v.size() != 0 ) {
-			int ctr = v.size();
-			LinkTuple tmp;
-			for (int i=0; i<ctr; i++) {
-			    tmp = ((LinkTuple)v.elementAt(i));
-			    if (tmp.getLink().equals(objUrl)) {
-				data = roomUrl + " " +
-				    objUrl + " " +
-				    tmp.getShape() + " " +
-				    tmp.getClasstype() + " " +
-				    tmp.getSubtype() + " " +
-				    x + " " + y + " " + z + "\n";
-			    }
-			    e.setData(data);
-			}
-		    }
-		}
-
-		// propagate the info
-		e.setFromComponent("data_server");
-		e.setMethod("s_addObject");
-
-		try {
-		    Vector v1 = et.findRoomTuple(roomUrl);
-		    if (v1 == null)
-			return;
-		    for (int idx=0; idx < v1.size(); idx++) {
-			e.setUsername(((RoomTuple)(v1.elementAt(idx))).getUser());
-			e.publish();
-		    }
-		} catch (Exception ex) {
-		    System.err.println(ex);
-		    return;
-		}
-
-		System.err.println("END OF DS METHOD CALL PROCESS");
-	    }
 
 	    // method: c_deleteObject
 	    else if (method.equals("c_deleteObject")) {
+			handleDeleteObjectEvent(e);
+		}
+	}
+}
 
+	//handle the event to delete an object
+	public void handleDeleteObjectEvent(SienaObject e) {
 		System.err.println("DS METHOD CALL: CLIENT.C_DELETEOBJECT");
 
+		String protocol = e.getProtocol();
+		String data = e.getData();
+		StringTokenizer st;
+
 		st = new StringTokenizer(data, " ");
-		if (st.countTokens() < 2) {
-		    System.err.println("c_deleteObject Call does not have enough tokens.");
-		    return;
-		}
+			if (st.countTokens() < 2) {
+			    System.err.println("c_deleteObject Call does not have enough tokens.");
+			    return;
+			}
 
-		String roomUrl = st.nextToken();
-		String objUrl = st.nextToken();
+			String roomUrl = st.nextToken();
+			String objUrl = st.nextToken();
 
-		// remove an link tuple to the link table
-		removeLinkTuple(protocol, roomUrl, objUrl);
+			// remove an link tuple to the link table
+			removeLinkTuple(protocol, roomUrl, objUrl);
 
-		// remove the movement tuple
-		et.removeMovementTuple(roomUrl, objUrl);
+			// remove the movement tuple
+			et.removeMovementTuple(roomUrl, objUrl);
 
-		// propagate the info
-		e.setFromComponent("data_server");
-		e.setMethod("s_deleteObject");
+			// propagate the info
+			e.setFromComponent("data_server");
+			e.setMethod("s_deleteObject");
 
-		try {
-		    Vector v = et.findRoomTuple(roomUrl);
-		    if (v == null)
-			return;
-		    for (int idx=0; idx < v.size(); idx++) {
-			e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
-			e.publish();
-		    }
-		} catch (Exception ex) {
-		    System.err.println(ex);
-		    return;
-		}
+			try {
+			    Vector v = et.findRoomTuple(roomUrl);
+		    	if (v == null)
+					return;
+			    for (int idx=0; idx < v.size(); idx++) {
+				e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
+					e.publish();
+				    }
+				} catch (Exception ex) {
+				    System.err.println(ex);
+				    return;
+				}
 
-		System.err.println("END OF DS METHOD CALL PROCESS");
+				System.err.println("END OF DS METHOD CALL PROCESS");
 	    }
+
+	//handle the event to add an object
+	public void handleAddObjectEvent(SienaObject e) {
+		System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
+
+		String protocol = e.getProtocol();
+		String data = e.getData();
+		StringTokenizer st;
+
+		st = new StringTokenizer(data, " ");
+				if (st.countTokens() < 5) {
+				    System.err.println("c_addObject Call does not have enough tokens.");
+				    return;
+				}
+
+				String roomUrl = st.nextToken();
+				String objUrl = st.nextToken();
+				double x = 0;
+				double y = 0;
+				double z = 0;
+				try {
+				    x = Double.parseDouble(st.nextToken());
+				    y = Double.parseDouble(st.nextToken());
+				    z = Double.parseDouble(st.nextToken());
+				} catch (Exception ex) {
+				    System.err.println(ex);
+				    return;
+				}
+
+				// add an link tuple to the link table
+				addLinkTuple(protocol, roomUrl, objUrl, "LINK");
+
+				// add the movement tuple
+				et.addMovementTuple(roomUrl, objUrl, 0, 0, 0, x, y, z);
+
+				// find the shape info about the object
+				Vector v = findSourceTuple(protocol, roomUrl);
+				if ( v != null && v.size() != 0 ) {
+				    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
+				    v = findLinkTuple(tableName);
+				    if (v != null && v.size() != 0 ) {
+					int ctr = v.size();
+					LinkTuple tmp;
+					for (int i=0; i<ctr; i++) {
+					    tmp = ((LinkTuple)v.elementAt(i));
+					    if (tmp.getLink().equals(objUrl)) {
+						data = roomUrl + " " +
+						    objUrl + " " +
+						    tmp.getShape() + " " +
+						    tmp.getClasstype() + " " +
+						    tmp.getSubtype() + " " +
+						    x + " " + y + " " + z + "\n";
+					    }
+					    e.setData(data);
+					}
+				    }
+				}
+
+				// propagate the info
+				e.setFromComponent("data_server");
+				e.setMethod("s_addObject");
+
+				try {
+				    Vector v1 = et.findRoomTuple(roomUrl);
+				    if (v1 == null)
+					return;
+				    for (int idx=0; idx < v1.size(); idx++) {
+					e.setUsername(((RoomTuple)(v1.elementAt(idx))).getUser());
+					e.publish();
+				    }
+				} catch (Exception ex) {
+				    System.err.println(ex);
+				    return;
+				}
+
+				System.err.println("END OF DS METHOD CALL PROCESS");
 	}
-    }
+
+
+	//handle an event c_getRoom
+	public void handleGetRoomRequest(SienaObject e) {
+		System.err.println("DS METHOD CALL: CLIENT.C_GETROOM");
+		String protocol = e.getProtocol();
+		String data = e.getData();
+		StringTokenizer st;
+		String roomUrl = data;
+
+			Vector v = findSourceTuple(protocol, roomUrl);
+
+			if (v == null)
+				System.err.println("The vector doesn't exist");
+			else
+				System.out.println("The vector size is: " + v.size());
+
+			// query frax
+			if ( v == null || v.size() == 0 ) {
+			    e.setFromComponent("data_server");
+			    e.setMethod("s_queryFrax");
+			    e.setOptional("true");
+			    try {
+				e.publish();
+			    } catch (Exception ex) {
+				System.err.println(ex);
+			    }
+			    //e.setFromComponent("client");
+			    //e.setMethod("c_getRoom");
+
+				//eventReceived(e); // call the method again
+			} else {
+			    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
+			    v = findLinkTuple(tableName);
+			    if (v == null || v.size() == 0 ) {
+					e.setData(data + " 10 5 1 0\n");
+			    } else {
+					int ctr = v.size();
+					int length = 2* (ctr + 1);
+					if (length < 10)
+					    length = 10;
+					LinkTuple tmp;
+					int isDefault;
+					data += " 10 5 " + length + " " + ctr + "\n";
+					for (int i=0; i<ctr; i++) {
+					    tmp = ((LinkTuple)v.elementAt(i));
+					    data += tmp.getLink() + " " +
+						tmp.getShape() + " " +
+						tmp.getClasstype() + " " +
+						tmp.getSubtype() + " ";
+
+						MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
+
+						if (mv != null) {
+							isDefault = 0; //not the default
+							data += isDefault + " " +
+							mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
+						}
+
+						else {
+							isDefault = 1;
+							double x = 0;
+							double y = 0;
+							double z = 0;
+							data += isDefault + " " + x + " " + y + " " + z + "\n";
+						}
+					}
+					e.setData(data);
+				    }
+				    e.setFromComponent("data_server");
+				    e.setMethod("s_roomInfo");
+				    try {
+					e.publish();
+				    } catch (Exception ex) {
+					System.err.println(ex);
+				    }
+				}
+
+				System.err.println("END OF DS METHOD CALL PROCESS");
+			}
+
+
+	//handle an event that is from FRAX
+	public void handleEventFromFrax(SienaObject e) {
+		   System.err.println("DS METHOD CALL: FRAX");
+		   String protocol = e.getProtocol();
+		   String data = e.getData();
+		   String optional = e.getOptional();
+		   StringTokenizer st;
+
+			String type;
+			    Parser p = null;
+			    String token;
+
+			    try {
+				SAXBuilder builder = new SAXBuilder();
+				data = e.getData();
+				Document doc = builder.build( new StringReader(data) );
+				//Document doc = builder.build( new StringReader(xmlsample));
+				System.err.println("I just got this event:");
+				System.err.println(doc);
+				type = doc.getRootElement().getAttribute("type").getValue();
+
+				if (type.equals("dir")) {
+				    p = new DirParser(doc, data);
+				    //p = new DirParser(doc, xmlsample);
+				    SourceTuple t = p.parseDoc();
+
+				    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+				    // invoke VEM with t.getProtocol(), t.getUrl()
+				    vem = VemNotif.getInstance();
+				    vobj = vem.getShape(t.getProtocol(),t.getUrl());
+				    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				    // create a table of links and images
+				    try {
+					String tableName = "table" + tupleID;
+					statement.executeQuery("create table " +
+							       tableName +
+							       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
+					data = t.getOpt()[2];
+					st = new StringTokenizer(data, " \n");
+					while ( st.hasMoreTokens() ) {
+					    token = st.nextToken();
+					    statement.executeQuery("insert into " +
+								   tableName +
+								   " values ('" +
+								   token +
+								   "', 'FILE', null, null, null, null)");
+					}
+
+					// invoke VEM with t.getUrl(), token
+					vem = VemNotif.getInstance();
+					vobj = vem.getShape(t.getProtocol(),t.getUrl());
+					setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+					printTable(tableName);
+
+				    } catch(SQLException e1) {
+					if (e1.getErrorCode() != 0) {
+					    System.err.println("ERROR: FAILS TO CREATE TABLE");
+					    System.exit(1);
+					}
+					System.err.println(e1);
+				    } catch (Exception e2) {
+					System.err.println(e2);
+				    }
+
+				} else if (type.equals("html")) {
+
+				    p = new HtmlParser(doc,data);
+				    //p = new HtmlParser(doc,xmlsample);
+				    SourceTuple t = p.parseDoc();
+				    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+				    // invoke VEM with t.getProtocol(), t.getUrl()
+				    vem = VemNotif.getInstance();
+				    vobj = vem.getShape(t.getProtocol(),t.getUrl());
+				    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				    // create a table of links and images
+				    try {
+					String tableName = "table" + tupleID;
+					statement.executeQuery("create table " +
+							       tableName +
+							       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
+					int idx1 = 0;
+					int idx2 = 0;
+					data = t.getOpt()[2];
+					System.err.println("get into loop");
+					System.err.println(data);
+					while ( idx2 < data.length() ) {
+					    idx1 = data.indexOf("<Source>", idx1)+8;
+					    idx2 = data.indexOf("</Source>", idx2);
+					    if (idx1>=data.length() || idx2>=data.length()
+						|| idx1<=7 || idx2 <=0)
+						break;
+
+						System.err.println("The index is: " + idx1 + " " + idx2);
+					    token = data.substring(idx1,idx2);
+					    statement.executeQuery("insert into " +
+								   tableName +
+								   " values ('" +
+								   token +
+								   "', 'IMAGE', null, null, null, null)");
+					    // invoke VEM with t.getUrl(), token
+					    vem = VemNotif.getInstance();
+					    vobj = vem.getLinkShape(t.getUrl(),token);
+					    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
+
+					    System.err.println("one iteration " + idx1 + " " + idx2);
+					    idx2 = idx2 + 8; //advance the counter past the word "source"
+					}
+
+					System.err.println("out of loop");
+					data = t.getOpt()[4];
+					st = new StringTokenizer(data, " \n");
+					while ( st.hasMoreTokens() ) {
+
+					    token = st.nextToken();
+
+					    statement.executeQuery("insert into " +
+								   tableName +
+								   " values ('" +
+								   token +
+								   "', 'LINK', null, null, null, null)");
+					    // invoke VEM with t.getUrl(), token
+					    vem = VemNotif.getInstance();
+					    vobj = vem.getLinkShape(t.getUrl(),token);
+					    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
+
+					}
+
+					printTable(tableName);
+
+				    } catch(SQLException e1) {
+					if (e1.getErrorCode() != 0) {
+					    System.err.println("ERROR: FAILS TO CREATE TABLE");
+					    System.exit(1);
+					}
+					System.err.println(e1);
+				    } catch (Exception e2) {
+					System.err.println(e2);
+				    }
+
+				} else if (type.equals("image")) {
+				    p = new ImageParser(doc);
+				    SourceTuple t = p.parseDoc();
+				    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+				    // invoke VEM with t.getProtocol(), t.getUrl()
+				    vem = VemNotif.getInstance();
+				    vobj = vem.getShape(t.getProtocol(),t.getUrl());
+				    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				} else if (type.equals("txt")) {
+				    p = new TxtParser(doc);
+				    SourceTuple t = p.parseDoc();
+				    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+				    // invoke VEM with t.getProtocol(), t.getUrl()
+				    vem = VemNotif.getInstance();
+				    vobj = vem.getShape(t.getProtocol(),t.getUrl());
+				    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				} else if (type.equals("other")) {
+				    p = new OtherParser(doc);
+				    SourceTuple t = p.parseDoc();
+				    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+				    // invoke VEM with t.getProtocol(), t.getUrl()
+				    vem = VemNotif.getInstance();
+				    vobj = vem.getShape(t.getProtocol(),t.getUrl());
+				    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				} else {
+				    System.err.println("Type Not Found.");
+				}
+			    } catch (Exception ex) {
+				// check if bscw type
+				if (data != null) {
+				    if (-1 != data.indexOf("<BSCW>")) {
+					p = new BscwParser(data);
+					SourceTuple t = p.parseDoc();
+					addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+					// invoke VEM with t.getProtocol(), t.getUrl()
+					vem = VemNotif.getInstance();
+					vobj = vem.getShape(t.getProtocol(),t.getUrl());
+
+					setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+
+				    } else {
+					ex.printStackTrace();
+				    }
+				} else {
+				    ex.printStackTrace();
+				}
+			    }
+
+			    printTable("SOURCE");
+
+				if (optional.trim().equals("true")) {
+					e.setFromComponent("client");
+					e.setMethod("c_getRoom");
+					e.setData(e.getAddress());
+					handleGetRoomRequest(e);
+				}
+
+			    System.err.println("END OF DS METHOD CALL PROCESS");
+	}
 
 
     // insert a tuple into the database, if not already there.

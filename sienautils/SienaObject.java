@@ -13,6 +13,7 @@ public class SienaObject {
     public String Sprotocol;
     public String Smethod;
     public String Srealm = null;
+    public String SOptional;
     HierarchicalDispatcher Ssiena;
 
     /**
@@ -78,6 +79,11 @@ public class SienaObject {
 
 	if (not.getAttribute("realm") != null)
 		setRealm(not.getAttribute("realm").stringValue());
+
+    if (not.getAttribute("chime_optional") != null)
+		setOptional(not.getAttribute("chime_optional").stringValue());
+	else
+		setOptional("false");
     }
 
     /**
@@ -96,8 +102,26 @@ public class SienaObject {
 	e.putAttribute("access", getAccess());
 	e.putAttribute("chime_method", getMethod());
 	e.putAttribute("realm", getRealm());
+	e.putAttribute("chime_optional", getOptional());
 	return e;
     }
+
+
+	/**
+	 * Get the contents of the optional field
+	 */
+
+	 public String getOptional() {
+		 return SOptional;
+	 }
+
+	 /**
+	  * Set the contents of the optional field
+	  */
+
+	 public void setOptional(String option) {
+		 SOptional = option;
+	 }
 
 
 	/**
