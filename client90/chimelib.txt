@@ -1,0 +1,34 @@
+;Load all the necessary textures
+TEXT brownfabric /lib/chime/brownfabric1.jpg
+TEXT greywall /lib/chime/greywall.jpg
+TEXT tilefloor /lib/chime/tilefloor1.jpg
+TEXT woodfloor /lib/chime/woodfloor.jpg
+TEXT marble1 /lib/chime/marble1.gif
+TEXT whitemarble /lib/chime/whitemarble.jpg
+TEXT cube /lib/chime/cubo_ref.jpg
+TEXT hallfloor /lib/chime/hallfloor.jpg
+TEXT connfloor /lib/chime/connfloor.jpg
+TEXT halldoor /lib/chime/halldoor.jpg
+TEXT glasswall /lib/chime/glasswall.jpg
+TEXT funkywall /lib/chime/funkywall.jpg
+TEXT checkerfloor /lib/chime/checkerfloor.jpg
+TEXT water /lib/chime/water.jpg
+TEXT metalfloor /lib/chime/metalfloor.jpg
+TEXT mdl1 /lib/chime/mdl1.jpg
+TEXT ninja /lib/chime/mdl1.jpg
+
+;Load all the necessary 3D objects
+;OBJ  balloons lib/chime/BALLOONS.3DS brownfabric
+OBJ  chair lib/chime/chradiro.3ds greywall
+OBJ  table lib/chime/table_of.3ds woodfloor
+OBJ  stool lib/chime/stool.3ds woodfloor
+OBJ  books lib/chime/books.3ds brownfabric
+OBJ  violin lib/chime/violin_case.3ds brownfabric
+OBJ  cube lib/chime/cube.3ds cube
+;OBJ  mdl1 lib/chime/mdl1.md2 mdl1
+OBJ  mdl1 lib/chime/mdl1.3ds mdl1
+OBJ  ninja lib/chime/ninja.mdl ninja
+
+;Specify path to the browser
+BROWSER	c:\Progra~1\Intern~1\iexplore.exe
+END

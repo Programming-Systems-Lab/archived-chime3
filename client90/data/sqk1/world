@@ -1,0 +1,356 @@
+WORLD
+(
+  TEXTURES
+  (
+    TEXTURE 'up'    (FILE (sqk_u.jpg) MIPMAP (no) DITHER (yes))
+    TEXTURE 'left'  (FILE (sqk_l.jpg) MIPMAP (no) DITHER (yes))
+    TEXTURE 'right' (FILE (sqk_r.jpg) MIPMAP (no) DITHER (yes))
+    TEXTURE 'front' (FILE (sqk_f.jpg) MIPMAP (no) DITHER (yes))
+    TEXTURE 'back'  (FILE (sqk_b.jpg) MIPMAP (no) DITHER (yes))
+    TEXTURE 'white' (FILE (/lib/std/white.gif))
+    TEXTURE 'tree'  (FILE (/data/squawk/tree.png))
+    TEXTURE 'terrain.png' ()
+  )
+
+  MATERIALS
+  (
+    MATERIAL 'white' (TEXTURE ('white'))
+    MATERIAL 'tree'  (TEXTURE ('tree'))
+    MATERIAL 'terr'  (TEXTURE ('terrain.png'))
+    MATERIAL 'up'    (TEXTURE ('up'))
+    MATERIAL 'left'  (TEXTURE ('left'))
+    MATERIAL 'right' (TEXTURE ('right'))
+    MATERIAL 'front' (TEXTURE ('front'))
+    MATERIAL 'back'  (TEXTURE ('back'))
+  )
+
+  PLUGINS (
+    PLUGIN 'thing' ('crystalspace.mesh.loader.thing')
+  )
+      
+  MESHFACT 'terrain-factory'
+  (
+    PLUGIN ('crystalspace.mesh.loader.factory.sprite.3d')
+;    PARAMS
+;    (
+      FILE ('terrain.mdl')
+      MATERIAL ('terr')
+;    )
+  )
+
+  MESHFACT 'tree-factory'
+  (
+    PLUGIN ('crystalspace.mesh.loader.factory.sprite.3d')
+;    PARAMS
+;    (
+      FILE ('/data/squawk/tree.mdl')
+      MATERIAL ('tree')
+;    )
+  )
+
+  MESHFACT 'sphere-factory'
+  (
+    PLUGIN ('crystalspace.mesh.loader.factory.sprite.3d')
+;    PARAMS
+;    (
+      FILE ('sphere.mdl')
+      MATERIAL ('white')
+;      SMOOTH (0)
+;    )
+  )
+
+  MESHFACT 'testbot-factory'
+  (
+    PLUGIN ('crystalspace.mesh.loader.factory.sprite.3d')
+;    PARAMS
+;    (
+      FILE ('testbot.mdl')
+      MATERIAL ('white')
+;      ACTION 'run'
+;      (
+;        F ('run1',150)
+;        F ('run2',150)
+;        F ('run3',150)
+;        F ('run4',150)
+;        F ('run5',150)
+;        F ('run6',150)
+;        F ('run7',150)
+;        F ('run8',150)
+;        F ('run9',150)
+;        F ('run10',150)
+;        F ('run11',150)
+;        F ('run12',150)
+;      )
+;    )
+  )
+
+  MESHFACT 'smoothy-factory'
+  (
+    PLUGIN ('crystalspace.mesh.loader.factory.sprite.3d')
+;    PARAMS
+;    (
+      FILE ('testbot.mdl')
+      MATERIAL ('white')
+;      ACTION 'run'
+;      (
+;        F ('run1',500)
+;        F ('run2',500)
+;        F ('run3',500)
+;        F ('run4',500)
+;        F ('run5',500)
+;        F ('run6',500)
+;        F ('run7',500)
+;        F ('run8',500)
+;        F ('run9',500)
+;        F ('run10',500)
+;        F ('run11',500)
+;        F ('run12',500)
+;      )
+;      SMOOTH (0)
+;    )
+  )
+
+  SECTOR 'area1'
+  (
+    LIGHT (-800,700,700 : 3200, 1,1,1, false);
+    MESHOBJ 'sky'
+    (
+      PLUGIN ('thing')
+      ZFILL ()
+      CAMERA ()
+      PARAMS (
+      VERTEX (-1280,-1280,-1280)
+      VERTEX (-1280,-1280, 1280)
+      VERTEX (-1280,    0,-1280)
+      VERTEX (-1280,    0, 1280)
+      VERTEX (-1280, 1280,-1280)
+      VERTEX (-1280, 1280, 1280)
+      VERTEX ( 1280,-1280,-1280)
+      VERTEX ( 1280,-1280, 1280)
+      VERTEX ( 1280,    0,-1280)
+      VERTEX ( 1280,    0, 1280)
+      VERTEX ( 1280, 1280,-1280)
+      VERTEX ( 1280, 1280, 1280)
+      POLYGON 'up'
+      (
+        VERTICES (4,10,11,5)
+        MATERIAL ('up')
+        TEXTURE
+        (
+          ORIG   (-1290, 1280,-1290)
+          FIRST  ( 1290, 1280,-1290)
+          SECOND (-1290, 1280, 1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (2580)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'left'
+      (
+        VERTICES (4,5,3,2)
+        MATERIAL ('left')
+        TEXTURE
+        (
+          ORIG   (-1280, 1290,-1290)
+          FIRST  (-1280, 1290, 1290)
+          SECOND (-1280,  -10,-1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'right'
+      (
+        VERTICES (11,10,8,9)
+        MATERIAL ('right')
+        TEXTURE
+        (
+          ORIG   ( 1280, 1290, 1290)
+          FIRST  ( 1280, 1290,-1290)
+          SECOND ( 1280,  -10, 1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'front'
+      (
+        VERTICES (5,11,9,3)
+        MATERIAL ('front')
+        TEXTURE
+        (
+          ORIG   (-1290, 1290, 1280)
+          FIRST  ( 1290, 1290, 1280)
+          SECOND (-1290,  -10, 1280)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'back'
+      (
+        VERTICES (10,4,2,8)
+        MATERIAL ('back')
+        TEXTURE
+        (
+          ORIG   ( 1290, 1290,-1280)
+          FIRST  (-1290, 1290,-1280)
+          SECOND ( 1290,  -10,-1280)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'mirror_up'
+      (
+        VERTICES (1,7,6,0)
+        MATERIAL ('up')
+        TEXTURE
+        (
+          ORIG   (-1290,-1280,-1290)
+          FIRST  ( 1290,-1280,-1290)
+          SECOND (-1290,-1280, 1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (2580)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'mirror_left'
+      (
+        VERTICES (2,3,1,0)
+        MATERIAL ('left')
+        TEXTURE
+        (
+          ORIG   (-1280,-1290,-1290)
+          FIRST  (-1280,-1290, 1290)
+          SECOND (-1280,   10,-1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'mirror_right'
+      (
+        VERTICES (9,8,6,7)
+        MATERIAL ('right')
+        TEXTURE
+        (
+          ORIG   ( 1280,-1290, 1290)
+          FIRST  ( 1280,-1290,-1290)
+          SECOND ( 1280,   10, 1290)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'mirror_front'
+      (
+        VERTICES (3,9,7,1)
+        MATERIAL ('front')
+        TEXTURE
+        (
+          ORIG   (-1290,-1290, 1280)
+          FIRST  ( 1290,-1290, 1280)
+          SECOND (-1290,   10, 1280)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      POLYGON 'mirror_back'
+      (
+        VERTICES (8,2,0,6)
+        MATERIAL ('back')
+        TEXTURE
+        (
+          ORIG   ( 1290,-1290,-1280)
+          FIRST  (-1290,-1290,-1280)
+          SECOND ( 1290,   10,-1280)
+          FIRST_LEN  (2580)
+          SECOND_LEN (1300)
+        )
+        LIGHTING (false)
+      )
+      )
+    )
+
+    MESHOBJ 'terrain'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('terrain-factory')
+;        ACTION ('base')
+      )
+      MOVE (V (0,-1,0) MATRIX (20))
+    )
+
+    MESHOBJ 'testbot'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('testbot-factory')
+;        ACTION  ('run')
+      )
+      MOVE (V (0,1,-3) MATRIX (0.5))
+    )
+
+    MESHOBJ 'smoothbot'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('smoothy-factory')
+;        ACTION  ('run')
+      )
+      MOVE (V (0,2,5) MATRIX (2.0))
+    )
+
+    MESHOBJ 'sphere'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('sphere-factory')
+;        ACTION  ('base')
+      )
+      MOVE (V (1,1,-3) MATRIX (0.5))
+    )
+
+    MESHOBJ 'tree1'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('tree-factory')
+;        ACTION  ('base')
+      )
+      MOVE (V (-16,2.9,0) MATRIX (2.5,0,0,0,1.5,0,0,0,2.5))
+    )
+
+    MESHOBJ 'tree2'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('tree-factory')
+;        ACTION  ('base')
+      )
+      MOVE (V (-8,0.9,4) MATRIX (1.5,0,0,0,2,0,0,0,1.5))
+    )
+
+    MESHOBJ 'tree3'
+    (
+      PLUGIN ('crystalspace.mesh.loader.sprite.3d')
+      PARAMS
+      (
+        FACTORY ('tree-factory')
+;        ACTION  ('base')
+      )
+      MOVE (V (-12,1,-8) MATRIX (2,0,0,0,2,0,0,0,2))
+    )
+
+  )
+  START (area1, 0, 1, 0)
+)
