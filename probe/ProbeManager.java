@@ -96,7 +96,6 @@ public class ProbeManager {
 
 		else {
 			//it is already in the hash
-			System.err.println("Protocol already in the hash");
 			Object cfg_obj = DictatorHash.get(protocol);
 
 			if (cfg_obj == null) {
@@ -104,17 +103,20 @@ public class ProbeManager {
 				return;
 			}
 
+			System.err.println(cfg_obj);
+
 			ProbeObject latest_obj = new ProbeObject();
 			latest_obj.setProtocol(protocol);
 			latest_obj.setLocation(location);
-			boolean different;
+			boolean different = false;
 
 			if (((ConfigObject) cfg_obj).lookAtMetadata()) {
 				latest_obj.setMetadata((String) pass_to_manager[0]);
 				System.err.println("The metadata is: " + pass_to_manager[0]);
 				if (!latest_obj.equals(po, po.COMPARE_METADATA)) { //compare to old object - look at metadata
-					System.err.println("The Meta Data of " + location + " has changed");
+					sendOutEvent("Notification: The Meta Data of " + location + " has changed");
 					different = true;
+					po.setMetadata(latest_obj);
 				}
 			}
 
@@ -122,8 +124,9 @@ public class ProbeManager {
 				try {
 					latest_obj.setData((DataInputStream) pass_to_manager[1]);
 					if (!latest_obj.equals(po, po.COMPARE_DATA)) { //compare to old object - look at data
-						System.err.println("The Data of " + location + " has changed");
+						sendOutEvent("Notification: The Data of " + location + " has changed");
 						different = true;
+						po.setData(latest_obj);
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -132,26 +135,20 @@ public class ProbeManager {
 
 			if (((ConfigObject) cfg_obj).lookAtLength()) {
 				latest_obj.setLength((Long) pass_to_manager[2]);
-				if (!latest_obj.equals(po, po.COMPARE_LENGTH))  //compare to old object - look at length
-					System.err.println("The Length of " + location + " has changed");
+				if (!latest_obj.equals(po, po.COMPARE_LENGTH))  {//compare to old object - look at length
+					sendOutEvent("Notification: The Length of " + location + " has changed");
+					po.setLength(latest_obj);
 					different = true;
+				}
 			}
-
-			po = latest_obj;
+			if (!different)
+				System.err.println("No change has been detected");
 		}
 	}
 
 
 	//add to the list of monitored items
 	public synchronized void addToMonitorList(String protocol, String location, Object[] pass_to_manager) {
-
-			//if the object is not in the hash
-			//ConfigObject cfg_obj = (ConfigObject) DictatorHash.get(protocol);
-
-			//if (cfg_obj == null) {
-			//	System.err.println("Error: Object not in Configuration");
-			//	return;
-			//}
 
 			ProbeObject po = new ProbeObject();
 			po.setProtocol(protocol);
@@ -165,23 +162,17 @@ public class ProbeManager {
 				e.printStackTrace();
 			}
 
-			System.err.println("After set data");
-
 			po.setLength((Long) pass_to_manager[2]);
+			System.err.println(po.toString());
 			pbuf.add(po);
 
-			/*
-			//it is already in the buffer so check if the rules have changed
-			ConfigObject cfg_obj = dictatorHash.get(protocol);
-			if (cfg_obj.lookAtMetadata())
-				po.setMetadata(pass_to_manager[0]);
-			if (cfg_obj.lookAtData())
-				po.setData(pass_to_manager[1]);
-			if (cfg_obj.lookAtLength())
-				po.setLength(pass_to_manager[2]);
-			*/
 	}
 
+	private void sendOutEvent(String message) {
+		ProbeEvent event = new ProbeEvent(siena);
+		//event.publish(message); 	for now let's just print it
+		System.err.println(message);
+	}
 
 	//sleep for the set delay
 	private void sleep() {
@@ -205,7 +196,7 @@ public class ProbeManager {
 			System.err.println("------Checking Data Sources - round: " + round);
 			round++;
 
-	    	Enumeration enum =  pbuf.getEnumeration();
+	    	Enumeration enum = pbuf.getEnumeration();
 	    	ProbeObject obj;
 
 	    	while(enum.hasMoreElements()) {
@@ -221,9 +212,9 @@ public class ProbeManager {
 					s.setAddress(obj.getLocation());
 					s.setFromComponent("probe");
 					s.setMethod("probe");
-					//ppl.runProt(s);
-					HTTPProtocol prot = new HTTPProtocol(obj.getLocation(), s);
-					prot.processObject();
+					ppl.runProt(s);
+					//HTTPProtocol prot = new HTTPProtocol(obj.getLocation(), s);
+					//prot.processObject();
 				} catch (Exception e) {  //catch any class loading exceptions
 					e.printStackTrace();
 				}

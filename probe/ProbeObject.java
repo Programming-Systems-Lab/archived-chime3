@@ -25,6 +25,10 @@ public class ProbeObject {
 		this.metadata = md5.toDigest(metadata);
 	}
 
+	void setMetadata(ProbeObject po) {
+			this.metadata = po.getMetadata();
+	}
+
 	void setData(String data) {
 			this.data = md5.toDigest(data);
 	}
@@ -34,11 +38,22 @@ public class ProbeObject {
 		String temp;
 		while((temp = br.readLine()) != null)
 			data = data + temp + "\n";
+
+		setData(data);
+	}
+
+
+	void setData(ProbeObject po) {
+		this.data = po.getData();
 	}
 
 
 	void setLength(Long length) {
 			this.length = length;
+	}
+
+	void setLength(ProbeObject po) {
+		this.length = po.getLength();
 	}
 
 	void setProtocol(String protocol) {
@@ -71,6 +86,8 @@ public class ProbeObject {
 
 	//compare this object to the other ProbeObject
 	public boolean equals(ProbeObject pb, int flag) {
+		System.err.println("Old Object is: " + pb + "\nNew Object is: " + this);
+
 		switch (flag) {
 
 		case COMPARE_METADATA:
@@ -93,6 +110,19 @@ public class ProbeObject {
 			}
 		return false;
 	}
+
+	public String toString() {
+		String temp = new String();
+		temp = "--------------------------------------\n";
+		temp = temp + "<<<Protocol : " + getProtocol() + "\n";
+		temp = temp + "<<<Location : " + getLocation() + "\n";
+		temp = temp + "<<<Metadata : " + getMetadata() + "\n";
+		temp = temp + "<<<Data : " + getData() + "\n";
+		temp = temp + "<<<Length : " + getLength() + "\n";
+		temp = temp + "--------------------------------------\n";
+		return temp;
+	}
+
 }
 
 

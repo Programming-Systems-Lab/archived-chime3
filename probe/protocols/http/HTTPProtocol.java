@@ -247,7 +247,7 @@ public class HTTPProtocol extends ProbeProtocol  {
 
 	temp = temp + "<Size>" + getField(rsp, "Content-Length") + "</Size>\n";
 	temp = temp + "<Expiration>" + getField(rsp, "Expires") + "</Expiration>\n";
-	temp = temp + "<Delivered>" + getField(rsp, "Date") + "</Delivered>\n";
+	//temp = temp + "<Delivered>" + getField(rsp, "Date") + "</Delivered>\n";
 	temp = temp + "<Type>" + getField(rsp, "Content-Type") + "</Type>\n";
 	temp = temp + "<Last-Modified>" + getField(rsp, "Last-Modified") + "</Last-Modified>\n";
 

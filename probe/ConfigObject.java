@@ -65,4 +65,16 @@ public class ConfigObject {
 	String getClassname() {
 		return prot_load_class;
 	}
+
+	public String toString() {
+		String temp = new String();
+		temp = "-------------------------------\n";
+		temp = temp + "Protocol : " + getProtocol()  + "\n";
+		temp = temp + "Classname : " + getClassname() + "\n";
+		temp = temp + "Look at Metadata : " + lookAtMetadata() + "\n";
+		temp = temp + "Look at Data : " + lookAtData() + "\n";
+		temp = temp + "Look at Length : " + lookAtLength() + "\n";
+		temp = temp + "-------------------------------\n";
+		return temp;
+	}
 }

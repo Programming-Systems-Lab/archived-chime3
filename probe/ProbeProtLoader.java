@@ -9,6 +9,7 @@ import java.lang.Class;
 import java.lang.reflect.*;
 import psl.chime.probe.probeExceptions.*;
 import psl.chime.sienautils.*;
+import siena.*;
 import java.util.*;
 
 public class ProbeProtLoader {
@@ -36,16 +37,28 @@ public class ProbeProtLoader {
 		prot_CLASS = pcl.loadClass(cfg_obj.getClassname());
 	}
 
-	boolean success = execProt(pcl, prot_CLASS, arg, s);
+	try {
+		boolean success = execProt(pcl, prot_CLASS, arg, s);
 
-	if (success == false)
-	    throw new MethodNotFoundException();
+		if (!success)
+			sendOutEvent(s.getDispatcher(), "Notification: Data Source has dissapeared");
 
+	} catch (Exception e) {
+	    sendOutEvent(s.getDispatcher(), "Notification: Data Not Found");
+	}
 
-	System.out.println("Protocol Ended Successfully: " + success);
 	return true;
     }
 
+
+	/**
+	 * send out an event to KX
+	 **/
+	 public void sendOutEvent(HierarchicalDispatcher siena, String message) {
+		ProbeEvent event = new ProbeEvent(siena);
+		//event.publish(message); publish an event
+		System.err.println(message);
+	}
 
 	/**
 	 * Find the class in the hashtable
