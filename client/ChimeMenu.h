@@ -53,7 +53,7 @@ public:
   /// Initialize maze editor
   virtual ~ChimeMenu ();
 
-  ///
+  //handle an event
   virtual bool HandleEvent (iEvent &Event);
 
   virtual bool Initialize (const char *iConfigName);
@@ -65,10 +65,7 @@ public:
 
 
 
-
-
 //VEM stuff
-
 class ChimeVEM : public csWindow
 {
   public:
@@ -132,166 +129,79 @@ class ConnectDialog : public csWindow
 
 {
 
-
-
   csInputLine *username;
-
   csInputLine *password;
-
   csInputLine *chime_server;
 
-
-
   //void gui ();
-
-
 
 public:
 
   ConnectDialog(csComponent *iParent);
-
-
-
   virtual ~ConnectDialog ();
-
   virtual bool HandleEvent (iEvent &Event);
-
   //virtual bool Initialize (const char *iConfigName);
-
-
 
 };
 
 
-
-
-
 //ObjectToRetrieve
-
 class ObjectToRetrieveDialog : public csWindow
-
 {
-
-
-
   csInputLine *object;
-
   csInputLine *protocol;
-
-
-
   //void gui ();
-
-
 
 public:
 
   ObjectToRetrieveDialog(csComponent *iParent);
-
-
-
   virtual ~ObjectToRetrieveDialog ();
-
   virtual bool HandleEvent (iEvent &Event);
-
   //virtual bool Initialize (const char *iConfigName);
-
-
-
 };
-
-
 
 
 
 //Siena Setting dialog
-
 //Connect stuff
-
 class SienaDialog : public csWindow
-
 {
-
   csListBox *lbFile;
-
   csListBox *lbType;
-
   csListBox *lbSub;
-
   csListBox *lbObject;
 
-
-
-
-
   //void gui ();
-
-
-
 public:
 
   SienaDialog(csComponent *iParent);
-
-
-
   virtual ~SienaDialog ();
-
   virtual bool HandleEvent (iEvent &Event);
-
   //virtual bool Initialize (const char *iConfigName);
-
-
-
 };
 
 
-
-
-
 class InfoStorer
-
 {
-
    //the username
-
   char *username;
-
-
-
   //the password
-
   char *password;
-
-
-
   //object to retrieve
-
   char *object;
 
 
-
   //protocol to use
-
   char *protocol;
 
-
-
   //siena location
-
   char *siena_location;
 
-
-
   //chat server to use
-
   char *chat_server;
 
-
-
   //chat port
-
   char *port;
-
 };
 
 

@@ -28,6 +28,7 @@ class ClientComm;
 class chimeComm;
 class chimeBrowser;
 
+#include "ChimeMenu.h"
 #include "ChimeComm.h"
 #include "comm_client/udp.h"
 #include "ChimeSector.h"
@@ -38,11 +39,28 @@ class chimeBrowser;
 #define COMPONENT 2
 #define USER 3
 
+//menu options
+#define POPUP_EDIT_WITH_DEFAULT_APP 88801
+#define POPUP_SELECT_APP 88802
+#define POPUP_CARRY 88803
+#define POPUP_DROP 88804
+#define POPUP_DELETE 88805
+#define POPUP_UNDELETE 88806
+#define POPUP_INCREASE_SECURITY 88807
+#define POPUP_DECREASE_SECURITY 88808
+#define POPUP_PROPERTIES 88809
+
+
 class chimeBrowser: public SysSystemDriver
 {
   typedef SysSystemDriver superclass;
 
 private:
+
+	csMenu *menu;					//the popup menu object
+	bool menu_drawn;				//whether the popup menu is currently on the screen
+
+	ChimeMenu *app;					//the app
 	char username[80];				//the username of the user using CHIME
 
     csView      *view;			//View of the curSector.
@@ -124,6 +142,13 @@ private:
 	// Read a given room description
 	bool chimeBrowser::ReadRoom(char *desc);
 
+	//Draw a menu
+	bool chimeBrowser::DrawMenu(csVector2 screenPoint);
+	//Get rid of Popup menu
+	bool chimeBrowser::WipePopupMenu();
+	//Handle an event originating from the popup menu
+	bool chimeBrowser::HandleMenuEvent(iEvent &Event); 
+
 	char testRoom[500], google[500], google2[500], google3[500];
 
 	///***** Comm section
@@ -135,6 +160,11 @@ private:
 
 
 public:
+	//tell ChimeBrowser where to find the app
+	void chimeBrowser::setCSApp(ChimeMenu *app);
+
+	//set the chimeBrowser in a window
+	void chimeBrowser::setInWindow();
 
 	//Load a mesh object from a file.
 	bool LoadMeshObj (char *filename, char *templatename, char* txtname);

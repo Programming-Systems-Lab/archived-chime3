@@ -229,8 +229,9 @@ int main (int argc, char* argv[])
   if (!System.Initialize (argc, argv, "/config/chime.cfg"))
     return -1;
 
-  //if (!System.Open ("CHIME (Columbia Hypermedia Immersion Environment)"))
-   // return -1;
+  /*if (!System.Open ("CHIME (Columbia Hypermedia Immersion Environment)"))
+    return -1;
+	*/
 
   // Look for skin variant from config file
   DefaultSkin.Prefix = System.GetOptionCL ("skin");
@@ -241,7 +242,14 @@ int main (int argc, char* argv[])
   ChimeMenu app (&System, DefaultSkin);
 
   if (app.Initialize ("/lib/csws/csws.cfg"))
-    System.Loop ();
+
+	  //pass a reference of the app to the chimeBrowser System
+	  System.setCSApp(&app);
+
+	  //try to create a window
+	  //System.setInWindow();
+
+	  System.Loop ();
 
   return 0;
 }

@@ -110,11 +110,35 @@ chimeBrowser::chimeBrowser()
 */
 }
 
+//**********************************************************************
+//*
+//* This function will set the 3D world in a window some day.
+//* Doesn't work yet.
+//*
+//**********************************************************************
+void chimeBrowser::setInWindow() {
+	csWindow *w = new csWindow (app, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
+	w->SetRect (0, 0, FrameWidth*2/3, FrameHeight*2);
+}
+
+
+//**********************************************************************
+//*
+//* Destructor
+//*
+//**********************************************************************
 chimeBrowser::~chimeBrowser()
 {
 	 if (collide_system) collide_system->DecRef ();
 }
 
+//**********************************************************************
+//*
+//* This function is a callback function from the communicator class. 
+//* Whenever a network event comes in that concerns the chimeBrowser it gets
+//* routed here
+//*
+//**********************************************************************
 void chimeBrowser::GetFunction(int method, char *received)
 {
 	//Communication thread waits here until main thread
@@ -127,7 +151,11 @@ void chimeBrowser::GetFunction(int method, char *received)
 
 }
 
-// Find room corresponding to a given room url
+//**********************************************************************
+//*
+//* Find room corresponding to a given room url
+//*
+//**********************************************************************
 csSector* chimeBrowser::FindRoom(char *roomUrl)
 {
 	chimeSector *sec = NULL;
@@ -145,7 +173,11 @@ csSector* chimeBrowser::FindRoom(char *roomUrl)
 	return room;
 }
 
-// Find sector corresponding to a given room url
+//**********************************************************************
+//*
+//* Find sector corresponding to a given room url
+//*
+//********************************************************************** 
 chimeSector* chimeBrowser::FindSector(char *roomUrl)
 {
 	chimeSector *sec = NULL;
@@ -161,7 +193,11 @@ chimeSector* chimeBrowser::FindSector(char *roomUrl)
 	return sec;
 }
 
-// Find sector corresponding to a given room
+//**********************************************************************
+//*
+//* Find sector corresponding to a given room
+//*
+//********************************************************************** 
 chimeSector* chimeBrowser::FindSector(csSector *room)
 {
 	chimeSector *sec = NULL;
@@ -177,7 +213,11 @@ chimeSector* chimeBrowser::FindSector(csSector *room)
 	return sec;
 }
 
-// Find  an object in a given room
+//**********************************************************************
+//*
+//* Find  an object in a given room
+//*
+//********************************************************************** 
 csMeshWrapper* chimeBrowser::FindObject(csSector *room, char *objectUrl)
 {
 	csMeshWrapper* obj = NULL;
@@ -195,7 +235,11 @@ csMeshWrapper* chimeBrowser::FindObject(csSector *room, char *objectUrl)
 	return obj;
 }
 
-//User has moved send notification to all clients.
+//**********************************************************************
+//*
+//* User has moved send notification to all clients.
+//*
+//********************************************************************** 
 void chimeBrowser::UserMoved()
 {
 	csVector3 newPos, roomOrigin;
@@ -253,6 +297,9 @@ void chimeBrowser::UserMoved()
 bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iConfigName)
 {
 	srand (time (NULL));
+
+	//the menu wasn't drawn
+	menu_drawn = false;
 
 	//Initialize basic things that crystal-space must need.
 	if (!superclass::Initialize (argc, argv, iConfigName))
@@ -325,11 +372,6 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	//view->SetRectangle (0, 0, FrameWidth/2, FrameHeight);
 
 	engine->Prepare ();
-
-	// Initialize the engine window ...
-	//csWindow *w = new csWindow (view, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
-	//w->SetRect (0, 0, FrameWidth, FrameHeight / 2);
-
 	return true;
 }
 
@@ -426,6 +468,7 @@ void chimeBrowser::NextFrame ()
 
 	  view->Draw ();
 	  inactive_time = 0;
+
   }
   
 
@@ -580,7 +623,7 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
 	  strcpy(reqRoomUrl, doorUrl);
 	  comm.SubscribeRoom(doorUrl, userID);
 	  comm.GetRoom(doorUrl);
-
+	  return true;
 	  //FIXIT Remove this debug code
 	 /* if(!strcmp(doorUrl, "www.google.com"))
 			ReadRoom(google);
@@ -588,11 +631,129 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
 		  ReadRoom(testRoom);
 		  */
 
-  }
+  } 
+  
+  else 
+  {
+	csVector2   screenPoint;
+	screenPoint.x = Event.Mouse.x;
+	screenPoint.y = FrameHeight - Event.Mouse.y - 1;
+	selectedMesh = SelectMesh(view->GetCamera(), &screenPoint, selectedMeshDist);
 
-	return true;
+	if (selectedMesh) {
+		DrawMenu(screenPoint);
+		return true;
+	}
+  }
+	
+	return false;
 }
 
+//*************************************************************************
+//*
+//* Tell ChimeBrowser System where to find the App
+//*
+//************************************************************************
+void chimeBrowser::setCSApp(ChimeMenu *app) {
+	chimeBrowser::app = app;
+}
+
+
+//*************************************************************************
+//*
+//* Draws a menu
+//*
+//************************************************************************
+bool chimeBrowser::DrawMenu(csVector2 screenPoint) {
+
+  //disable all movement
+  Stop3D();
+
+  //just in case there was one before this that wasn't wiped
+  WipePopupMenu();
+
+  // Create a menu for all test dialogs we implement
+  menu = new csMenu (app, csmfs3D, 0);
+  csMenu *submenu = new csMenu (NULL);
+  (void)new csMenuItem (menu, "~Editing Options", submenu);
+    (void)new csMenuItem (submenu, "~Edit with Default App", POPUP_EDIT_WITH_DEFAULT_APP);
+    (void)new csMenuItem (submenu, "~Select App", POPUP_SELECT_APP);
+
+  submenu = new csMenu (NULL);
+  (void)new csMenuItem (menu, "~Moving Options", submenu);
+    (void)new csMenuItem (submenu, "Carry", POPUP_CARRY);
+    (void)new csMenuItem (submenu, "Drop", POPUP_DROP);
+	 (void)new csMenuItem (submenu, "Delete", POPUP_DELETE);
+    (void)new csMenuItem (submenu, "Undelete", POPUP_UNDELETE);
+
+  submenu = new csMenu (NULL);
+  (void)new csMenuItem (menu, "~Security", submenu);
+    (void)new csMenuItem (submenu, "Increase", POPUP_INCREASE_SECURITY);
+    (void)new csMenuItem (submenu, "Decrease", POPUP_DECREASE_SECURITY);
+  
+  submenu = new csMenu (NULL);
+  (void)new csMenuItem (menu, "~Properties", POPUP_PROPERTIES);
+   
+  csMenuItem *mi = new csMenuItem (menu, "~Quit\tQ", cscmdQuit);
+
+  // Show that a hint can be added to absolutely any component
+  app->HintAdd ("Choose this menu item to quit the program", mi);
+
+  menu->SetPos (screenPoint.x - 3, FrameHeight - (screenPoint.y - 3));
+
+  menu_drawn = true;
+  return true;
+}
+
+//*************************************************************************
+//*
+//* Get rid of Popup menu
+//*
+//************************************************************************
+bool chimeBrowser::WipePopupMenu()
+{
+	if (menu_drawn) {
+		menu->Close();
+		menu_drawn = false;
+		Start3D();
+		return true;
+	} else 
+		return false;
+}
+
+//*************************************************************************
+//*
+//* Handle All Events that emerge from the popup menu
+//*
+//************************************************************************
+bool chimeBrowser::HandleMenuEvent(iEvent &Event) 
+{
+  //if (superclass::HandleEvent (Event))
+  // return true;
+
+  switch (Event.Type)
+  {
+    case csevCommand:
+      switch (Event.Command.Code)
+      {
+	    //Edit with Default App Selected
+        case POPUP_EDIT_WITH_DEFAULT_APP:
+		case POPUP_SELECT_APP:
+		case POPUP_CARRY:
+		case POPUP_DROP:
+		case POPUP_DELETE:
+		case POPUP_UNDELETE:
+		case POPUP_INCREASE_SECURITY:
+		case POPUP_DECREASE_SECURITY:
+		case POPUP_PROPERTIES:
+		  WipePopupMenu();
+		  return true;
+	  }
+
+  }
+
+  return false;
+}
 //*************************************************************************
 //*
 //* Function responsible for handling left mouse button click
@@ -638,7 +799,11 @@ bool chimeBrowser::HandleLeftMouseClick(iEvent &Event)
 	return true;
 }
 
-//Handle double click on the left mouse button
+//*************************************************************************
+//*
+//* Handle double click on the left mouse button
+//*
+//*************************************************************************
 bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
 {
 	csMeshWrapper *m;
@@ -746,6 +911,11 @@ bool chimeBrowser::MoveSelectedMesh(iEvent &Event)
 	return true;
 }
 
+//*************************************************************************
+//*
+//* Find a sector containing a particular point
+//*
+//************************************************************************
 csSector* chimeBrowser::FindSectContainingPoint(csVector3 &pos, chimeSector *&newSect)
 {
 	csSector *room = NULL;
@@ -862,6 +1032,7 @@ bool chimeBrowser::HandleEvent (iEvent &Event)
 	if (superclass::HandleEvent (Event))
 		return true;
 
+	HandleMenuEvent(Event);
 
 	switch (Event.Type)
 	{
@@ -885,7 +1056,12 @@ bool chimeBrowser::HandleEvent (iEvent &Event)
 		{
 			UpdateObjPos();
 			meshSelected = false;
+		} 
+		else if (Event.Mouse.Button == 2)
+		{
+			WipePopupMenu();
 		}
+
 		break;
 	case csevMouseMove:
 		{
@@ -933,6 +1109,7 @@ bool chimeBrowser::HandleEvent (iEvent &Event)
 	case csevKeyUp:
 		break;
 	case csevKeyDown:
+		
 		HandleKeyEvent(Event);
 
 		if(Event.Key.Code == 116)
@@ -968,6 +1145,8 @@ bool chimeBrowser::HandleEvent (iEvent &Event)
 			p->SetMaterial(mat);
 			engine->Prepare();
 		}
+
+
 
 	}//Switch
 	return false;
@@ -1195,7 +1374,11 @@ bool chimeBrowser::DeleteMeshObj(csMeshWrapper *mesh)
     }
 }
 
-//Remove selected chime sector.
+//*********************************************************************************
+//*
+//* Remove selected chime sector.
+//*
+//*********************************************************************************
 bool chimeBrowser::RemoveChimeSector(chimeSector* &sec)
 {
 	//sec->UnlinkHallwayDoors();
@@ -1206,8 +1389,13 @@ bool chimeBrowser::RemoveChimeSector(chimeSector* &sec)
 	return true;
 }
 
-//Remove the first sector of the chimeworld
-//and push remaining sectors up.
+//*********************************************************************************
+//*
+//* Remove the first sector of the chimeworld
+//* and push remaining sectors up.
+//*
+//*********************************************************************************
+
 bool chimeBrowser::ReshuffleSectors()
 {
 	sector[1]->DisconnectSector();
@@ -1220,6 +1408,7 @@ bool chimeBrowser::ReshuffleSectors()
 	return true;
 
 }
+
 //*********************************************************************************
 //*
 //* Find closest mesh to the clicked screen coordinate
@@ -1300,6 +1489,11 @@ csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoor
 	return closestMesh;
 }
 
+//*********************************************************************************
+//*
+//* check if there is a collision
+//*
+//*********************************************************************************
 bool chimeBrowser::CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *room)
 {
 	bool rc;
@@ -1327,7 +1521,12 @@ bool chimeBrowser::CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *r
 	 return false;
 }
 
-//Update and signal server about the new pos of the object.
+//*********************************************************************************
+//*
+//* Update and signal server about the new pos of the object.
+//*
+//*********************************************************************************
+
 bool chimeBrowser::UpdateObjPos()
 {
 	if(!meshSelected) return false;
@@ -1344,8 +1543,11 @@ bool chimeBrowser::UpdateObjPos()
 }
 
 
-
-//			**** Recieved info handling functions ***
+//*********************************************************************************
+//*
+//* handle all nework events which are received by chimeBrowser::GetFunction()
+//*
+//*********************************************************************************
 
 bool chimeBrowser::HandleNetworkEvent(int method, char *params)
 {
@@ -1430,7 +1632,11 @@ bool chimeBrowser::HandleNetworkEvent(int method, char *params)
 
 }
 
-// Move a specified object
+//*********************************************************************************
+//*
+//* Move a specified object.
+//*
+//*********************************************************************************
 bool chimeBrowser::MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z)
 {
 	chimeSector *sec = NULL;
@@ -1456,7 +1662,11 @@ bool chimeBrowser::MoveObject(char *roomUrl, char *objectUrl, float x, float y, 
 	return true;
 }
 
-// Move a specified user
+//*********************************************************************************
+//*
+//* Move a specified user.
+//*
+//*********************************************************************************
 bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float z)
 {
 	chimeSector *sec = NULL;
@@ -1484,7 +1694,12 @@ bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float
 
 }
 
-// Add a specified object in a given room
+//*********************************************************************************
+//*
+//* Add a specified object in a given room
+//*
+//*********************************************************************************
+
 bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z)
 {
@@ -1519,7 +1734,12 @@ bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *
 	return true;
 }
 
-// Delete a specified object
+
+//*********************************************************************************
+//*
+//* Delete a specified object
+//*
+//*********************************************************************************
 bool chimeBrowser::DeleteObject(char *roomUrl, char *objectUrl)
 {
 	chimeSector *sec = FindSector( roomUrl );
@@ -1557,7 +1777,11 @@ bool chimeBrowser::DeleteObject(char *roomUrl, char *objectUrl)
 	return true;
 }
 
-// Add a specified user in a given room
+//*********************************************************************************
+//*
+//* Add a specified user in a given room
+//*
+//*********************************************************************************
 bool chimeBrowser::AddUser(char *roomUrl, char *userID, char *shape, float x, float y, float z)
 {
 
@@ -1595,7 +1819,11 @@ bool chimeBrowser::AddUser(char *roomUrl, char *userID, char *shape, float x, fl
 	return true;
 }
 
-// Add a specified user in a given room
+//*********************************************************************************
+//*
+//* Delete a specified user from a given room
+//*
+//*********************************************************************************
 bool chimeBrowser::DeleteUser(char *roomUrl, char *userID)
 {
 	chimeSector *sec = FindSector( roomUrl );
@@ -1634,7 +1862,13 @@ bool chimeBrowser::DeleteUser(char *roomUrl, char *userID)
 	return true;
 }
 
-// Change shape of a given 3d object
+
+//*********************************************************************************
+//*
+//* Change shape of a given 3d object (FUTURE WORK)
+//*
+//*********************************************************************************
+ 
 bool chimeBrowser::ChangeClass(char *desc)
 {
 	//Future work
@@ -1642,7 +1876,11 @@ bool chimeBrowser::ChangeClass(char *desc)
 	return true;
 }
 
-// Read a given room description
+//*********************************************************************************
+//*
+//* Read a given room description
+//*
+//*********************************************************************************
 bool chimeBrowser::ReadRoom(char *desc)
 {
 	char roomUrl[200];
@@ -1702,7 +1940,12 @@ bool chimeBrowser::ReadRoom(char *desc)
 	return true;
 }
 
-//get the IP address of this machine
+//*********************************************************************************
+//*
+//* get the IP address of this machine
+//*
+//*********************************************************************************
+
 char* chimeBrowser::getLocalIP()
 {
 
