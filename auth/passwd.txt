@@ -1,0 +1,2 @@
+denis:denis:super_user
+suhit:suhit:user
