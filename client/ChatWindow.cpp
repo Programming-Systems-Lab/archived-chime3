@@ -118,8 +118,14 @@ bool ChatWindow::SendMsg(csComponent *item, void *chat_window_class) {
 //**********************************************************************
 void ChatWindow::SendMessage(const char *ip_address, const char *msg) {
 	char temp[1000];
-	sprintf(temp, "%s %s %s",((ChimeApp*) app)->GetInfo()->GetLocalIP(), ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
-	((ChimeApp*) app)->GetInfo()->GetCommObject()->SendUDPFunction(ip_address, c_talk, temp);
+	char username[50];
+
+	((ChimeApp*) app)->GetInfo()->GetUsername(username);
+
+	if (username != NULL) {
+	       sprintf(temp, "%s %s %s",((ChimeApp*) app)->GetInfo()->GetLocalIP(), username, msg);
+	       ((ChimeApp*) app)->GetInfo()->GetCommObject()->SendUDPFunction(ip_address, c_talk, temp);
+	}
 }
 
 //**********************************************************************
@@ -129,7 +135,11 @@ void ChatWindow::SendMessage(const char *ip_address, const char *msg) {
 //**********************************************************************
 void ChatWindow::ShowMessage(const char* msg) {
 	char temp[1000];
-	sprintf(temp, "%s: %s", ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
+	char username[50];	
+	
+	((ChimeApp*) app)->GetInfo()->GetUsername(username);
+
+	sprintf(temp, "%s: %s", username, msg);
 	new ChatAreaItem(chat_area, temp, last_ID);
 }
 

@@ -1400,13 +1400,17 @@ int ChimeSector::findType(const char *thing)
 //Add user name to the list of users in the sector
 bool ChimeSector::AddUser(char *username, char *ip_address)
 {
+	char my_username[50];
+
+	((ChimeSystemDriver *)System)->GetApp()->GetInfo()->GetUsername(username);
+
 	//don't do anything if the user is already there
 	for (int i = 0; i < userList.Length(); i++) {
 		char in_username[100];
 		char in_ip_address[100];
 		sscanf(userList.Get(i), "%s %s", in_username, in_ip_address);
 		if (strcmp(username, in_username) == 0 || //already on the list
-			strcmp(username, ((ChimeSystemDriver *)System)->GetApp()->GetInfo()->GetUsername()) == 0) //me
+			strcmp(username, my_username) == 0) //me
 			return false;
 	}
 

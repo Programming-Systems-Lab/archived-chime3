@@ -31,6 +31,8 @@ private:
   //communication object
   ClientComm *comm_object;
 
+  // Create a Mutex object
+  volatile HANDLE mutex; 
 
 public:
 	//setup internal things
@@ -43,16 +45,16 @@ public:
 	void SetCommObject(ClientComm *comm_object);
 
 	//get the username
-	char* GetUsername();
+	void GetUsername(char *username);
 
 	//get the password
-	const char* GetPassword();
+	void GetPassword(char *password);
 
 	//return the port used to send chat commands
 	const int GetChatPort();
 
 	//get the hostname of the siena
-	const char* GetSienaLocation();
+	void GetSienaLocation(char *siena_location);
 
 	//get the port on which Siena is listening
 	const int GetSienaPort();
@@ -76,7 +78,7 @@ public:
 	void SetMyIPAddress(char *ip_address);
 
 	//get my IP address
-	char* GetMyIPAddress();
+	void GetMyIPAddress(char *my_address);
 
 	char* GetLocalIP();
 };

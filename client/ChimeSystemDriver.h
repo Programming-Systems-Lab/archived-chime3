@@ -209,6 +209,9 @@ private:
 	//delete the popup menu
 	bool DeletePopupMenu();
 
+	//set the contents of the info object
+	void SetInfoObject();
+
 public:
 
 	//reset the local chat buddies list

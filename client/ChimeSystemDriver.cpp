@@ -289,6 +289,19 @@ void ChimeSystemDriver::UserMoved()
 
 	prevSector = currentSector;
 	currentSector = sec = GetCurChimeSector();
+
+	char username[50];
+	info->GetUsername(username);
+
+	if (strcmp(username, "") == 0) 
+		return;
+
+	char my_ip_address[50];
+	info->GetMyIPAddress(my_ip_address);
+
+	if (strcmp(my_ip_address, "") == 0)
+		return;
+
 	if(prevSector && currentSector != prevSector)
 	{
 
@@ -297,7 +310,7 @@ void ChimeSystemDriver::UserMoved()
 		{
 			if( sector[nextSector] )
 			{
-				comm.UnsubscribeRoom(sector[nextSector]->GetUrl(), info->GetUsername());
+				comm.UnsubscribeRoom(sector[nextSector]->GetUrl(), username);
 				RemoveChimeSector(sector[nextSector]);
 			}
 
@@ -309,13 +322,13 @@ void ChimeSystemDriver::UserMoved()
 			nextSector++;			//protect this room from caching out
 		}
 		
-		comm.UserLeftRoom(info->GetUsername(), info->GetMyIPAddress(), prevSector->GetUrl());
+		comm.UserLeftRoom(username, my_ip_address, prevSector->GetUrl());
 
 		newPos = view->GetCamera()->GetOrigin();
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
-		comm.UserEnteredRoom(info->GetUsername(), info->GetMyIPAddress(), sec->GetUrl(), newPos.x, newPos.y, newPos.z);
+		comm.UserEnteredRoom(username, my_ip_address, sec->GetUrl(), newPos.x, newPos.y, newPos.z);
 		ResetLocalChatBuddies(sec);
 	}
 	else
@@ -325,7 +338,7 @@ void ChimeSystemDriver::UserMoved()
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
-		comm.MoveUser(roomUrl, info->GetUsername(), info->GetMyIPAddress(), newPos.x, 0, newPos.z, sec->GetUserList());
+		comm.MoveUser(roomUrl, username, my_ip_address, newPos.x, 0, newPos.z, sec->GetUserList());
 		//MoveUser(roomUrl, "1.1.1.1", newPos.x, 0, newPos.z+4);
 	}
 
@@ -401,21 +414,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
 	
-	if (info->GetPassword() == NULL || info->GetUsername() == NULL ||
-		info->GetSienaLocation() == NULL) {
-			info->SetUsername("denis");
-			info->SetPassword("denis");
-			info->SetSienaLocation("localhost");
-	}
-
-	info->SetSienaPort(1234);
-	info->SetChatPort(9999);
-	
-	comm_client = new ClientComm(info->GetChatPort(), info->GetSienaLocation(), 
-		info->GetSienaPort(), info->GetUsername(), info->GetPassword(), this);
-	
-	comm.SetChimeCom(comm_client, this);
-	info->SetCommObject(comm_client);
+	SetInfoObject();
 
 	// csView is a view encapsulating both a camera and a clipper.
 	// You don't have to use csView as you can do the same by
@@ -442,11 +441,27 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	// previously loaded into the engine.
 	//InitProcTextures ();
 
-	ReadRoom(testRoom);
-
 	curSector = 0;
 
 	engine->Prepare ();
+
+	//create the siena room
+	char siena_location[50];
+	char username[50];
+	char password[50];
+
+	info->GetSienaLocation(siena_location);
+	info->GetUsername(username);
+	info->GetPassword(password);
+
+	comm_client = new ClientComm(info->GetChatPort(), siena_location, 
+					info->GetSienaPort(), username, password, this);
+	
+	comm.SetChimeCom(comm_client, this);
+	info->SetCommObject(comm_client);
+
+	ReadRoom(testRoom);
+
 
 	// Open the procedural textures after the main texture manager has been prepared
 	//if (!OpenProcTextures ())
@@ -454,6 +469,33 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 
 	return true;
 }
+
+
+//************************************************************************************
+//*
+//* Set the contents of the info object for this session
+//*
+//************************************************************************************
+void ChimeSystemDriver::SetInfoObject() {
+	char password[50];
+	char username[50];
+	char siena_location[50];
+
+	info->GetPassword(password);
+	info->GetUsername(username);
+	info->GetSienaLocation(siena_location);
+
+	if (strcmp(password, "") == 0 || strcmp(username, "") == 0 || strcmp(siena_location, "") == 0) {
+			info->SetUsername("denis");
+			info->SetPassword("denis");
+			info->SetSienaLocation("localhost");
+	}
+
+	info->SetSienaPort(1234);
+	info->SetChatPort(9999);
+}
+
+
 
 //**********************************************************************
 //*
@@ -661,19 +703,25 @@ void ChimeSystemDriver::NextFrame ()
 //**********************************************************************
 void ChimeSystemDriver::writeMessage() 
 {
+	char username[50];
+	info->GetUsername(username);
+
+	if (strcmp(username, "") == 0)
+		return;
+
 	iTextureManager *tm = G3D->GetTextureManager ();
 	int write_colour = tm->FindRGB (255, 255, 255);
 	iFont *courierFont = NULL;
 	iFontServer *fs = G2D->GetFontServer ();
 	courierFont = fs->LoadFont (CSFONT_COURIER);
 	ChimeSector *curSect = GetCurChimeSector();
-	if (curSect != NULL && info->GetUsername() != NULL) {
+	if (curSect != NULL) {
 		char displayString[1000];
 		if (selectedMesh) {
 			sprintf(displayString, "Selected Mesh: %s", selectedMesh->GetName());
 			G2D->Write(courierFont, 2, G2D->GetHeight() - 40, write_colour, -1, displayString);
 		}
-		sprintf(displayString, "Username: %s", info->GetUsername());
+		sprintf(displayString, "Username: %s", username);
 		G2D->Write(courierFont, 2, G2D->GetHeight() - 30, write_colour, -1, displayString);
 		sprintf(displayString, "Room Location: %s", curSect->GetUrl());
 		G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, displayString);
@@ -812,17 +860,23 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 /**************************************************************************
 /* 
 /*        Open the indicated door.
-/*  Note: Will work is reqAtDoor and reqAtSec are set. Otherwise
+/*  Note: Will work if reqAtDoor and reqAtSec are set. Otherwise
 /*        nothing will happen
 /*
 /**************************************************************************/
 bool ChimeSystemDriver::OpenDoor() {
 	char *doorUrl;
 
+	char username[50];
+	info->GetUsername(username);
+
+	if (strcmp(username, "") == 0)
+		return false;
+
 	if (reqAtDoor != 0 && reqAtSec != NULL) {
 		doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
 		strcpy(reqRoomUrl, doorUrl);
-		comm.SubscribeRoom(doorUrl, info->GetUsername());
+		comm.SubscribeRoom(doorUrl, username);
 		comm.GetRoom(doorUrl);
 		return true;
 	}
@@ -1029,7 +1083,6 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
 		case DOOR_LINK_SOMEWHERE_ELSE:
 			SetupMenu();
 			(void)new GetObjectWindow(app);
-			//MarkPopupMenuForDeletion();
 			return true;
 	  }
   }
@@ -1104,9 +1157,14 @@ bool ChimeSystemDriver::HandleLeftMouseDoubleClick(iEvent &Event)
 
 	//is this a container?
 	if (m)  {
-		
+		char username[50];
+		info->GetUsername(username);
+
+		if (strcmp(username, "") == 0)
+			return false;
+
 		if (curSect->findType(selectedMesh->GetName()) == CONTAINER) {
-			comm.SubscribeRoom((char*) selectedMesh->GetName(), info->GetUsername());
+			comm.SubscribeRoom((char*) selectedMesh->GetName(), username);
 			comm.GetRoom((char*) selectedMesh->GetName());
 		}
 	
@@ -1896,7 +1954,10 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 			sscanf(params, "%s %s %s %f %f %f", username, ip_address, newRoomUrl, &x, &y, &z);
 
 			//don't add me as a user
-			if (strcmp(username, info->GetUsername()) != 0)
+			char my_username[50];
+			info->GetUsername(my_username);	
+
+			if (strcmp(username, "") != 0 && strcmp(username, my_username) != 0)
 				result = AddUser(newRoomUrl, username, ip_address, "mdl1", 3, 0, 2);  //NEEDS TO BE FIXED - NOT HARDCODED
 
 			break;
@@ -2233,6 +2294,12 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 	csVector3 doorPos(0, 0, 0);
 	ChimeSector *sec1 = reqAtSec;
 
+	char my_username[50];
+	info->GetUsername(my_username);
+
+	if (strcmp(my_username, "") == 0)
+		return false;
+
 	if( nextSector == NUM_SECT )
 	{
 		//Remove the firstSector from the chime world to
@@ -2265,7 +2332,7 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 		sec2 = new ChimeSector(System, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
 
-		comm.SubscribeRoom(sec2->GetUrl(), info->GetUsername());
+		comm.SubscribeRoom(sec2->GetUrl(), my_username);
 
 		if( sec1 )
 		{
@@ -2280,7 +2347,13 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 			csVector3 newPos = view->GetCamera()->GetOrigin();
 			csVector3 roomOrigin = sec2->GetOrigin();
 			newPos -= roomOrigin;
-			comm.UserEnteredRoom(info->GetUsername(), info->GetMyIPAddress(), sec2->GetUrl(), newPos.x, newPos.y, newPos.z);
+			char my_ip_address[50];
+			info->GetMyIPAddress(my_ip_address);
+
+			if (strcmp(my_ip_address, "") == 0)
+				return false;
+
+			comm.UserEnteredRoom(my_username, my_ip_address, sec2->GetUrl(), newPos.x, newPos.y, newPos.z);
 		}
 	}
 
@@ -2335,7 +2408,11 @@ char* ChimeSystemDriver::getLocalIP()
 void ChimeSystemDriver::ShowError(const char *component, const char* error_msg, const char *variable) {
 	char tmp[50];
 	sprintf(tmp, "%s\n%s : %s\n", component, error_msg, variable);
-	Alert(tmp);
+
+	if (component == NULL || error_msg == NULL || variable == NULL)
+		Alert("Unknown error has occurred");
+	else
+		Alert(tmp);
 }
 
 //*********************************************************************************
@@ -2346,8 +2423,12 @@ void ChimeSystemDriver::ShowError(const char *component, const char* error_msg, 
 void ChimeSystemDriver::ShowError(const char *component, const char* error_msg) {
 	char tmp[50];
 	sprintf(tmp, "%s\n%s\n", component, error_msg);
-	Alert(tmp);
-	//Printf (MSG_WARNING, "%s\n%s\n", component, error_msg);
+
+	if (component == NULL || error_msg == NULL)
+		Alert("Unknown error has occurred");
+	else
+		Alert(tmp);
+
 }
 
 //*********************************************************************************

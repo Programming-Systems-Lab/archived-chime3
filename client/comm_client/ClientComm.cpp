@@ -25,8 +25,8 @@ ClientComm::~ClientComm() {
 }
 
 ClientComm::ClientComm(int port, const char *SAddress, int Sport, const char *_username, const char *_password, ChimeSystemDriver *_nav) {
-	password = _password;
-	username = _username;
+	strcpy(password, _password);
+	strcpy(username, _username);
 	nav = _nav;
 
 	cl = new UDPClient(port, nav);

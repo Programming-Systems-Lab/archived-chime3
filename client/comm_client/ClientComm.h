@@ -2,6 +2,9 @@
 #ifndef __CHIME_UDP_H_
 #define __CHIME_UDP_H_
 
+#define MAX_FIELD_SIZE 500
+#define MAX_MSG_SIZE 1024
+
 #include "..\ChimeSystemDriver.h"
 #include <windows.h>
 #include <stdio.h>
@@ -73,8 +76,8 @@ class UDPServer {
 
    int     Port;
 
-   char    *UserName;
-   char    *MachineName;
+   char    UserName[MAX_FIELD_SIZE];
+   char    MachineName[MAX_FIELD_SIZE];
    char		*buf;
    char		*Text;
    ChimeSystemDriver *nav;
@@ -116,12 +119,12 @@ class UDPClient {
 
 
 class SienaSubscriber {
-	char subscribeString [1000]; 
+	char subscribeString [MAX_MSG_SIZE]; 
 	ChimeSystemDriver *System;
-	const char *username;
-	const char *host;
+	char username [MAX_FIELD_SIZE];
+	char host [MAX_FIELD_SIZE];
 	int port;
-	char Component[50];
+	char Component[MAX_FIELD_SIZE];
 
 	SOCKET	r;
 	//SOCKADDR_IN saR, saS;
@@ -151,13 +154,13 @@ class SienaPublisher {
 	SOCKADDR_IN saServer;
 
 	ChimeSystemDriver *System;
-	char headerString [1000]; 
-	const char *username;
-	const char *password;
-	char hostname[1000];
+	char headerString [MAX_MSG_SIZE]; 
+	char username[MAX_FIELD_SIZE];
+	char password[MAX_FIELD_SIZE];
+	char hostname[MAX_FIELD_SIZE];
 	int port;
-	const char *host;
-	char Component[50];
+	char host[MAX_FIELD_SIZE];
+	char Component[MAX_FIELD_SIZE];
 
 private:
 	bool setupSocket();
@@ -202,8 +205,8 @@ class ClientComm {
    SienaSubscriber *siena_subscriber;
    SienaPublisher *siena_publisher;
    ChimeSystemDriver *nav;
-   const char *username;
-   const char *password;
+   char username[MAX_FIELD_SIZE];
+   char password[MAX_FIELD_SIZE];
    HANDLE proc;
    HANDLE siena_proc;
 

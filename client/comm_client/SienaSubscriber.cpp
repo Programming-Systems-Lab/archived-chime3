@@ -13,8 +13,8 @@
 SienaSubscriber::SienaSubscriber(const char *_host, short _port, const char *_username, ChimeSystemDriver *_nav) {
 
 	System = _nav;
-	username = _username;
-	host = _host;
+	strcpy(username, _username);
+	strcpy(host, _host);
 	port = _port;
 	strcpy(Component, "Siena Subscriber");
 

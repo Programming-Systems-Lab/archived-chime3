@@ -12,9 +12,9 @@
 SienaPublisher::SienaPublisher(const char *_host, short _port, const char *_username, const char *_password, ChimeSystemDriver *_System) {
 
 	port = _port;
-	host = _host;
-	username = _username;
-	password = _password;
+	strcpy(host, _host);
+	strcpy(username, _username);
+	strcpy(password, _password);
 	lpht = NULL;
 	s = NULL;
 	System = _System;

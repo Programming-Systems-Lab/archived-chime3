@@ -85,6 +85,7 @@ bool GetObjectWindow::HandleEvent (iEvent &Event)
 
 	    //Retrieve button was pressed
         case 66800:
+
 		  Close();
 		  return true;
 
