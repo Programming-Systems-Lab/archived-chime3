@@ -28,4 +28,7 @@ OBJ  cube lib/chime/cube.3ds cube
 ;OBJ  mdl1 lib/chime/mdl1.md2 mdl1
 OBJ  mdl1 lib/chime/mdl1.3ds mdl1
 OBJ  ninja lib/chime/ninja.mdl ninja
+
+;Specify path to the browser
+BROWSER	D:\Progra~1\Intern~1\iexplore.exe
 END

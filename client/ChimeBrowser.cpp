@@ -71,7 +71,7 @@ chimeBrowser::chimeBrowser()
 	//DEBUG stuff. FIXIT
 	strcpy(userID, "124.2.12.1");
 
-	strcpy(testRoom, "www.yahoo.com 10 5 20 3\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 13.0\n");
+	strcpy(testRoom, "www.yahoo.com 10 5 20 3\nwww.cnn.com cube txt txt 1\nwww.altavista.com violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "www.google.com stool link link 1\n");
 	strcpy(reqRoomUrl, "www.yahoo.com");
 
@@ -567,6 +567,25 @@ bool chimeBrowser::HandleLeftMouseClick(iEvent &Event)
 	return true;
 }
 
+//Handle double click on the left mouse button
+bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
+{
+	
+	csMeshWrapper *m;
+	csVector2   screenPoint;
+	
+	screenPoint.x = Event.Mouse.x;
+	screenPoint.y = FrameHeight - Event.Mouse.y - 1;
+	m = SelectMesh(view->GetCamera(), &screenPoint, selectedMeshDist);
+
+	if (m)
+	{
+		_spawnl(_P_NOWAIT, browserPath, "browser", selectedMesh->GetName(), NULL);						
+	}				
+	
+	return true;
+}
+
 //*************************************************************************
 //*
 //* Move selected mesh as mouse moves.
@@ -748,7 +767,10 @@ bool chimeBrowser::HandleEvent (iEvent &Event)
 	switch (Event.Type)
 	{
 	case csevBroadcast:	  
-		break;   
+		break;  
+	case csevMouseDoubleClick:
+		HandleLeftMouseDoubleClick(Event);
+		break;
 	case csevMouseDown:
 		if(Event.Mouse.Button == 2)
 		{
@@ -963,7 +985,11 @@ bool chimeBrowser::LoadChimeLib(char *fileName)
 				Printf (MSG_FATAL_ERROR, err);
 				return false;
 			}
-		}		
+		}
+		else if(!strcmp(command, "BROWSER"))
+		{//Read 3D model			
+			sscanf(buf, "%s %s", command, browserPath);			
+		}
 
 		fgets(buf, bufSize, fp);
 		sscanf(buf, "%s", command);

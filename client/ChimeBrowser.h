@@ -72,6 +72,9 @@ private:
 
 	//If 3D view is active or not
 	bool active;
+
+	//Path to the internet browser
+	char browserPath[400];
 	
 	//Remove selected chime sector.
 	bool RemoveChimeSector(chimeSector* &sec2);
@@ -157,6 +160,8 @@ public:
 	bool HandleRightMouseClick(iEvent &Event);
 	// Function responsible for hndling left mouse button click
 	bool HandleLeftMouseClick(iEvent &Event);
+	//Handle double click on the left mouse button
+	bool HandleLeftMouseDoubleClick(iEvent &Event);
 	//Prepares NextFrame
 	virtual void NextFrame();
 	//Refresh 3D Display

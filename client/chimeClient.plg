@@ -6,20 +6,13 @@
 --------------------Configuration: chimeClient - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP263.tmp" with contents
+Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B2.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR"Debug/" /Fp"Debug/chimeClient.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\ChimeBrowser.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\ChimeComm.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\ChimeMenu.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\comm_client\clientcomm.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\comm_client\siena_publisher.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\comm_client\siena_subscriber.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\comm_client\udpclient.cpp"
-"D:\Documents and Settings\nav\Columbia\psl_research\cvs\psl\chime\client\comm_client\udpserver.cpp"
 ]
-Creating command line "cl.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP263.tmp" 
-Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP264.tmp" with contents
+Creating command line "cl.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B2.tmp" 
+Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B3.tmp" with contents
 [
 zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/chimeClient.pdb" /debug /machine:I386 /out:"Debug/chimeClient.exe" /pdbtype:sept 
 ".\Debug\ChimeBrowser.obj"
@@ -37,19 +30,14 @@ zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib lib
 ".\Debug\udpserver.obj"
 ".\Debug\vem.obj"
 ]
-Creating command line "link.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP264.tmp"
+Creating command line "link.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B3.tmp"
 <h3>Output Window</h3>
 Compiling...
-ChimeComm.cpp
 ChimeBrowser.cpp
-ChimeMenu.cpp
-clientcomm.cpp
-siena_publisher.cpp
-siena_subscriber.cpp
-udpclient.cpp
-udpserver.cpp
 Linking...
-Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP265.tmp" with contents
+   Creating library Debug/chimeClient.lib and object Debug/chimeClient.exp
+LINK : warning LNK4098: defaultlib "LIBCMT" conflicts with use of other libs; use /NODEFAULTLIB:library
+Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B7.tmp" with contents
 [
 /nologo /o"Debug/chimeClient.bsc" 
 ".\Debug\ChimeBrowser.sbr"
@@ -66,14 +54,14 @@ Creating temporary file "D:\DOCUME~1\nav\LOCALS~1\Temp\RSP265.tmp" with contents
 ".\Debug\udpclient.sbr"
 ".\Debug\udpserver.sbr"
 ".\Debug\vem.sbr"]
-Creating command line "bscmake.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP265.tmp"
+Creating command line "bscmake.exe @D:\DOCUME~1\nav\LOCALS~1\Temp\RSP2B7.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 
 
 
 <h3>Results</h3>
-chimeClient.exe - 0 error(s), 0 warning(s)
+chimeClient.exe - 0 error(s), 1 warning(s)
 </pre>
 </body>
 </html>
