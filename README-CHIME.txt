@@ -1,5 +1,5 @@
 Programming Systems Lab
-Columbia Hypermedia Immersive Environment (CHIME) v3.0 README
+Columbia Hypermedia Immersive Environment (CHIME) v3.00 README
 Copyright (c) 2001 The Trustees of Columbia University in the City of
 New York.  All Rights Reserved.
 ----------------------------------------
