@@ -12,7 +12,8 @@
 #include "csengine/polygon.h"
 #include "icollide.h"
 #include "icfgnew.h"
-
+#include "ifontsrv.h"
+#include "itxtmgr.h"
 
 
 
@@ -59,7 +60,7 @@ chimeSector::~chimeSector()
 {
 
 	//FIXIT: Other rooms need to be freed.
-	
+
 }
 
 int chimeSector::escapeEndlines(char *buf)
@@ -91,7 +92,7 @@ int chimeSector::getStrLine(const char *buf, char *line)
 	int len = strlen(buf);
 
 	while(i < len && buf[i] != '\n')
-	{		
+	{
 		line[i] = buf[i];
 		i++;
 	}
@@ -107,7 +108,7 @@ int chimeSector::getStrLine(const char *buf, char *line)
 //*
 //*********************************************************************************
 bool chimeSector::InitDoors()
-{	
+{
 	numDoors = 0;
 
 	//Polygons representing doors of the hallway
@@ -135,13 +136,13 @@ bool chimeSector::InitDoors()
 	numDoors += 1;
 
 	conn1BackDoor = &doorList[numDoors];
-	numDoors += 1;	
+	numDoors += 1;
 
 	conn2FrontDoor = &doorList[numDoors];
 	numDoors += 1;
 
 	conn2BackDoor = &doorList[numDoors];
-	numDoors += 1;	
+	numDoors += 1;
 
 	for(int i = 0; i < MAX_DOOR; i++)
 	{
@@ -157,18 +158,18 @@ bool chimeSector::InitDoors()
 //*
 //*********************************************************************************
 bool chimeSector::InitStdVectors()
-{	
+{
 	stdVector[LEFT+0].Set(0,1,0);
 	stdVector[LEFT+1].Set(0,1,1);
 	stdVector[LEFT+2].Set(0,0,1);
-	stdVector[LEFT+3].Set(0,0,0);	
+	stdVector[LEFT+3].Set(0,0,0);
 
 	stdVector[RIGHT+2].Set(0,1,1);
 	stdVector[RIGHT+3].Set(0,1,0);
 	stdVector[RIGHT+0].Set(0,0,0);
 	stdVector[RIGHT+1].Set(0,0,1);
-	
-		
+
+
 	stdVector[FRONT+0].Set(0,1,0);
 	stdVector[FRONT+1].Set(1,1,0);
 	stdVector[FRONT+2].Set(1,0,0);
@@ -177,7 +178,7 @@ bool chimeSector::InitStdVectors()
 	stdVector[BACK+2].Set(1,1,0);
 	stdVector[BACK+3].Set(0,1,0);
 	stdVector[BACK+0].Set(0,0,0);
-	stdVector[BACK+1].Set(1,0,0);		
+	stdVector[BACK+1].Set(1,0,0);
 
 	stdVector[FLOOR+0].Set(0,0,1);
 	stdVector[FLOOR+1].Set(1,0,1);
@@ -193,7 +194,7 @@ bool chimeSector::InitStdVectors()
 	return true;
 }
 
-//Dummy room 
+//Dummy room
 bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
@@ -205,13 +206,13 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 	char command[80];
 
 	csSector *room = NULL;
-	csPolygon3D* p;	
+	csPolygon3D* p;
 	csMaterialWrapper* txt;
 	csVector3 pos;
 	csStatLight* light;
 
 	fgets(buf, bufSize, fp);
-	sscanf(buf, "%s", command);	
+	sscanf(buf, "%s", command);
 
 	while( !feof(fp) && strcmp(command, "END"))
 	{
@@ -219,12 +220,12 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 		{//Skip comments
 		}
 		else if(!strcmp(command, "ROOM"))
-		{//Read texture 
+		{//Read texture
 			char name[80];
 			int numPoly;
-			
+
 			pos.Set(0,0,0);
-			sscanf(buf, "%s %s %f %f %f %d", command, name, &pos.x, &pos.y, &pos.z,&numPoly);			
+			sscanf(buf, "%s %s %f %f %f %d", command, name, &pos.x, &pos.y, &pos.z,&numPoly);
 			roomList[numRooms] = engine->CreateCsSector (name);
 			room = roomList[numRooms];
 			numRooms++;
@@ -234,7 +235,7 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 				int numPoints;
 				char str[100];
 				char *curChar = buf;
-					
+
 				command[0] = '\0';
 				fgets(buf, bufSize, fp);
 				sscanf(buf, "%s", command);
@@ -249,28 +250,28 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 
 				sscanf(curChar, " %[^ ,] ", str);
 				while(*curChar != ',') curChar++; curChar++;
-				txt = engine->GetMaterials ()->FindByName (str);			
+				txt = engine->GetMaterials ()->FindByName (str);
 				p = room->NewPolygon (txt);
-								
+
 				sscanf(curChar, "%d", &numPoints);
 				while(*curChar != ',') curChar++; curChar++;
 
 				for(int j = 0; j < numPoints; j++)
 				{
-					float x, y, z;					
+					float x, y, z;
 
 					sscanf(curChar, "%f %f %f", &x, &y, &z);
 					while(*curChar != ',') curChar++; curChar++;
 					x += pos.x; y += pos.y; z += pos.z;
-					p->AddVertex (x, y, z);										
+					p->AddVertex (x, y, z);
 				}
 				int ind1, ind2, size;
 				sscanf(curChar, "%d %d %d", &ind1, &ind2, &size);
-				p->SetTextureSpace (p->Vobj (ind1), p->Vobj (ind2), size);								
-			}			
+				p->SetTextureSpace (p->Vobj (ind1), p->Vobj (ind2), size);
+			}
 		}
 		else if(!strcmp(command, "OBJ"))
-		{//Read 3D object		
+		{//Read 3D object
 			char name[80];
 			char obj[80];
 			csVector3 location;
@@ -286,7 +287,7 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 			csVector3 loc, col;
 			float radius;
 			char type[80];
-			
+
 			sscanf(buf, "%s %s %f %f %f %f %f %f %f", command, type, &loc.x, &loc.y, &loc.z, &col.x, &col.y, &col.z, &radius);
 			loc += pos;
 			light = new csStatLight (loc.x, loc.y, loc.z, radius, col.x, col.y, col.z, false);
@@ -296,19 +297,19 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 		{//Read 3D model
 			char name[80], file[100], text[80];
 			sscanf(buf, "%s %s %s %s", command, name, file, text);
-		}	
-		else 
+		}
+		else
 		{//Read 3D model
 			//unkown token
 		}
 		command[0] = '\0';
 		fgets(buf, bufSize, fp);
-		sscanf(buf, "%s", command);		
+		sscanf(buf, "%s", command);
 	}
 
 
 	room->SetAmbientColor(50,50,50);
-	
+
 	//Prepare the whole room.
 	room->Prepare (room);
 	room->InitLightMaps (false);
@@ -317,7 +318,7 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 
 	fclose(fp);
 	return true;
-	
+
 }
 
 //Build dynamic room as a function of number of objects in the room
@@ -337,9 +338,9 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 	int nObj = 0;
 	int numObjects = 0;
 	bool switched = false;
-	
+
 	fgets(buf, bufSize, fp);
-	sscanf(buf, "%s", command);	
+	sscanf(buf, "%s", command);
 
 	while( !feof(fp) && strcmp(command, "END"))
 	{
@@ -347,10 +348,10 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 		{//Skip comments
 		}
 		else if(!strcmp(command, "ROOM"))
-		{//Read texture 
+		{//Read texture
 			char name[80];
-			
-			
+
+
 			sscanf(buf, "%s %s %d", command, name, &numObjects);
 			roomList[numRooms] = engine->CreateCsSector (name);
 			room = roomList[numRooms];
@@ -358,7 +359,7 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			float length = __max(10, 2*(numObjects+1));
 			csVector3 size(10, 5, length);
 			csVector3 curPos;
-			
+
 			curPos = pos;
 			curPos.z += 1;
 			size.x = 2;
@@ -366,7 +367,7 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			size.z = 2;
 			connector1 = engine->CreateCsSector ("connector1");
 			BuildStandardConnector(connector1, size, curPos, CONN1);
-			
+
 			size.x = 10;
 			size.y = 5;
 			size.z = length;
@@ -374,17 +375,17 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			objStartPos.x -= 3;
 			objPos = objStartPos;
 
-			curPos.z += 1+(size.z/2);						
+			curPos.z += 1+(size.z/2);
 			BuildStandardRoom(room, size, curPos);
 			csStatLight* light;
 			light = new csStatLight (0+curPos.x, 5+curPos.y, 0+curPos.z, 20, 1, 1, 1, false);
 			room->AddLight (light);
-			
+
 			curPos.z += size.z/2 + 1;
 			size.x = 2;
 			size.y = 3;
 			size.z = 2;
-				
+
 			connector2 = engine->CreateCsSector ("connector2");
 			BuildStandardConnector(connector2, size, curPos, CONN2);
 			curPos.z += 1+3;
@@ -392,8 +393,8 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			size.y = 4;
 			size.z = 6;
 			hallway = engine->CreateCsSector ("hallway");
-			BuildHallway(hallway, size, curPos);		
-			
+			BuildHallway(hallway, size, curPos);
+
 			//Set default camera location
 			camLocation = pos;
 			camLocation.y = 2;
@@ -402,10 +403,10 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			firstDoorLocation = curPos;
 			firstDoorLocation.z += 3;
 			firstDoorLocation.x -= 18;
-			
+
 		}
 		else if(!strcmp(command, "OBJ"))
-		{//Read 3D object		
+		{//Read 3D object
 			char name[80];
 			char obj[80];
 			csVector3 location;
@@ -424,26 +425,26 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 			location = objPos;
 			AddMeshObj (obj, name, room,location, scale);
 
-		}		
+		}
 		/*else if(!strcmp(command, "MOD"))
 		{//Read 3D model
 			char name[80], file[100], text[80];
 			sscanf(buf, "%s %s %s %s", command, name, file, text);
 		}
 		*/
-		else 
+		else
 		{
 			//unkown token
 		}
 		command[0] = '\0';
 		fgets(buf, bufSize, fp);
-		sscanf(buf, "%s", command);		
+		sscanf(buf, "%s", command);
 	}
 
 
-	
+
 	room->SetAmbientColor(50,50,50);
-	
+
 	//Prepare the whole room.
 	room->Prepare (room);
 	room->InitLightMaps (false);
@@ -492,7 +493,7 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 	mesh = QUERY_INTERFACE (room, iPolygonMesh);
     (void)new csCollider (*room, collide_system, mesh);
     mesh->DecRef ();
-		
+
 	mesh = QUERY_INTERFACE (connector1, iPolygonMesh);
     (void)new csCollider (*connector1, collide_system, mesh);
     mesh->DecRef ();
@@ -520,14 +521,14 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 
 	fclose(fp);
 	return true;
-	
+
 }
 
 //Build dynamic room as a function of number of objects in the room
 bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
-	
+
 
 	int bufSize = 100;
 	int count;
@@ -544,7 +545,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	int nObj = 0;
 	int numObjects = 0;
 	bool switched = false;
-	
+
 	//Make \n characters to endline character.
 	escapeEndlines(roomDesc);
 
@@ -555,9 +556,9 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	strcpy(roomUrl, roomURL);
 	roomList[numRooms] = engine->CreateCsSector (roomURL);
 	room = roomList[numRooms];
-	//numRooms++;					
+	//numRooms++;
 	csVector3 curPos;
-			
+
 	curPos = pos;
 	curPos.z += 1;
 
@@ -566,22 +567,22 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	connSize.z = 2;
 	connector1 = engine->CreateCsSector ("connector1");
 	BuildStandardConnector(connector1, connSize, curPos, CONN1);
-						
+
 	roomOrigin.x = curPos.x - (size.x/2);
 	roomOrigin.y = 0;
 	roomOrigin.z = curPos.z + 1;
-	
-	curPos.z += 1+(roomSize.z/2);						
+
+	curPos.z += 1+(roomSize.z/2);
 	BuildStandardRoom(room, roomSize, curPos);
 	csStatLight* light;
 	light = new csStatLight (0+curPos.x, 4.9+curPos.y, 0+curPos.z, 20, 1, 1, 1, false);
 	room->AddLight (light);
-	
-			
+
+
 	curPos.z += roomSize.z/2 + 1;
 
-	
-				
+
+
 	connector2 = engine->CreateCsSector ("connector2");
 	BuildStandardConnector(connector2, connSize, curPos, CONN2);
 	curPos.z += 1+3;
@@ -590,8 +591,8 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	hallwaySize.z = 6;
 
 	hallway = engine->CreateCsSector ("hallway");
-	BuildHallway(hallway, hallwaySize, curPos);		
-			
+	BuildHallway(hallway, hallwaySize, curPos);
+
 	//Set default camera location
 	camLocation = pos;
 	camLocation.y = 2;
@@ -601,32 +602,32 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	firstDoorLocation.z += 3;
 	firstDoorLocation.x -= 18;
 
-	
+
 	objPos.x = roomOrigin.x + 2;
 	objPos.y = 0;
-	objPos.z = roomOrigin.z + 1;	
+	objPos.z = roomOrigin.z + 1;
 
-	for(int i = 0; i < numObjects; i++)	
-	{//Read 3D object		
+	for(int i = 0; i < numObjects; i++)
+	{//Read 3D object
 		char objUrl[MAX_URL];
 		char shape[80];
 		char Class[80];
 		char subClass[80];
 		int defaultLoc;
-			
+
 		csVector3 location;
 
 		if(nObj >= numObjects/2 && !switched)
 		{
 			objPos.x = roomOrigin.x + roomSize.x - 2;
 			objPos.y = 0;
-			objPos.z = roomOrigin.z - 1;	
+			objPos.z = roomOrigin.z - 1;
 			switched = true;
 		}
 		nObj++;
 
-		objPos.z += 2;		
-		
+		objPos.z += 2;
+
 
 		count = getStrLine(buf, line);
 		//sscanf(line, "%s %s %s %s %d", objUrl, shape, Class, subClass, &defaultLoc);
@@ -642,7 +643,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		}
 
 
-		if (!strcmp(Class, "User")) 
+		if (!strcmp(Class, "User"))
 		{
 			AddUser(objUrl);  //add the user to the list of users
 		}
@@ -653,24 +654,22 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			strcpy(tmp, objUrl);
 			connList.Push(tmp);
 		}
-		
+
 		buf += count;
 
 		AddMeshObj (shape, objUrl, room,location, 1);
-	}		
-	
+	}
+
 	room->SetAmbientColor(50,50,50);
 	connector1->SetAmbientColor(50,50,50);
 	connector2->SetAmbientColor(50,50,50);
 	hallway->SetAmbientColor(50,50,50);
-	
+
 	//Prepare the whole room.
 	room->Prepare (room);
 	room->InitLightMaps (false);
 	room->ShineLights ();
 	room->CreateLightMaps (System->G3D);
-
-
 
 	connector1->Prepare (connector1);
 	connector1->InitLightMaps (false);
@@ -711,7 +710,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	mesh = QUERY_INTERFACE (room, iPolygonMesh);
     (void)new csCollider (*room, collide_system, mesh);
     mesh->DecRef ();
-		
+
 	mesh = QUERY_INTERFACE (connector1, iPolygonMesh);
     (void)new csCollider (*connector1, collide_system, mesh);
     mesh->DecRef ();
@@ -735,20 +734,20 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			(void)new csCollider (*sp, collide_system, mesh);
 			mesh->DecRef ();
 		}
-	}	
+	}
 
 	int numActiveDoors = __min(connList.Length(), 10);
 	for ( i = 0 ; i < numActiveDoors; i++)
-	{		
-		hallFrontDoor[i]->SetAlpha(25);		
+	{
+		hallFrontDoor[i]->SetAlpha(25);
 	}
 	for ( i = numActiveDoors ; i < 10; i++)
-	{		
-		hallFrontDoor[i]->SetAlpha(100);		
+	{
+		hallFrontDoor[i]->SetAlpha(100);
 	}
 
 	return true;
-	
+
 }
 
 csSector* chimeSector::GetRoom(int index)
@@ -780,7 +779,7 @@ iMeshWrapper* chimeSector::AddMeshObj (char* tname, char* sname, csSector* where
   spr->GetMovable ()->UpdateMove ();
 
   spr->DeferUpdateLighting (CS_NLIGHT_STATIC|CS_NLIGHT_DYNAMIC, 10);
-  
+
   return spr;
 }
 
@@ -793,22 +792,22 @@ bool chimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVec
 {
 	csMaterialWrapper* txt;
 	csVector3 trans(0,0,0);
-		
+
 	//Load standard texure for walls
 	srand( (unsigned)time( NULL ) );
 	int dice = rand() % 3;
 
 	if( dice == 0 )
-		txt = engine->GetMaterials ()->FindByName ("brownfabric");					
+		txt = engine->GetMaterials ()->FindByName ("brownfabric");
 	else if( dice == 1)
 		txt = engine->GetMaterials ()->FindByName ("glasswall");
-	else 
+	else
 		txt = engine->GetMaterials ()->FindByName ("funkywall");
-	
+
 
 	//Build front wall of the room
 	trans.Set(-size.x/2.0, 0, size.z/2.0);
-	trans += pos;	
+	trans += pos;
 	buildFrontDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 1, 4,roomFrontDoor);
 	//BuildWall(room, size, trans, FRONT, txt, csVector3(3,3,3));
 
@@ -817,25 +816,25 @@ bool chimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVec
 	trans += pos;
 	//BuildWall(room, size, trans, BACK, txt, csVector3(3,3,3));
 	buildBackDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 1, 4,roomBackDoor);
-	
+
 	//Build Left wall of the room
 	trans.Set(-size.x/2, 0, -size.z/2.0);
 	trans += pos;
 	BuildWall(room, size, trans, LEFT, txt, csVector3(3,3,3));
-	
+
 	//Build Right wall of the room
 	trans.Set(size.x/2, 0, -size.z/2.0);
 	trans += pos;
-	BuildWall(room, size, trans, RIGHT, txt, csVector3(3,3,3));	
+	BuildWall(room, size, trans, RIGHT, txt, csVector3(3,3,3));
 
 	//Build Floor wall of the room
 	//Load sandard texure for walls
 	dice = rand() % 3;
 	if( dice == 0 )
-		txt = engine->GetMaterials ()->FindByName ("woodfloor");					
+		txt = engine->GetMaterials ()->FindByName ("woodfloor");
 	else if( dice == 1)
 		txt = engine->GetMaterials ()->FindByName ("tilefloor");
-	else 
+	else
 		txt = engine->GetMaterials ()->FindByName ("checkerfloor");
 
 	trans.Set(-size.x/2, 0, -size.z/2);
@@ -847,7 +846,6 @@ bool chimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVec
 	trans.Set(-size.x/2, size.y, -size.z/2);
 	trans += pos;
 	BuildWall(room, size, trans, ROOF, txt, csVector3(3,3,3));
-
 
 	return true;
 }
@@ -861,7 +859,7 @@ bool chimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, 
 {
 	csMaterialWrapper* txt;
 	csVector3 trans(0,0,0);
-	csPolygon3D **connFrontDoor, **connBackDoor;	
+	csPolygon3D **connFrontDoor, **connBackDoor;
 
 	if(type == CONN1)
 	{
@@ -876,10 +874,10 @@ bool chimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, 
 
 	//Load sandard texure for walls
 	txt = engine->GetMaterials ()->FindByName ("whitemarble");
-	
+
 	//Build front wall of the room
 	trans.Set(-size.x/2.0, 0, size.z/2.0);
-	trans += pos;		
+	trans += pos;
 	//BuildWall(room, size, trans, FRONT, txt, csVector3(3,3,3));
 	buildFrontDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 1, 0, connFrontDoor);
 
@@ -893,24 +891,24 @@ bool chimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, 
 	trans.Set(-size.x/2, 0, -size.z/2.0);
 	trans += pos;
 	BuildWall(room, size, trans, LEFT, txt, csVector3(3,3,3));
-	
+
 	//Build Right wall of the room
 	trans.Set(size.x/2, 0, -size.z/2.0);
 	trans += pos;
-	BuildWall(room, size, trans, RIGHT, txt, csVector3(3,3,3));	
+	BuildWall(room, size, trans, RIGHT, txt, csVector3(3,3,3));
 
-	//Build Roof wall of the room	
+	//Build Roof wall of the room
 	trans.Set(-size.x/2, size.y, -size.z/2);
 	trans += pos;
 	BuildWall(room, size, trans, ROOF, txt, csVector3(3,3,3));
 
-	//Build Floor wall of the room	 
+	//Build Floor wall of the room
 	txt = engine->GetMaterials ()->FindByName ("metalfloor");
 	//txt = engine->GetMaterials ()->FindByName ("water");
 	trans.Set(-size.x/2, 0, -size.z/2);
 	trans += pos;
 	BuildWall(room, size, trans, FLOOR, txt, csVector3(2,2,1));
-	
+
 	return true;
 }
 //*********************************************************************************
@@ -924,19 +922,19 @@ bool chimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 
 	csVector3 trans(0,0,0);
 	float doorOff = (size.x - 2)/2;
 	//Load sandard texure for walls
-	txt = engine->GetMaterials ()->FindByName ("marble1");				
+	txt = engine->GetMaterials ()->FindByName ("marble1");
 	//Build front wall of the room
 	trans.Set(-size.x/2.0, 0, size.z/2.0);
-	trans += pos;	
+	trans += pos;
 	buildFrontDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 10, 2, hallFrontDoor);
 	//BuildWall(room, size, trans, FRONT, txt, csVector3(3,3,3));
 	//Build back wall of the room
 	trans.Set(-size.x/2.0, 0, -size.z/2.0);
-	trans += pos;	
+	trans += pos;
 	buildBackDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 1, doorOff, hallBackDoor);
 	//Build Left wall of the room
 	trans.Set(-size.x/2, 0, -size.z/2.0);
-	trans += pos;	
+	trans += pos;
 	///buildLeftDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(0,3,2), 5, 2, hallLeftDoor);
 	BuildWall(room, size, trans, LEFT, txt, csVector3(3,3,3));
 	//Build Right wall of the room
@@ -970,18 +968,18 @@ bool chimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 
 //*********************************************************************************
 csPolygon3D * chimeSector::BuildWall(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csMaterialWrapper *txt, csVector3 const &txtSize)
 {
-	
+
 	csVector3 v1;
 	csVector3 v2;
 	csVector3 v3;
-	csVector3 v4;			
-	
+	csVector3 v4;
+
 	v1 = stdVector[type+0];
 	v2 = stdVector[type+1];
 	v3 = stdVector[type+2];
 	v4 = stdVector[type+3];
 
-	csPolygon3D *p = NULL;	
+	csPolygon3D *p = NULL;
 
 	v1.x = v1.x * size.x; v1.y = v1.y * size.y; v1.z = v1.z * size.z;
 	v2.x = v2.x * size.x; v2.y = v2.y * size.y; v2.z = v2.z * size.z;
@@ -991,21 +989,21 @@ csPolygon3D * chimeSector::BuildWall(csSector *room, csVector3 const &size, csVe
 	v1 += pos;
 	v2 += pos;
 	v3 += pos;
-	v4 += pos;	
+	v4 += pos;
 
 	p = room->NewPolygon (txt);
 	p->AddVertex (v1.x, v1.y, v1.z);
 	p->AddVertex (v2.x, v2.y, v2.z);
 	p->AddVertex (v3.x, v3.y, v3.z);
-	p->AddVertex (v4.x, v4.y, v4.z);	
-	//p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x);	
+	p->AddVertex (v4.x, v4.y, v4.z);
+	//p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x);
 	if(type == RIGHT || type == BACK)
 	{
 		p->SetTextureSpace (p->Vobj (2), p->Vobj (3), txtSize.x, p->Vobj (1), txtSize.y);
 	}
 	else
 	{
-		p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x, p->Vobj (3), txtSize.y);	
+		p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x, p->Vobj (3), txtSize.y);
 	}
 
 	return p;
@@ -1022,11 +1020,11 @@ bool chimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVe
 	doorTxtSize.z = 0;				//Its ignored by BuildWall() anyway.
 
 	curPos = pos;
-	size1.x = size.x;			
+	size1.x = size.x;
 	size1.y = doorSize.y;
 	size1.z = offset;
-	
-	size2.x = size.x;			
+
+	size2.x = size.x;
 	size2.y = size.y - doorSize.y;
 	size2.z = size.z;
 
@@ -1042,7 +1040,8 @@ bool chimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVe
 	{
 		if(size1.z > 0)
 			BuildWall(room, size1, curPos, RIGHT, txt, txtSize);
-		curPos.z += offset; 
+		curPos.z += offset;
+
 		pList[i] = BuildWall(room, doorSize, curPos, RIGHT, t, doorTxtSize);
 		curPos.z += doorSize.z;
 	}
@@ -1065,11 +1064,11 @@ bool chimeSector::buildLeftDoorWall(csSector *room, csVector3 const &size, csVec
 	doorTxtSize.z = 0;				//Its ignored by BuildWall() anyway.
 
 	curPos = pos;
-	size1.x = size.x;			
+	size1.x = size.x;
 	size1.y = doorSize.y;
 	size1.z = offset;
-	
-	size2.x = size.x;			
+
+	size2.x = size.x;
 	size2.y = size.y - doorSize.y;
 	size2.z = size.z;
 
@@ -1085,7 +1084,7 @@ bool chimeSector::buildLeftDoorWall(csSector *room, csVector3 const &size, csVec
 	{
 		if(size1.z > 0)
 			BuildWall(room, size1, curPos, LEFT, txt, txtSize);
-		curPos.z += offset; 
+		curPos.z += offset;
 		pList[i] = BuildWall(room, doorSize, curPos, LEFT, t, doorTxtSize);
 		curPos.z += doorSize.z;
 	}
@@ -1110,11 +1109,11 @@ bool chimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 
 
 	curPos = pos;
-	size1.x = offset;			
+	size1.x = offset;
 	size1.y = doorSize.y;
 	size1.z = size.z;
-	
-	size2.x = size.x;			
+
+	size2.x = size.x;
 	size2.y = size.y - doorSize.y;
 	size2.z = size.z;
 
@@ -1131,8 +1130,9 @@ bool chimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 	{
 		if(size1.x > 0)
 			BuildWall(room, size1, curPos, FRONT, txt, txtSize);
-		curPos.x += offset; 
-		pList[i] = BuildWall(room, doorSize, curPos, FRONT, t, doorTxtSize);		
+		curPos.x += offset;
+
+		pList[i] = BuildWall(room, doorSize, curPos, FRONT, t, doorTxtSize);
 		curPos.x += doorSize.x;
 	}
 	size1.x = (pos.x + size.x - curPos.x);
@@ -1156,11 +1156,11 @@ bool chimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVec
 
 
 	curPos = pos;
-	size1.x = offset;			
+	size1.x = offset;
 	size1.y = doorSize.y;
 	size1.z = size.z;
-	
-	size2.x = size.x;			
+
+	size2.x = size.x;
 	size2.y = size.y - doorSize.y;
 	size2.z = size.z;
 
@@ -1176,7 +1176,7 @@ bool chimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVec
 	{
 		if(size1.x > 0)
 			BuildWall(room, size1, curPos, BACK, txt, txtSize);
-		curPos.x += offset; 
+		curPos.x += offset;
 		pList[i] = BuildWall(room, doorSize, curPos, BACK, t, doorTxtSize);
 		curPos.x += doorSize.x;
 	}
@@ -1222,7 +1222,7 @@ bool chimeSector::SetLinkedSectorInfo(chimeSector *sect, int doorNum)
 
 //Get given halway door of this chime sector.
 csPolygon3D*  chimeSector::GetHallwayDoor(int doorNum)
-{	
+{
 	if( doorNum >= 0 && doorNum < 10)
 	{
 		return hallFrontDoor[doorNum];
@@ -1235,13 +1235,13 @@ csPolygon3D*  chimeSector::GetHallwayDoor(int doorNum)
 
 //Get BackDoor of this chime sector.
 csPolygon3D*  chimeSector::GetBackDoor()
-{	
+{
 	return conn1BackDoor[0];
 }
 
 //Get spatial location of a given hallway door.
 bool chimeSector::GetHallwayDoorLoc(int doorNum, csVector3 & location)
-{	
+{
 	location = firstDoorLocation;
 	location.x += 4*doorNum;
 	return true;
@@ -1271,7 +1271,7 @@ bool chimeSector::AddUser(char *userID)
 bool chimeSector::deleteUser(char *userID)
 {
 	if(!userID) return false;
-	
+
 	char *user = NULL;
 	for(int i = 0; i < userList.Length(); i++)
 	{
@@ -1280,7 +1280,7 @@ bool chimeSector::deleteUser(char *userID)
 			userList.Delete(i);
 			return true;
 		}
-	}	
+	}
 	return false;
 }
 
@@ -1291,7 +1291,7 @@ bool chimeSector::ConnectSectors(chimeSector *otherSect, int atDoor)
 
 	csPolygon3D *door = hallFrontDoor[atDoor];
 	csPolygon3D *otherSectorBackDoor = otherSect->GetBackDoor();
-		
+
 	door->SetCSPortal(otherSect->GetConn1());
 	door->SetAlpha(0);
 	otherSectorBackDoor->SetCSPortal(hallway);
@@ -1323,7 +1323,7 @@ bool chimeSector::DisconnectSector()
 }
 
 bool chimeSector::Disconnect()
-{	
+{
 	conn1BackDoor[0]->SetCSPortal(NULL);
 	conn1BackDoor[0]->SetAlpha(100);
 	return true;
@@ -1338,8 +1338,8 @@ bool chimeSector::UnlinkHallwayDoors()
 		sec = doorSec[i];
 		if( sec )
 		{
-			sec->Disconnect();			
-		}				
+			sec->Disconnect();
+		}
 	}
 	return true;
 }
@@ -1361,12 +1361,12 @@ chimeSector* chimeSector::GetDoorSector(int doorNum)
 {
 	if( doorNum >= 0 && doorNum < MAX_DOOR)
 	{
-		return doorSec[doorNum];	
+		return doorSec[doorNum];
 	}
 	else
 	{
 		return NULL;
-	}	
+	}
 }
 
 char* chimeSector::GetDoorUrl(int doorNum)
@@ -1375,14 +1375,14 @@ char* chimeSector::GetDoorUrl(int doorNum)
 
 	if( doorNum >= 0 && doorNum < numActive)
 	{
-		return connList.Get(doorNum);	
+		return connList.Get(doorNum);
 	}
 	else
 	{
 		return NULL;
-	}	
+	}
 }
-// Find  an object in this sector 
+// Find  an object in this sector
 csMeshWrapper* chimeSector::FindObject(char *objectUrl, csSector *&room)
 {
 	room = NULL;
@@ -1442,7 +1442,7 @@ csMeshWrapper* chimeSector::FindObject(char *objectUrl, csSector *&room)
 
 //check if a given beam hits any of the meshes in this sector.
 csMeshWrapper* chimeSector::SelectMesh (const csVector3 &start, const csVector3 &end, csVector3 &isect, float &dist)
-{		
+{
 	int i;
 	csSector *room;
 
@@ -1524,7 +1524,7 @@ csSector* chimeSector::FindRoomContainingPoint(csVector3 p)
 	{
 		return hallway;
 	}
-	
+
 	return NULL;
 }
 
@@ -1559,7 +1559,7 @@ bool chimeSector::HitBeam(const csVector3 &start, const csVector3 &end, csVector
 {
 
 	csPolygon3D* p = NULL;
-	
+
 	p = roomList[0]->HitBeam (start, end, isect);
 	if( p ) return true;
 	p = hallway->HitBeam (start, end, isect);
@@ -1599,4 +1599,4 @@ bool chimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, 
 	}
 	return false;
 }
-	
+

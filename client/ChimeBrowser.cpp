@@ -21,6 +21,7 @@
 #include "itxtmgr.h"
 #include "icollide.h"
 #include "icfgnew.h"
+#include "ifontsrv.h"
 
 #include <process.h>
 
@@ -336,6 +337,12 @@ void chimeBrowser::Refresh3D ()
 		return;
 	}
 
+	iTextureManager *tm = G3D->GetTextureManager ();
+	int write_colour = tm->FindRGB (255, 150, 100);
+	iFont *courierFont = NULL;
+	iFontServer *fs = G2D->GetFontServer ();
+	courierFont = fs->LoadFont (CSFONT_COURIER);
+	G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, "Hello World this is a very small string");
 
 	// Drawing code ends here.
 	G3D->FinishDraw ();
