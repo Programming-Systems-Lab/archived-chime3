@@ -991,7 +991,6 @@ public class DataServer {
 	// create an siena object and publish it.
 	// method: s_changeClass
 
-	/*
 	Subscriber subscriber = Subscriber.getInstance();
 	HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
 
@@ -1005,11 +1004,12 @@ public class DataServer {
 
 	//SHEN, I added the try - catch clause
 	try {
-	sienaObj.publish();
+		System.err.println("Before publishing");
+		sienaObj.publish();
+		System.err.println("After publishing");
     } catch (Exception e) {
 		e.printStackTrace();
 	}
-	*/
 
 	return true;
     }

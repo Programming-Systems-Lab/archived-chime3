@@ -29,7 +29,7 @@ public class PublishObject {
 	siena = s;
 	submit(e);
     }
-   
+
     /**
      * submit the sienaObject onto the Siena bus
      */
@@ -39,12 +39,12 @@ public class PublishObject {
 
     /**
      * publish what was generated
-     * This is a specific method most of the time you will need to 
+     * This is a specific method most of the time you will need to
      * use the method above
      */
-    private void submit(Notification e) throws Exception {	
+    private void submit(Notification e) throws Exception {
 	siena.publish(e);
-	System.out.println("publishing " + e.toString());
+	//System.out.println("publishing " + e.toString());
     }
-    
+
 }

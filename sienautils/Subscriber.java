@@ -25,7 +25,7 @@ public class Subscriber {
     /*
      * This is the method which should be called to get an instance of a Subscriber
      */
-    public static synchronized Subscriber getInstance() {
+    public static Subscriber getInstance() {
 	if (myself == null) {
 	    System.err.println("Need Location in order to Start Subscriber - please use other getInstance method");
 	    System.exit(1);
@@ -39,6 +39,7 @@ public class Subscriber {
      * user has told it is running
      */
     private Subscriber(String siena_location) {
+	myself = this;
 
 	//start the VEM
 	Vem V = new Vem ();
@@ -77,7 +78,7 @@ public class Subscriber {
      * Get a Hierarchical Dispatcher
      */
     public HierarchicalDispatcher getDispatcher() {
-	return siena;
+		return siena;
     }
 
 
