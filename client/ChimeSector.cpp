@@ -626,6 +626,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 	for(int i = 0; i < numObjects; i++)
 	{//Read 3D object
+		bool proceed = true;
 		char objUrl[MAX_URL];
 		char shape[80];
 		char Class[80];
@@ -644,7 +645,6 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		nObj++;
 
 		objPos.z += 2;
-
 
 		count = getStrLine(buf, line);
 		//sscanf(line, "%s %s %s %s %d", objUrl, shape, Class, subClass, &defaultLoc);
@@ -665,7 +665,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 		else if (!strcmp(Class, "User"))
 		{
-			AddUser(objUrl, subClass);  //add the user to the list of users - subClass is the IP for users
+			proceed = AddUser(objUrl, subClass);  //add the user to the list of users - subClass is the IP for users
 			strcat(objUrl, " ");
 			strcat(objUrl, subClass);
 		}
@@ -677,9 +677,11 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			connList.Push(tmp);
 		}
 
-		buf += count;
+		if (proceed) {
 
-		AddMeshObj (shape, objUrl, room,location, 1);
+			buf += count;
+			AddMeshObj (shape, objUrl, room,location, 1);
+		}
 	}
 
 	room->SetAmbientColor(50,50,50);
@@ -1403,7 +1405,8 @@ bool ChimeSector::AddUser(char *username, char *ip_address)
 		char in_username[100];
 		char in_ip_address[100];
 		sscanf(userList.Get(i), "%s %s", in_username, in_ip_address);
-		if (strcmp(username, in_username) == 0)
+		if (strcmp(username, in_username) == 0 || //already on the list
+			strcmp(username, ((ChimeSystemDriver *)System)->GetApp()->GetInfo()->GetUsername()) == 0) //me
 			return false;
 	}
 
