@@ -127,7 +127,9 @@ bool chimeComm::MoveUser(char *roomUrl, char *username, char *ip_address, float 
 	//Send signal to all the users in this room
 	for(int i = 0 ; i < userList->Length(); i++)
 	{
-		char *to_username = strtok(userList->Get(i), " ");
+		char temp[100];
+		strcpy(temp, userList->Get(i));
+		char *to_username = strtok(temp, " ");
 		char *to_ip_address = strtok(NULL, " ");
 
 		if (to_username != NULL && to_ip_address != NULL 

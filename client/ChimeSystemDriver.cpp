@@ -404,7 +404,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 		info->GetSienaLocation() == NULL) {
 			info->SetUsername("denis");
 			info->SetPassword("denis");
-			info->SetSienaLocation("eagle");
+			info->SetSienaLocation("grand");
 	}
 
 	info->SetSienaPort(1234);
