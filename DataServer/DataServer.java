@@ -415,6 +415,7 @@ public class DataServer {
 			if (length < 10)
 			    length = 10;
 			LinkTuple tmp;
+			int isDefault;
 			data += " 10 5 " + length + " " + ctr + "\n";
 			for (int i=0; i<ctr; i++) {
 			    tmp = ((LinkTuple)v.elementAt(i));
@@ -426,13 +427,13 @@ public class DataServer {
 				MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
 
 				if (mv != null) {
-					int isDefault = 0;
-					data += isDefault + " " +  //not the default
+					isDefault = 0; //not the default
+					data += isDefault + " " +
 					mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
 				}
 
 				else {
-					int isDefault = 1;
+					isDefault = 1;
 					double x = 0;
 					double y = 0;
 					double z = 0;
