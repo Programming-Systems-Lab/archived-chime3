@@ -30,7 +30,6 @@
 
 #include "chimeBrowser.h"
 
-
 //-- CsfEdit ---------------------------------------------------------------
 
 // Scroll bar class default palette
@@ -51,7 +50,7 @@ ChimeMenu::ChimeMenu (iSystem *System, csSkin &Skin) : csApp (System, Skin)
 
 ChimeMenu::~ChimeMenu ()
 {
-  
+
 }
 
 bool ChimeMenu::Initialize (const char *iConfigName)
@@ -89,10 +88,10 @@ bool ChimeMenu::Initialize (const char *iConfigName)
 	(void)new csMenuItem (submenu, "~Get Object\tCtrl+G", 66601);
     ka->Command ('g', CSMASK_CTRL, 66601);
 
-	//popup the VEM console
+	//the VEM console
 	(void)new csMenuItem (submenu, "~VEM Console\tCtrl+C", 66602);
 	ka->Command ('v', CSMASK_CTRL, 66602);
-		
+
   ////////////////////////////////LAST SUBMENU OF FIRST COLUMN////////////////////////
 
 	(void)new csMenuItem(submenu);
@@ -120,6 +119,10 @@ bool ChimeMenu::Initialize (const char *iConfigName)
    //popup the connection dialog box
   (void)new ConnectDialog(this);
 
+  // Initialize the engine window ...
+  //csWindow *w = new csWindow (this, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
+  //w->SetRect (0, 0, ((chimeBrowser*)System)->FrameWidth*2/3, ((chimeBrowser*)System)->FrameHeight*2);
+
   return true;
 }
 
@@ -134,42 +137,42 @@ bool ChimeMenu::HandleEvent (iEvent &Event)
   {
 	  case csevKeyDown:
 
-		  if(Event.Key.Code == CSKEY_ESC)  
+		  if(Event.Key.Code == CSKEY_ESC)
 		  {
 			  ((chimeBrowser*)System)->Stop3D();
-			  Invalidate(true);				
+			  Invalidate(true);
 			  return true;
 		  }
 
-		  if(Event.Key.Code == 's') 
+		  if(Event.Key.Code == 's')
 		  {
 			  ((chimeBrowser*)System)->Start3D();
 			  return true;
 		  }
 
 	  case csevCommand:
-		  switch (Event.Command.Code)			  
+		  switch (Event.Command.Code)
 		  {
-			  
-			  //a new connection has been opened    
+
+			  //a new connection has been opened
 		  case 66600:
 			  {
-				  (void)new ConnectDialog(this);  
+				  (void)new ConnectDialog(this);
 				  return true;
 			  }
-			  
+
 			  //get a Certain Object dialog is opened
-			  
+
 		  case 66601:
 			  {
-				  (void)new ObjectToRetrieveDialog(this);	  
+				  (void)new ObjectToRetrieveDialog(this);
 				  return true;
-			  }			  
-			  
+			  }
+
 			  //a VEM console is requested
 		  case 66602:
 			  {
-				  (void)new VEM(this);	  
+				  (void)new ChimeVEM(this);
 				  return true;
 			  }
 
@@ -207,7 +210,7 @@ void ChimeMenu::Refresh3D()
 }
 
 void ChimeMenu::Draw ()
-{	
+{
 	csApp::Draw();
 	Refresh3D();
 	Invalidate(true);

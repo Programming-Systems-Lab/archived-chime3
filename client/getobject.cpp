@@ -9,17 +9,6 @@
 
 
 // Scroll bar class default palette
-
-static int palette_VEM[] =
-{
-  cs_Color_Gray_D,			// Application workspace
-  cs_Color_Green_L,			// End points
-  cs_Color_Red_L,			// lines
-  cs_Color_White			// Start points
-
-};
-
-
 ObjectToRetrieveDialog::~ObjectToRetrieveDialog() {}
 
 

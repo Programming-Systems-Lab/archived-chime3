@@ -27,15 +27,21 @@
 #include "csws/csws.h"
 
 
+// Scroll bar class default palette
+static int palette [] =
+{
+  cs_Color_Gray_D,			// Application workspace
+  cs_Color_Green_L,			// End points
+  cs_Color_Red_L,			// lines
+  cs_Color_White			// Start points
+};
 
-/*  main app of csf font editor */
+
+/*  main app of menu */
 class ChimeMenu : public csApp
 {
 
-
-
   /// reliable fonts, for display
-
   iFont *mainfont, *tinyfont;
   /// menu item to gray or not
   csMenuItem *saveitem, *closeitem;
@@ -63,58 +69,58 @@ public:
 
 //VEM stuff
 
-class VEM : public csWindow
-
+class ChimeVEM : public csWindow
 {
-
-  csListBox *lbFile;
-
-  csListBox *lbType;
-
-  csListBox *lbSub;
-
-  csListBox *lbObject;
+  public:
+	ChimeVEM(csComponent *iParent);
+	~ChimeVEM() {} ;
+ };
 
 
+// Main VeM class that exends csDialog
+class VeM : public csDialog
+{
+	csListBox *lbFile;
+	csListBox *lbType;
+	csListBox *lbSub;
+	csListBox *lbObject;
 
-  csInputLine *ilFile;
+	csInputLine *ilFile;
+	csInputLine *ilType;
+	csInputLine *ilSub;
+	csInputLine *ilObject;
 
-  csInputLine *ilType;
+  public:
+	VeM (csComponent *iParent) : csDialog (iParent) {}
 
-  csInputLine *ilSub;
+	virtual void Gui (int user);
+	virtual void Publish (char *host, short port);
 
-  csInputLine *ilObject;
+	virtual void FillFiles ();
+	virtual void FillListBox (char *which, csListBox *lstbx);
 
+	virtual bool HandleEvent (iEvent &Event)
+	{
+		if (Event.Type == csevCommand)
+		{
+			switch (Event.Command.Code)
+			{
+				case 70000: // Apply Button
+					Publish ("localhost", 1111); // Where do u get the ip and port from????
+					return true;
+					break;
+				case 70001: // Clear Button
+					this -> GetChild (1000) -> SetText (""); 
+					this -> GetChild (1001) -> SetText ("");
+					this -> GetChild (1002) -> SetText ("");
+					this -> GetChild (1003) -> SetText ("");
+					return true;
+					break;
+			}
+		}
 
-
-  //void gui ();
-
-
-
-public:
-
-  VEM(csComponent *iParent);
-
-
-
-  virtual ~VEM ();
-
-  virtual bool HandleEvent (iEvent &Event);
-
-  //virtual bool Initialize (const char *iConfigName);
-
-
-
-protected:
-
-  void FillFile ();
-
-  void FillType ();
-
-  void FillSub  ();
-
-  void FillObject ();
-
+		return csDialog::HandleEvent (Event);
+	}
 };
 
 
@@ -126,7 +132,7 @@ class ConnectDialog : public csWindow
 
 {
 
- 
+
 
   csInputLine *username;
 
@@ -166,13 +172,13 @@ class ObjectToRetrieveDialog : public csWindow
 
 {
 
- 
+
 
   csInputLine *object;
 
   csInputLine *protocol;
 
- 
+
 
   //void gui ();
 
@@ -216,7 +222,7 @@ class SienaDialog : public csWindow
 
 
 
-  
+
 
   //void gui ();
 

@@ -144,7 +144,7 @@ SOURCE=.\comm_client\udpserver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\vem.cpp
+SOURCE=.\vem\vem.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

@@ -32,10 +32,6 @@ class chimeBrowser;
 #include "comm_client/udp.h"
 #include "ChimeSector.h"
 
-
-
-
-
 #define NUM_SECT 5
 #define CONTAINER 0
 #define CONNECTOR 1

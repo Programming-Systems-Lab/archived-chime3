@@ -7,78 +7,13 @@
 #include "icfgnew.h"
 #include <string.h>
 #include <winsock.h>
+#include "../chimemenu.h"
 
 #define ADM 0
 #define PWR 1
 #define USR 2
 
 typedef struct { char file [255], type [255], sub [255], object [255]; } FileData;
-
-class Chime : public csApp
-{
-  public:
-	Chime (iSystem *SysDriver, csSkin &Skin);
-	virtual ~Chime ();
-    virtual bool HandleEvent (iEvent &Event);
-	virtual bool Initialize (const char *iConfigName);
-	
-	void VEMgui ();
-};
-
-// Scroll bar class default palette
-static int palette_VEM [] =
-{
-  cs_Color_Gray_D,			// Application workspace
-  cs_Color_Green_L,			// End points
-  cs_Color_Red_L,			// lines
-  cs_Color_White			// Start points
-};
-
-// Main VeM class that exends csDialog
-class VeM : public csDialog
-{
-	csListBox *lbFile;
-	csListBox *lbType;
-	csListBox *lbSub;
-	csListBox *lbObject;
-
-	csInputLine *ilFile;
-	csInputLine *ilType;
-	csInputLine *ilSub;
-	csInputLine *ilObject;
-
-  public:
-	VeM (csComponent *iParent) : csDialog (iParent) {}
-
-	virtual void Gui (int user);
-	virtual void Publish (char *host, short port);
-
-	virtual void FillFiles ();
-	virtual void FillListBox (char *which, csListBox *lstbx);
-
-	virtual bool HandleEvent (iEvent &Event)
-	{
-		if (Event.Type == csevCommand)
-		{
-			switch (Event.Command.Code)
-			{
-				case 70000: // Apply Button
-					Publish ("localhost", 1111); // Where do u get the ip and port from????
-					return true;
-					break;
-				case 70001: // Clear Button
-					this -> GetChild (1000) -> SetText (""); 
-					this -> GetChild (1001) -> SetText ("");
-					this -> GetChild (1002) -> SetText ("");
-					this -> GetChild (1003) -> SetText ("");
-					return true;
-					break;
-			}
-		}
-
-		return csDialog::HandleEvent (Event);
-	}
-};
 
 // Helper VeM class that handles notebook events
 class VeMnb : public csDialog
@@ -445,88 +380,18 @@ void VeM::Publish (char *host, short port)
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 
-Chime::Chime (iSystem *System, csSkin &Skin) : csApp (System, Skin)
-{
-  int pal = csRegisterPalette (palette_VEM, sizeof (palette_VEM) / sizeof (int));
-  SetPalette (pal);
-}
 
-Chime::~Chime () {}
+ChimeVEM::ChimeVEM(csComponent *iParent)
+  : csWindow(iParent, "VEM Console", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+    CSWS_BUTMAXIMIZE)
+  {
 
-bool Chime::Initialize (const char *iConfigName)
-{
-  if (!csApp::Initialize (iConfigName))
-    return false;
-
-  GetG2D () -> DoubleBuffer (false);
-
-  csMenu *menu = new csMenu (this, csmfs3D, 0);
-  csMenu *submenu = new csMenu (NULL);
-  (void)new csMenuItem (menu, "~VEM", 66620);
-
-  menu -> SetPos (10, 10);
-
-  csKeyboardAccelerator *ka = new csKeyboardAccelerator (this);
-  ka -> Command ('q', CSMASK_SHIFT, cscmdQuit);
-
-  return true;
-}
-
-
-void Chime::VEMgui ()
-{
-  csComponent *window = new csWindow (this, "VeM Menu", CSWS_TITLEBAR | CSWS_BUTHIDE | CSWS_BUTCLOSE); 
-  window -> SetSize (500, 285);
-  window -> Center ();
+  this -> SetSize (500, 285);
+  this -> Center ();
   
-  VeM *v = new VeM (window);
-  window -> SendCommand (cscmdWindowSetClient, (void *) v);
+  VeM *v = new VeM (this);
+  this -> SendCommand (cscmdWindowSetClient, (void *) v);
 
   v -> Gui (ADM);
 }
 
-bool Chime::HandleEvent (iEvent &Event)
-{
-  if (csApp::HandleEvent (Event))
-    return true;
-
-  switch (Event.Type)
-  {
-	case csevCommand:
-	  switch (Event.Command.Code)
-      {	
-        case 66620:
-          VEMgui ();
-          return true;
-		  break;
-      }
-      break;
-  } 
-
-  return false;
-}
-
-SKIN_DECLARE_DEFAULT (DefaultSkin);
-
-int main (int argc, char* argv[])
-{
-  SysSystemDriver System;
-
-  if (!System.Initialize (argc, argv, "/config/cswstest.cfg"))
-    return -1;
-
-  if (!System.Open ("CHIME Client"))
-    return -1;
-
-  DefaultSkin.Prefix = System.GetOptionCL ("skin");
-
-  if (!DefaultSkin.Prefix)
-    DefaultSkin.Prefix = System.GetConfig () -> GetStr ("CSWS.Skin.Variant", NULL);
-
-  Chime app (&System, DefaultSkin);
-
-  if (app.Initialize ("/lib/csws/csws.cfg"))
-    System.Loop ();
-
-  return 0;
-}

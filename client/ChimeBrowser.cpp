@@ -6,8 +6,17 @@
 
 #include "cssysdef.h"
 #include "cssys/system.h"
-#include "chimeBrowser.h"
 
+#include "cssys/sysdriv.h"
+#include "csws/csws.h"
+#include "chimemenu.h"
+#include "version.h"
+#include "ifontsrv.h"
+#include "icfgnew.h"
+#include <sys/stat.h>
+#include "csutil/csrect.h"
+
+#include "chimeBrowser.h"
 
 #include "csengine/engine.h"
 #include "csengine/csview.h"
@@ -15,7 +24,6 @@
 #include "csengine/polygon.h"
 #include "csparser/csloader.h"
 #include "csparser/crossbld.h"
-
 
 #include "imspr3d.h"
 #include "itxtmgr.h"
@@ -271,6 +279,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 
 	//Turn of light caching
 	engine->EnableLightingCache (false);
+
 	//Load chime objects and textures
 	LoadChimeLib("chimelib.txt");
 
@@ -311,12 +320,15 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	//AddUser("http://www.yahoo.com/", "1.1.1.1", "mdl1", 5, 0, 5);
 	//AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
 
-//	view->SetSector (sector[curSector]->GetRoom(0));
-//	view->GetCamera ()->SetPosition (csVector3 (0, 2, 2));
-//	view->SetRectangle (0, 0, FrameWidth, FrameHeight);
+	//view->SetSector (sector[curSector]->GetRoom(0));
+	//view->GetCamera ()->SetPosition (csVector3 (0, 2, 2));
+	//view->SetRectangle (0, 0, FrameWidth/2, FrameHeight);
 
 	engine->Prepare ();
 
+	// Initialize the engine window ...
+	//csWindow *w = new csWindow (view, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
+	//w->SetRect (0, 0, FrameWidth, FrameHeight / 2);
 
 	return true;
 }
@@ -333,16 +345,6 @@ void chimeBrowser::Refresh3D ()
 		return;
 
 	view->Draw ();
-
-
-	/*
-	iTextureManager *tm = G3D->GetTextureManager ();
-	int write_colour = tm->FindRGB (255, 150, 100);
-	iFont *courierFont = NULL;
-	iFontServer *fs = G2D->GetFontServer ();
-	courierFont = fs->LoadFont (CSFONT_COURIER);
-	G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, "Hello World this is a very small string");
-	*/
 
 	// Start drawing 2D graphics.
 	if (!G3D->BeginDraw (CSDRAW_2DGRAPHICS))
@@ -425,12 +427,7 @@ void chimeBrowser::NextFrame ()
 	  view->Draw ();
 	  inactive_time = 0;
   }
-  else
-  {
-
-
-
-  }
+  
 
 	writeMessage();
 
@@ -461,8 +458,11 @@ void chimeBrowser::NextFrame ()
 
 }
 
-
-//write a small message in the bottom left corner indicating your position
+//**********************************************************************
+//*
+//* Write a message at the bottom of the screen
+//*
+//**********************************************************************
 void chimeBrowser::writeMessage() 
 {
 	iTextureManager *tm = G3D->GetTextureManager ();
