@@ -12,7 +12,6 @@
 
 #include "chimeBrowser.h"
 #include "ChimeWorldView.h"
-#include "ChimeError.h"
 
 // Scroll bar class default palette
 static int palette_CsfEdit[] =

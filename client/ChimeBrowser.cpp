@@ -362,7 +362,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	WaitForSingleObject(hMutex,INFINITE);
 	strcpy(username, "suhit");
 
-	comm_client = new ClientComm(9999, "localhost", 1234, username, "suhit", this);
+	comm_client = new ClientComm(9999, "128.59.19.218", 1234, username, "suhit", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");

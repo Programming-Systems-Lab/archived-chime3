@@ -17,7 +17,7 @@ ChatWindow::ChatWindow(csComponent *iParent)
     CSWS_BUTMAXIMIZE)
   {
 
-  SetRect (0, app->bound.Height() / 2, app->bound.Width() / 4, app->bound.Height());
+  SetRect (0, app->bound.Height() / 3, app->bound.Width() / 4, app->bound.Height());
   SetState(CSS_DISABLED, true);
 
   int px = 15, py = 20;

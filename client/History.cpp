@@ -20,7 +20,7 @@ HistoryWindow::HistoryWindow(csComponent *iParent)
   InitCount();
   
 
-  SetRect (0, 15, app->bound.Width() / 4, app->bound.Height() / 2);
+  SetRect (0, 15, app->bound.Width() / 4, app->bound.Height() / 3);
   SetState(CSS_DISABLED, true);
 
   int px = 15, py = 20;
