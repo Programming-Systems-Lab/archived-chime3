@@ -77,18 +77,18 @@ bool ClientComm::SendUDPFunction(int function, char *params) {
 }
 
 bool ClientComm::SendSienaFunction(int function, char *params, char *address, char *prot) {
-	siena_publisher->publish("testFunction", "something", "yahoo", "HTTP");
+	siena_publisher->publish("testFunction", "something", "http://www.yahoo.com", "HTTP");
 	return true;
 }
 
 int main(int argc, char *argv[])
 {
 	NavCallback *nav = new NavCallback();
-	ClientComm *comm = new ClientComm(9999, "192.168.1.100", 1234, "denis", "denis", nav);
+	ClientComm *comm = new ClientComm(9999, "astor.psl.cs.columbia.edu", 1234, "denis", "denis", nav);
 	while(1) {
 		//comm->SendUDPFunction(1, "testing");
 		comm->SendSienaFunction(1, "testing", "http://www.yahoo.com", "HTTP");
-		Sleep(1000);
+		Sleep(100000);
 	}
 	return 0;
 }

@@ -127,7 +127,12 @@ class SienaPublisher {
 	char headerString [1000]; 
 	char *username;
 	char *password;
+	char hostname[1000];
+	int port;
+	char *host;
 
+private:
+	void setupSocket();
 
 public:
 	SienaPublisher(char *host, short port, char *username, char *password);
