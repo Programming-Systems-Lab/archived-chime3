@@ -220,6 +220,7 @@ public class DataServer {
 
 	    String type;
 	    Parser p = null;
+	    String token;
 
 	    try {
 		SAXBuilder builder = new SAXBuilder();
@@ -228,20 +229,15 @@ public class DataServer {
 		//Document doc = builder.build( new StringReader(xmlsample));
 		System.err.println("I just got this event:");
 		System.err.println(doc);
-
-		// this is the new siena stuff
 		type = doc.getRootElement().getAttribute("type").getValue();
-		Subscriber subscriber = Subscriber.getInstance();
-		HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
-		SienaObject sienaObj = new SienaObject("","","data_server","","","",false);
-		sienaObj.setDispatcher(dispatcher);
 
 		if (type.equals("dir")) {
 		    p = new DirParser(doc, data);
 		    //p = new DirParser(doc, xmlsample);
 		    SourceTuple t = p.parseDoc();
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-
+		    // invoke VEM with t.getProtocol, t.getUrl()
+		    
 		    // create a table of links and images
 		    try {
 			String tableName = "table" + tupleID;
@@ -251,12 +247,15 @@ public class DataServer {
 			data = t.getOpt()[2];
 			st = new StringTokenizer(data, " \n");
 			while ( st.hasMoreTokens() ) {
+			    token = st.nextToken();
 			    statement.executeQuery("insert into " +
 						   tableName +
 						   " values ('" +
-						   st.nextToken() +
+						   token +
 						   "', 'FILE', null, null, null, null)");
 			}
+			
+			// invoke VEM with t.getUrl(), token
 
 			printTable(tableName);
 
@@ -277,6 +276,8 @@ public class DataServer {
 		    SourceTuple t = p.parseDoc();
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
+		    // invoke VEM with t.getProtocol, t.getUrl
+
 		    // create a table of links and images
 		    try {
 			String tableName = "table" + tupleID;
@@ -294,22 +295,31 @@ public class DataServer {
 			    if (idx1>=data.length() || idx2>=data.length()
 				|| idx1<=7 || idx2 <=0)
 				break;
+			    
+			    token = data.substring(idx1,idx2);
 			    statement.executeQuery("insert into " +
 						   tableName +
 						   " values ('" +
-						   data.substring(idx1,idx2) +
+						   token +
 						   "', 'IMAGE', null, null, null, null)");
+			    // invoke VEM with t.getUrl(), token
+			    
 			    System.err.println("one iteration " + idx1 + " " + idx2);
 			}
+
 			System.err.println("out of loop");
 			data = t.getOpt()[4];
 			st = new StringTokenizer(data, " \n");
 			while ( st.hasMoreTokens() ) {
+
+			    token = st.nextToken();
+
 			    statement.executeQuery("insert into " +
 						   tableName +
 						   " values ('" +
-						   st.nextToken() +
+						   token +
 						   "', 'LINK', null, null, null, null)");
+			    // invoke VEM with t.getUrl(), token
 			}
 
 			printTable(tableName);
@@ -328,14 +338,27 @@ public class DataServer {
 		    p = new ImageParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		
+		
+		    // invoke VEM with t.getProtocol, t.getUrl()
+
+
 		} else if (type.equals("txt")) {
 		    p = new TxtParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+
+
+		    // invoke VEM with t.getProtocol, t.getUrl()
+		    
 		} else if (type.equals("other")) {
 		    p = new OtherParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		
+		    
+		    // invoke VEM with t.getProtocol, t.getUrl()
+
 		} else {
 		    System.err.println("Type Not Found.");
 		}
@@ -852,7 +875,7 @@ public class DataServer {
 
     /* set the shape field of a tuple in the database */
     public boolean setShape(String classtype, String subtype, String shape, String shape2d, String protocol, String url) {
-
+	
 	if (protocol == null)
 	    protocol = "http";
 	else
@@ -879,7 +902,7 @@ public class DataServer {
 	  System.err.println(e);
 	  return false;
 	}
-
+	
 	return true;
     }
 
@@ -920,13 +943,24 @@ public class DataServer {
 	  return false;
 	}
 
-	// post the sienaObject
-	// s_changeCLass -- "roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
 
+	// create an siena object and publish it.
+	// method: s_changeClass
+	Subscriber subscriber = Subscriber.getInstance();
+	HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
+	SienaObject sienaObj = new SienaObject(protocol,url,"data_server","","","",false);
+	sienaObj.setDispatcher(dispatcher);
+	sienaObj.setMethod("s_changeClass");
+	
+	sienaObj.setData("" + roomUrl + " " + url + " " + classtype + " " +
+			 subtype + " " + shape + " " + shape2d);
+	
+	sienaObj.publish();
+	
 	return true;
     }
-
-
+    
+    
     // find the url corresponding to direct parent of input string
     public String getParentDomain(String input) {
 
