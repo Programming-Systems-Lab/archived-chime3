@@ -77,7 +77,7 @@ public class SienaObject {
 		setMethod(not.getAttribute("chime_method").stringValue());
 
 	if (not.getAttribute("realm") != null)
-			setMethod(not.getAttribute("realm").stringValue());
+		setRealm(not.getAttribute("realm").stringValue());
     }
 
     /**

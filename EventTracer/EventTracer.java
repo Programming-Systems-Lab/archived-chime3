@@ -65,7 +65,7 @@ public class EventTracer {
     private static EventTracer myself;
 
     public static synchronized EventTracer getInstance() {
-	return myself;
+		return myself;
     }
 
     // constructor
@@ -80,6 +80,8 @@ public class EventTracer {
 	System.out.println("EVENT TRACER STARTED.");
 
 	ds = arg_ds;
+
+	myself = this;
     }
 
     public EventTracer(String file, DataServer arg_ds) {
@@ -187,10 +189,10 @@ public class EventTracer {
     // handle an event
     // handle an event
     public void eventReceived(SienaObject e) {
-	
+
 	String fromComponent = e.getFromComponent();
 	String method = e.getMethod();
-	
+
 	System.err.println("ET New Events Received.");
 	System.err.println("from_component: " + fromComponent );
 	System.err.println("method: " + method);
@@ -204,7 +206,7 @@ public class EventTracer {
 
 	    // method: c_connect
 	    if (method.equals("c_connect")) {
-		
+
 		System.err.println("METHOD CALL: CLIENT.C_CONNECT");
 	       if (st.countTokens() < 3)
 		   return;
@@ -429,7 +431,7 @@ public class EventTracer {
 
 		// remove user from the old room
 		removeUser(user);
-		
+
 		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 	}

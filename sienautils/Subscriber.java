@@ -48,6 +48,8 @@ public class Subscriber {
 	//start the Data Server and Theme Manager as per Shen's request
 	DataServer ds = DataServer.getInstance();
 
+	//start the Event Tracer
+	EventTracer ev = EventTracer.getInstance();
 
 
 
@@ -124,6 +126,8 @@ public class Subscriber {
      * is received
      **/
     public void alertAuth(SienaObject s) {
+
+	System.err.println("Authorization has been called...");
 	s.setDispatcher(siena);
 
 	//call the authenticator here
@@ -155,6 +159,8 @@ public class Subscriber {
      */
 
     public void alertFrax(SienaObject s) {
+
+	System.err.println("FRAX has been called...");
 	s.setDispatcher(siena);
 
 	//call something in frax when an event has occurred
@@ -188,6 +194,8 @@ public class Subscriber {
      */
 
     public void alertVEM(SienaObject s) {
+
+	System.err.println("VEM has been called...");
 	s.setDispatcher(siena);
 
 	//call the method which deals with a VEM event
@@ -302,11 +310,13 @@ public class Subscriber {
      */
 
     public void alertEventPackager(SienaObject s) {
+
+	System.err.println("Event Tracer has been called...");
 	s.setDispatcher(siena);
 
 	//call the method which deals with an event that is interesting to a theme manager
 	EventTracer ev = EventTracer.getInstance();
-	//ev.eventReceived(s);
+	ev.eventReceived(s);
 
     }
 
@@ -370,6 +380,8 @@ public class Subscriber {
      */
 
     public void alertDataServer(SienaObject s) {
+
+	System.err.println("Data Server has been called...");
 	s.setDispatcher(siena);
 
 	// alert the data server that an interesting event has occurred

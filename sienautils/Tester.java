@@ -20,7 +20,7 @@ public class Tester {
 	    e.putAttribute("prot", "HTTP");
 	    e.putAttribute("address", "http://www.yahoo.com");
 	    e.putAttribute("access", "");
-	    e.putAttribute("chime_method", "c_getRoom");
+	    e.putAttribute("chime_method", "c_enteredRoom");
 
 	    System.out.println("publishing " + e.toString());
 	    try {

@@ -115,7 +115,7 @@ public class SubscribeObject {
     public void alert(String component) {
 
 	Filter f = new Filter();
-	f.addConstraint("component", Op.EQ, component); //alert: that mess for me
+	f.addConstraint("component", Op.NE, component); //alert: that mess for me
 	SimpleNotif sn = new SimpleNotif(siena);
 
 
@@ -123,7 +123,7 @@ public class SubscribeObject {
 	try {
 	    siena.subscribe(f, sn);
 	    try {
-		Thread.sleep(1800000);       // sleeps for thirty minutes
+		Thread.sleep(100);       // sleeps for thirty minutes
 	    } catch (java.lang.InterruptedException ex) {
 		System.out.println("interrupted");
 	    }
@@ -133,8 +133,8 @@ public class SubscribeObject {
 	    System.err.println("Siena error:" + ex.toString());
 	}
 	System.out.println("shutting down.");
-	siena.shutdown();
-	System.exit(0);
+	//siena.shutdown();
+	//System.exit(0);
     }
 
     /**
