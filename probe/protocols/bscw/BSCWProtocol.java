@@ -64,7 +64,13 @@ public class BSCWProtocol extends ProbeProtocol {
 	    con.setAllowUserInteraction(false);  //will allow UI for demo
 	    //if (siena_obj.getRealm() != null)
 		//con.addBasicAuthorization(siena_obj.getRealm(), siena_obj.getUsername(), siena_obj.getPassword());
-		con.addDefaultBasicAuthorization(siena_obj.getUsername(), siena_obj.getPassword());
+		if (siena_obj.getUsername() != null && siena_obj.getPassword() != null) {
+			try {
+				con.addDefaultBasicAuthorization(siena_obj.getUsername(), siena_obj.getPassword());
+			} catch (Exception e) {
+				//this just means that the authorization has been already added
+			}
+		}
 
 	    rsp = con.Get(dest.getPath());
 	    NVPair[] test = con.getDefaultHeaders();

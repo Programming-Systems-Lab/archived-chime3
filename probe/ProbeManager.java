@@ -5,7 +5,7 @@ import psl.chime.sienautils.*;
 import java.util.*;
 import java.lang.*;
 import java.io.*;
-
+import psl.chime.probe.protocols.http.HTTPProtocol;
 
 public class ProbeManager {
 
@@ -29,10 +29,13 @@ public class ProbeManager {
 		}
 
     ProbeManager(String username, String password, String siena_location) {
+		this.username = username;
+		this.password = password;
 		pbuf = new ProbeBuffer();
 		refreshAllProtocols();
 		startSiena(siena_location);
 		new ProbeSubscriber(siena).start();   //start subscribing for new events to probe
+		ppl = new ProbeProtLoader();
 		manager = this;
 		runMonitor();
     }
@@ -85,6 +88,7 @@ public class ProbeManager {
 
 	//check if any differed
 	public synchronized void checkDifference(String protocol, String location, Object[] pass_to_manager) {
+		System.err.println("Checking for difference...");
 		ProbeObject po = pbuf.get(protocol, location);
 
 		if (po == null)
@@ -92,7 +96,8 @@ public class ProbeManager {
 
 		else {
 			//it is already in the hash
-			ConfigObject cfg_obj = (ConfigObject) DictatorHash.get(protocol);
+			System.err.println("Protocol already in the hash");
+			Object cfg_obj = DictatorHash.get(protocol);
 
 			if (cfg_obj == null) {
 				System.err.println("Error: Object not in Configuration");
@@ -104,28 +109,31 @@ public class ProbeManager {
 			latest_obj.setLocation(location);
 			boolean different;
 
-			if (cfg_obj.lookAtMetadata()) {
+			if (((ConfigObject) cfg_obj).lookAtMetadata()) {
 				latest_obj.setMetadata((String) pass_to_manager[0]);
-				if (!latest_obj.equals(po, po.COMPARE_METADATA))  //compare to old object - look at metadata
-					//po.setMetadata(pass_to_manager[0]);
+				System.err.println("The metadata is: " + pass_to_manager[0]);
+				if (!latest_obj.equals(po, po.COMPARE_METADATA)) { //compare to old object - look at metadata
+					System.err.println("The Meta Data of " + location + " has changed");
 					different = true;
+				}
 			}
 
-			if (cfg_obj.lookAtData()) {
+			if (((ConfigObject) cfg_obj).lookAtData()) {
 				try {
 					latest_obj.setData((DataInputStream) pass_to_manager[1]);
-					if (!latest_obj.equals(po, po.COMPARE_DATA))  //compare to old object - look at data
-						//po.setData(pass_to_manager[1]);
+					if (!latest_obj.equals(po, po.COMPARE_DATA)) { //compare to old object - look at data
+						System.err.println("The Data of " + location + " has changed");
 						different = true;
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 
-			if (cfg_obj.lookAtLength()) {
+			if (((ConfigObject) cfg_obj).lookAtLength()) {
 				latest_obj.setLength((Long) pass_to_manager[2]);
 				if (!latest_obj.equals(po, po.COMPARE_LENGTH))  //compare to old object - look at length
-					//po.setLength(pass_to_manager[2]);
+					System.err.println("The Length of " + location + " has changed");
 					different = true;
 			}
 
@@ -138,12 +146,12 @@ public class ProbeManager {
 	public synchronized void addToMonitorList(String protocol, String location, Object[] pass_to_manager) {
 
 			//if the object is not in the hash
-			ConfigObject cfg_obj = (ConfigObject) DictatorHash.get(protocol);
+			//ConfigObject cfg_obj = (ConfigObject) DictatorHash.get(protocol);
 
-			if (cfg_obj == null) {
-				System.err.println("Error: Object not in Configuration");
-				return;
-			}
+			//if (cfg_obj == null) {
+			//	System.err.println("Error: Object not in Configuration");
+			//	return;
+			//}
 
 			ProbeObject po = new ProbeObject();
 			po.setProtocol(protocol);
@@ -157,8 +165,10 @@ public class ProbeManager {
 				e.printStackTrace();
 			}
 
-			po.setLength((Long) pass_to_manager[2]);
+			System.err.println("After set data");
 
+			po.setLength((Long) pass_to_manager[2]);
+			pbuf.add(po);
 
 			/*
 			//it is already in the buffer so check if the rules have changed
@@ -185,15 +195,23 @@ public class ProbeManager {
 
     //run the probes periodically and probe the data sources
     public void runMonitor() {
+		System.err.println("Monitor has started");
+		long round = 0;
+		setDelay(15000);
 
 		while(true) {
+
 			sleep();
+			System.err.println("------Checking Data Sources - round: " + round);
+			round++;
 
 	    	Enumeration enum =  pbuf.getEnumeration();
 	    	ProbeObject obj;
 
 	    	while(enum.hasMoreElements()) {
-				obj = (ProbeObject) enum.nextElement();
+				String key = (String) enum.nextElement();
+				obj = pbuf.get(key);
+
 				try {
 					SienaObject s = new SienaObject();
 					s.setUsername(username);
@@ -201,9 +219,11 @@ public class ProbeManager {
 					s.setDispatcher(siena);
 					s.setProtocol(obj.getProtocol());
 					s.setAddress(obj.getLocation());
-					s.setFromComponent("data_server");
-					s.setMethod("s_queryFrax");
-					ppl.runProt(s);
+					s.setFromComponent("probe");
+					s.setMethod("probe");
+					//ppl.runProt(s);
+					HTTPProtocol prot = new HTTPProtocol(obj.getLocation(), s);
+					prot.processObject();
 				} catch (Exception e) {  //catch any class loading exceptions
 					e.printStackTrace();
 				}

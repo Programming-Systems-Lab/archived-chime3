@@ -9,9 +9,11 @@ public class ProbeSubscriber extends Thread {
 
 	public ProbeSubscriber(HierarchicalDispatcher siena) {
 		this.siena = siena;
-		subscribe();
 	}
 
+	public void run() {
+		subscribe();
+	}
 
     /**
      * Setup the subscription filters
@@ -24,7 +26,7 @@ public class ProbeSubscriber extends Thread {
 	    //loop forever until we shutdown
 	    //just wait
 	    while(true) {
-			Thread.sleep(100000);
+			sleep(100000);
 		}
 
 	} catch (Exception e) {

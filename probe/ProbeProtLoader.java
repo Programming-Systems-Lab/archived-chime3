@@ -31,13 +31,16 @@ public class ProbeProtLoader {
 
 	Class prot_CLASS = findClassInMemory(cfg_obj.getClassname());
 
-	if (prot_CLASS == null)
+	if (prot_CLASS == null) {
+		System.err.println("Class not found in memory... Loading " + cfg_obj.getClassname());
 		prot_CLASS = pcl.loadClass(cfg_obj.getClassname());
+	}
 
 	boolean success = execProt(pcl, prot_CLASS, arg, s);
 
 	if (success == false)
 	    throw new MethodNotFoundException();
+
 
 	System.out.println("Protocol Ended Successfully: " + success);
 	return true;
