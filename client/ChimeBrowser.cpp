@@ -113,6 +113,24 @@ chimeBrowser::chimeBrowser()
 
 //**********************************************************************
 //*
+//* Transport to an optimal location within a room
+//*
+//**********************************************************************
+bool chimeBrowser::TransportToRoom(char *name) {
+	csVector3 *camLocation;
+	chimeSector *sec = FindSector(name);
+	
+	if(sec) {
+		camLocation = sec->GetCamLocation();
+		Transport(sec->GetRoom(0), *camLocation, csVector3(0,0, 1), csVector3(0,-1, 0));
+		return true;
+	}
+
+	return false;
+}
+
+//**********************************************************************
+//*
 //* This function converts the Coordinates from Local To Global
 //* We need this because the Chime System is responsible for everything
 //*
@@ -312,6 +330,8 @@ void chimeBrowser::UserMoved()
 //**********************************************************************
 bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iConfigName)
 {
+	historyWindow = NULL;
+	
 	srand (time (NULL));
 
 	//the menu wasn't drawn
@@ -363,7 +383,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	strcpy(username, "denis");
 
 	comm_client = new ClientComm(9999, "eagle", 1234, username, "denis", this);
-	comm.SetChimeCom(comm_client);
+	comm.SetChimeCom(comm_client, this);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
 
@@ -564,7 +584,7 @@ bool chimeBrowser::Transport(csSector *room, csVector3 pos, csVector3 lookPos, c
 	view->SetSector (room);
 	view->GetCamera ()->SetPosition (pos);
 	view->GetCamera ()->LookAt(lookPos, lookUp);
-	view->SetRectangle (0, 0, FrameWidth, FrameHeight);
+	//view->SetRectangle (0, 0, FrameWidth, FrameHeight);
 
 	return true;
 }
@@ -682,6 +702,15 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
 //************************************************************************
 void chimeBrowser::setCSApp(ChimeMenu *app) {
 	chimeBrowser::app = app;
+}
+
+//*************************************************************************
+//*
+//* Tell ChimeBrowser System where to find the History Window
+//*
+//************************************************************************
+void chimeBrowser::SetHistoryWindow(HistoryWindow *historyWindow) {
+	chimeBrowser::historyWindow = historyWindow;
 }
 
 
@@ -1625,6 +1654,7 @@ bool chimeBrowser::HandleNetworkEvent(int method, char *params)
 
 			sscanf(params, "%s %s %f %f %f", userID, newRoomUrl, &x, &y, &z);
 			result = AddUser(newRoomUrl, userID, "mdl1", x, y, z);
+
 			break;
 		}
 
@@ -1945,10 +1975,6 @@ bool chimeBrowser::ReadRoom(char *desc)
 
 		sec2 = new chimeSector(System, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
-		
-		//add it to the history window
-		if (app != NULL && app->historyWindow != NULL)
-			app->historyWindow->AddItem(sec2->GetUrl());
 
 		comm.SubscribeRoom(sec2->GetUrl(), userID);
 

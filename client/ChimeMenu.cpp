@@ -240,6 +240,9 @@ int main (int argc, char* argv[])
 	  //pass a reference of the app to the chimeBrowser System
 	  System.setCSApp(&app);
 
+	  //pass a reference to the History window
+	  System.SetHistoryWindow(app.historyWindow);
+
 	  System.Loop ();
 
   return 0;

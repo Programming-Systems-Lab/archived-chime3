@@ -200,7 +200,9 @@ public:
 };
 
 
-//History Dialog
+#define GO_THERE_PRESSED 7000
+
+//History Window
 class HistoryWindow : public csWindow
 {
 
@@ -220,15 +222,23 @@ private:
 	void RemoveItem() {
 		count--; };
 
+	csVector history_list;
+	
+	char selected [50];
+
 public:
 
   HistoryWindow(csComponent *iParent);
   bool AddItem(char *item);
+  bool FindSector(char *text);
   void RemoveItem(char *item);
   virtual ~HistoryWindow ();
   virtual bool HandleEvent (iEvent &Event);
 
 };
+
+
+
 
 /*  main app of menu */
 class ChimeMenu : public csApp

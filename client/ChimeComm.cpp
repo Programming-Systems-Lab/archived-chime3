@@ -16,9 +16,10 @@ chimeComm::chimeComm()
 
 }
 
-chimeComm::chimeComm(ClientComm *client_comm)
+chimeComm::chimeComm(ClientComm *client_comm, chimeBrowser *System)
 {
 
+	chimeComm::System = System;
 	chimeComm::client_comm = client_comm;
 }
 
@@ -27,9 +28,9 @@ chimeComm::~chimeComm()
 
 }
 
-void chimeComm::SetChimeCom(ClientComm *client_comm)
+void chimeComm::SetChimeCom(ClientComm *client_comm, chimeBrowser *System)
 {
-
+	chimeComm::System = System;
 	chimeComm::client_comm = client_comm;
 }
 
@@ -133,6 +134,10 @@ bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z,
 //Broadcast entrance of a user in a given room
 bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y, float z)
 {
+
+	//add it to the history window
+	if (System != NULL && System->historyWindow != NULL)
+		System->historyWindow->AddItem(newRoomUrl);
 
 	strcpy(command, userID);
 	AppendToken(command, newRoomUrl);

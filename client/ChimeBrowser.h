@@ -154,16 +154,27 @@ private:
 
 	///***** Comm section
 	volatile HANDLE hMutex; // Create a Mutex object
+	
 	//communication helper class
 	chimeComm comm;
 	//this is the class that we will use for all communication
 	ClientComm *comm_client;
+
 
 	//Convert the Coordinates from Local To Global Coordinates
 	bool chimeBrowser::ConvertCoordinates(csVector2 *screenCoord);
 
 public:
 
+	//transport to some room
+	bool chimeBrowser::TransportToRoom(char *name); 
+
+	//a pointer so we can access the history Window
+	HistoryWindow *historyWindow;
+
+	//set a pointer to the history window so the system can update it as necessary
+	void SetHistoryWindow(HistoryWindow *historyWindow);
+	
 	//Show an error
 	void ShowError(const char *component, const char* error_msg);
 	void ShowError(const char *component, const char* error_msg, const char *variable);
