@@ -86,7 +86,7 @@ chimeBrowser::chimeBrowser()
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "124.1.12.24 mdl1 User User 1\n");
-	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
 	strcat(testRoom, "124.1.12.23 ninja User User 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
@@ -360,9 +360,9 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
-	strcpy(username, "suhit");
+	strcpy(username, "denis");
 
-	comm_client = new ClientComm(9999, "128.59.19.218", 1234, username, "suhit", this);
+	comm_client = new ClientComm(9999, "eagle", 1234, username, "denis", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");

@@ -188,7 +188,8 @@ public:
 	//unsubscribe from all events once leaving the room
 	bool unsubscribeALL();
 
-
+	//get a unique ID for siena messages
+	void createUniqueID(char *uniqueID);
 
 };
 

@@ -4,18 +4,18 @@ public class Tester {
 
 	public static ThinClient siena;
 
-	public static void publishC_getRoom(String method, String args) {
+	public static void publishC_getRoom(String username, String method, String args) {
 		Notification e = new Notification();
 
-		e.putAttribute("from_component", "client");
-		e.putAttribute("data", args);
-		e.putAttribute("auth", "true");
-		e.putAttribute("username", "denis");
-		e.putAttribute("password", "denis");
-		e.putAttribute("prot", "HTTP");
-		e.putAttribute("address", "http://www.google.com/");
-		e.putAttribute("access", "");
+		e.putAttribute("access", "user");
+		e.putAttribute("address", "http://www.yahoo.com/");
 		e.putAttribute("chime_method", method);
+		e.putAttribute("auth", "false");
+		e.putAttribute("data", args);
+		e.putAttribute("from_component", "event_tracer");
+		e.putAttribute("password", username);
+		e.putAttribute("prot", "HTTP");
+		e.putAttribute("username", username);
 
 		System.out.println("publishing " + e.toString());
 		try {
@@ -28,15 +28,15 @@ public class Tester {
 
     public static void main(String[] args) {
 		try {
-		    if (args.length != 3) {
-				System.err.println("Usage:java Tester [server-uri] [method] [args]");
+		    if (args.length != 4) {
+				System.err.println("Usage:java Tester [server-uri] [username] [method] [args]");
 				System.exit(1);
 			}
 
 	    	siena = new ThinClient(args[0]);
 
 	    	//this is the call
-	    	publishC_getRoom(args[1], args[2]);
+	    	publishC_getRoom(args[1], args[2], args[3]);
 
 	    	System.out.println("shutting down.");
 	   		siena.shutdown();

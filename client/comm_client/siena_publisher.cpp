@@ -74,7 +74,10 @@ bool SienaPublisher::setupSocket() {
 		}
 
 		// Create Request 
-		sprintf (headerString, "senp{version=1 method=\"PUB\" ttl=30 ");
+		char uniqueID[50];
+		createUniqueID(uniqueID);
+
+		sprintf (headerString, "senp{version=1 method=\"PUB\" ttl=30 id=%s", uniqueID);
 	    return true;
 	}
 }
@@ -139,9 +142,12 @@ bool SienaPublisher::subscribeRoom(char *room, int option) {
 	}
 
 	char subscribeString [1000]; 
+	char uniqueID[50];
+	createUniqueID(uniqueID);
+
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -181,10 +187,12 @@ bool SienaPublisher::subscribeClient() {
 		}
 		
 		char subscribeString [1000]; 
+		char uniqueID[50];
+		createUniqueID(uniqueID);
 
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -217,9 +225,12 @@ bool SienaPublisher::subscribeMethod(char *method, char *room, int option) {
 		}
 		
 		char subscribeString [1000]; 
+		char uniqueID[50];
+		createUniqueID(uniqueID);
+
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -260,10 +271,13 @@ bool SienaPublisher::unsubscribeRoom(char *room, int option) {
 		}
 		
 		
-		char subscribeString [1000]; 
+		char subscribeString [1000];
+		
+		char uniqueID[50];
+		createUniqueID(uniqueID);
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -302,9 +316,12 @@ bool SienaPublisher::unsubscribeClient() {
 		}
 		
 		char subscribeString [1000]; 
+		char uniqueID[50];
+		createUniqueID(uniqueID);
+
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -352,9 +369,12 @@ bool SienaPublisher::unsubscribeALL() {
 		}
 				
 		char subscribeString [1000]; 
+		char uniqueID[50];
+		createUniqueID(uniqueID);
+
 
 		// Create Header
-		sprintf (subscribeString, "senp{method=\"BYE\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "senp{method=\"BYE\" ttl=30 version=1.1 id=\"%s\"", uniqueID);
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
@@ -371,6 +391,16 @@ bool SienaPublisher::unsubscribeALL() {
 
 		closesocket (s);
 		return true;
+}
+
+//get a unique ID for siena messages
+void SienaPublisher::createUniqueID(char *uniqueID) {
+	time_t ltime;
+    time( &ltime );
+   
+	sprintf(uniqueID, "%ld492", ltime);
+	int rand_num = rand() % 100;
+	sprintf(uniqueID, "%s.%d.%s", uniqueID, rand_num, hostname);
 }
 
 
