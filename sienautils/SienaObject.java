@@ -16,9 +16,22 @@ public class SienaObject {
     public String SOptional;
     HierarchicalDispatcher Ssiena;
 
+	/**
+	 * @deprecated Do not use unless absolutely necessary!
+	 * Make sure to set the hierarchical Dispatcher, username, password, protocol and address
+	 * @see #SienaObject(String protocol, String address, String this_component, String data, String username, String password, boolean need_auth)
+	 */
+	public SienaObject() {
+		setNeedAuth(true);
+		setAccess("");
+		setMethod("");
+	}
+
     /**
-     * create a basic siena object
-     */
+	 * @deprecated  Do not use unless absolutely necessary!
+     * Make sure to set the Hierarchical Dispatcher (anoynmous/anonymous doesn't work as user/pass unless added
+     * @see #SienaObject(String protocol, String address, String this_component, String data, String username, String password, boolean need_auth)
+	 */
     public SienaObject(String component, String data, boolean needAuth) {
 	setData(data);
 	setFromComponent(component);

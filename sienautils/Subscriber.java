@@ -95,7 +95,8 @@ public class Subscriber {
 	    vemSubscriber();
 	    eventTracerSubscriber();
 	    //loop forever until we shutdown
-	    while(true);
+	    while(true)
+			Thread.sleep(99999999);
 
 	} catch (Exception e) {
 	    e.printStackTrace();
