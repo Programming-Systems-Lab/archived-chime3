@@ -40,13 +40,15 @@ public class Subscriber {
      */
     private Subscriber(String siena_location) {
 
-	//start the Data Server and Theme Manager as per Shen's request
-	DataServer ds = DataServer.getInstance();
-
 	//start the VEM
 	Vem V = new Vem ();
 	V.VemSetHost (siena_location);
 	V.start ();
+
+	//start the Data Server and Theme Manager as per Shen's request
+	DataServer ds = DataServer.getInstance();
+
+
 
 
 	Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -137,7 +139,7 @@ public class Subscriber {
 	Filter f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	//f.addConstraint("from_component", Op.EQ, "data_server");
+	f.addConstraint("chime_method", Op.EQ, "s_queryFrax");
 
 
 	System.out.println("subscribing for " + f.toString());
@@ -212,7 +214,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_connect");
+	f.addConstraint("chime_method", Op.EQ, "c_connect");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -224,7 +226,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_moveObject");
+	f.addConstraint("chime_method", Op.EQ, "c_moveObject");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -236,7 +238,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_enteredRoom");
+	f.addConstraint("chime_method", Op.EQ, "c_enteredRoom");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -248,7 +250,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_subscribeRoom");
+	f.addConstraint("chime_method", Op.EQ, "c_subscribeRoom");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -260,7 +262,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_leftRoom");
+	f.addConstraint("chime_method", Op.EQ, "c_leftRoom");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -272,7 +274,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_unsubscribeRoom");
+	f.addConstraint("chime_method", Op.EQ, "c_unsubscribeRoom");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -284,7 +286,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_disconnect");
+	f.addConstraint("chime_method", Op.EQ, "c_disconnect");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -325,11 +327,11 @@ public class Subscriber {
 	    });
 
 
-	//the c_getroom method
+	//the c_getRoom method
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_getroom");
+	f.addConstraint("chime_method", Op.EQ, "c_getRoom");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -338,11 +340,11 @@ public class Subscriber {
 	    });
 
 
-	//the c_getroom method
+	//the c_addObject method
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
+	f.addConstraint("chime_method", Op.EQ, "c_addObject");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
@@ -354,7 +356,7 @@ public class Subscriber {
 	f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
 	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
+	f.addConstraint("chime_method", Op.EQ, "c_deleteObject");
 
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
