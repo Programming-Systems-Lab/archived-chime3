@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2001: The Trustees of Columbia University 
+ * Copyright (c) 2001: The Trustees of Columbia University
  * in the City of New York.  All Rights Reserved.
  *
  * EventTracer.java
@@ -10,7 +10,7 @@
  * *******************************************************
  * List of Methods:
  * *******************************************************
- * 
+ *
  * public static synchronized EventTracer getInstance();
  * public EventTracer(String file,String usr,String pwd,DataServer ds);
  * public EventTracer(String file, DataServer ds);
@@ -29,7 +29,7 @@
  * public MovementTuple findLastMovement(String room, String obj);
  * public void printTable(String tableName);
  */
-  
+
 package psl.chime.EventTracer;
 
 import org.hsql.*;
@@ -46,9 +46,9 @@ import psl.chime.DataServer.*;
 
 
 public class EventTracer {
-	
+
     // SQL statements to create the tables
-    private static String[] tableCreationSQL = {		
+    private static String[] tableCreationSQL = {
 	"create table ROOM (url varchar(255), user varchar(255), PRIMARY KEY (url, user))",
        	"create index url on ROOM(url)",
 	"create table MOVEMENT (room varchar(255), obj varchar(255), x0 real, y0 real, z0 real, x1 real, y1 real, z1 real)",
@@ -61,27 +61,27 @@ public class EventTracer {
     private DatabaseMetaData meta; // database metadata
     private HierarchicalDispatcher siena; // siena connection
     private Filter filter1; // siena filter
-    
+
     private static EventTracer myself;
-    
+
     public static synchronized EventTracer getInstance() {
 	return myself;
     }
-    
+
     // constructor
     public EventTracer(String file,String usr,String pwd, DataServer arg_ds){
-	
+
 	// establish connection to the local database
 	connectDB(file, usr, pwd);
-	
+
 	// establish connection to the siena server
 	// connectSiena(sienaURL);
-	
+
 	System.out.println("EVENT TRACER STARTED.");
-   
+
 	ds = arg_ds;
     }
-    
+
     public EventTracer(String file, DataServer arg_ds) {
 	this(file,"sa","",arg_ds);
     }
@@ -89,15 +89,15 @@ public class EventTracer {
     public EventTracer(DataServer arg_ds) {
 	this("ET","sa","",arg_ds);
     }
-    
-    // shut down the data server -- destructor 
+
+    // shut down the data server -- destructor
     public void shutDown() {
 	// disable connection to siena server
 	// disconnectSiena();
 
 	// disable connection to the local database
 	disconnectDB();
-	
+
 	System.out.println("EVENT TRACER SHUT DOWN SUCCESSFULLY.");
     }
 
@@ -111,7 +111,7 @@ public class EventTracer {
 	    System.err.println("ERROR: FAILS TO ESTABLISH CONNECTION TO " + file + ".");
 	    System.exit(1);
 	}
-	
+
 	// create the tables, if not already exists
 	for(int i=0;i<tableCreationSQL.length;i++) {
 	    try {
@@ -120,16 +120,16 @@ public class EventTracer {
 		if (e.getErrorCode() != 0) {
 		    System.err.println("ERROR: FAILS TO CREATE TABLE");
 		    System.exit(1);
-		} 
-		
+		}
+
 		System.err.println(e);
 	    }
 	}
-	
+
 	System.out.println("CONNECTION TO " + file + " ESTABLISHED.");
     }
-    
-    
+
+
     // close database connection
     private void disconnectDB() {
 	try {
@@ -138,21 +138,21 @@ public class EventTracer {
 	    System.err.println("ERROR: FAILS TO CLOSE DATABASE CONNECTION.");
 	    System.exit(1);
 	}
-	
+
 	System.out.println("CONNECTION TO DATABASE CLOSED.");
     }
-    
- 
+
+
     // setting up siena connection to the server
     private void connectSiena(String url) {
     /*
        try {
 	   siena = new HierarchicalDispatcher();
 	   siena.setMaster(url);
-	   
+
 	   filter1 = new Filter();
-	   filter1.addConstraint("component", "CLIENT");
-	   
+	   filter1.addConstraint("component", "client");
+
 	   try {
 	   siena.subscribe(filter1, this);
 	   } catch (SienaException ex) {
@@ -165,10 +165,10 @@ public class EventTracer {
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	    System.exit(1);
-	} 
+	}
     */
     }
-    
+
     // disable connection to the siena server
     private void disconnectSiena() {
     /*
@@ -180,33 +180,33 @@ public class EventTracer {
 	} catch (Exception ex) {
 	    ex.printStackTrace();
 	    System.exit(1);
-	} 
+	}
     */
     }
-    
+
     // handle an event
     // handle an event
     public void eventReceived(SienaObject e) {
-	
+
 	String fromComponent = e.getFromComponent();
 	String method = e.getMethod();
 	String protocol = e.getProtocol();
 	String data = e.getData();
 	StringTokenizer st = new StringTokenizer(data," ");
 
-	// CLIENT Call
-	if (fromComponent.equals("CLIENT")) {
-	    	    
+	// client Call
+	if (fromComponent.equals("client")) {
+
 	    // method: c_connect
 	    if (method.equals("c_connect")) {
-		
+
 	       if (st.countTokens() < 3)
 		   return;
 	       st.nextToken();
 	       String user = st.nextToken();
 	       addRoomTuple("default", user);
 	    }
-	    
+
 	    // method: c_moveObject
 	    else if (method.equals("c_moveObject")) {
 		if (st.countTokens() < 5)
@@ -224,11 +224,11 @@ public class EventTracer {
 		    System.err.println(ex);
 		}
 		addMovementTuple(roomUrl, url, 0, 0, 0, x, y, z);
-		
+
 		// propagate the info
-		e.setFromComponent("SERVER");
+		e.setFromComponent("event_tracer");
 		e.setMethod("s_moveObject");
-		
+
 		try {
 		    Vector v = findRoomTuple(roomUrl);
 		    if (v == null)
@@ -242,14 +242,14 @@ public class EventTracer {
 		    return;
 		}
 	    }
-	    
+
 	    // method: c_enteredRoom
 	    else if (method.equals("c_enteredRoom")) {
 		if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
 		String roomUrl = st.nextToken();
-		
+
 		// notify users in the old room
 		String oldRoom = null;
 		Vector v = null;
@@ -275,17 +275,17 @@ public class EventTracer {
 			return;
 		    }
 		}
-		
+
 		// add user to the new room
 		addRoomTuple(roomUrl, user);
-		
+
 		// notify the new user about its roommates
 		// notify the roomates about the new user
 		v = null;
 		roommate = null;
 		v = findRoomTuple(roomUrl);
 		e.setMethod("s_enteredRoom");
-		
+
 		try {
 		    if (v!=null) {
 			for (int idx=0; idx<v.size(); idx++) {
@@ -294,10 +294,10 @@ public class EventTracer {
 				e.setUsername(roommate);
 				e.setData(user + " " + roomUrl);
 				e.publish();
-				
+
 				e.setUsername(user);
 				e.setData(roommate + " " + roomUrl);
-				e.publish();			    
+				e.publish();
 			    }
 			}
 		    }
@@ -306,25 +306,25 @@ public class EventTracer {
 		    return;
 		}
 	    }
-	    
+
 	    // method: c_subscribeRoom
 	    else if (method.equals("c_subscribeRoom")) {
 	    	if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
 		String roomUrl = st.nextToken();
-		
+
 		// add user to the new room
 		addRoomTuple(roomUrl, user);
 	    }
-	    
+
 	    // method: s_leftRoom
 	    else if (method.equals("c_leftRoom")) {
 		if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
 		String roomUrl = st.nextToken();
-		
+
 		// notify users in the old room
 		String oldRoom = null;
 		Vector v = null;
@@ -351,14 +351,14 @@ public class EventTracer {
 		    }
 		}
 	    }
-	    
+
 	    // method: c_unsubscribeRoom
 	    else if (method.equals("c_unsubscribeRoom")) {
 	    	if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
 		String roomUrl = st.nextToken();
-		
+
 		// remove user from the old room
 		removeUser(roomUrl, user);
 	    }
@@ -368,7 +368,7 @@ public class EventTracer {
 		if (st.countTokens() < 1)
 		    return;
 		String user = st.nextToken();
-				
+
 		// notify users in the old room
 		String oldRoom = null;
 		Vector v = null;
@@ -387,48 +387,48 @@ public class EventTracer {
 				e.publish();
 				}
 			    }
-			}    
+			}
 		    } catch (Exception ex) {
 			System.err.println(ex);
 			return;
 		    }
 		}
-		
+
 		// remove user from the old room
 		removeUser(user);
 	    }
 	}
     }
-    
+
     // insert a tuple into the database, if not already there.
     // all string arguments must be enclosed by '' except url.
     public boolean addRoomTuple(String url, String user) {
-	
+
 	user = user.toLowerCase();
 	url = url.toLowerCase();
-	
-	try {	  
-	    statement.executeQuery("insert into ROOM values ('" + 
-				   url + "','" + 
+
+	try {
+	    statement.executeQuery("insert into ROOM values ('" +
+				   url + "','" +
 				   user + "')");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
 
-    
+
     // insert a tuple into the database, if not already there.
     public boolean addMovementTuple(String room, String obj, double x0, double y0, double z0, double x1, double y1, double z1) {
-	
+
 	obj = obj.toLowerCase();
-	
-	try {	  
+
+	try {
 	    statement.executeQuery("insert into MOVEMENT values ('" +
-				   room + "','" + 
-				   obj + "'," + 
+				   room + "','" +
+				   obj + "'," +
 				   x0 + "," +
 				   y0 + "," +
 				   z0 + "," +
@@ -438,56 +438,56 @@ public class EventTracer {
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
-    
-    
+
+
     // remove the tuple with the specific url from the room database
     public boolean removeRoomTuple(String url, String user) {
 	user = user.toLowerCase();
 	url = url.toLowerCase();
-	
+
 	try {
-	    statement.executeQuery("delete from ROOM where URL='" + 
+	    statement.executeQuery("delete from ROOM where URL='" +
 				   url + "' AND USER='" + user + "'");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
-    
+
     // remove the tuple with the corresponding movement url
     public boolean removeMovementTuple(String room, String obj) {
 	room = room.toLowerCase();
 	obj = obj.toLowerCase();
-	
+
 	try {
-	    statement.executeQuery("delete from MOVEMENT where ROOM='" + 
+	    statement.executeQuery("delete from MOVEMENT where ROOM='" +
 				   room + "' AND OBJ='" + obj + "'");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
-    
+
     // remove the tuple with the specific user from the room database
     public boolean removeUser(String user) {
 	user = user.toLowerCase();
-	
+
 	try {
-	    statement.executeQuery("delete from ROOM where USER='" + 
+	    statement.executeQuery("delete from ROOM where USER='" +
 				   user + "'");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
 
@@ -495,25 +495,25 @@ public class EventTracer {
     public boolean removeUser(String url, String user) {
 	user = user.toLowerCase();
 	url = url.toLowerCase();
-	
+
 	try {
 	    statement.executeQuery("delete from ROOM where URL='" +
-				   url + "' AND USER='" + 
+				   url + "' AND USER='" +
 				   user + "'");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
-	} 
-	
+	}
+
 	return true;
     }
-    
+
     // find all users in a room
     public Vector findRoomTuple(String url) {
-	
+
 	url = url.toLowerCase();
 	ResultSet r = null;
-   
+
 	try {
 	    //System.err.println("Try to find " + url);
 	    r = statement.executeQuery("select * from ROOM where URL='"
@@ -521,8 +521,8 @@ public class EventTracer {
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return null;
-	} 
-	
+	}
+
 	if ( r == null) {
 	    //System.err.println("null SourceTuple Not FOUND.");
 	    return null;
@@ -534,17 +534,17 @@ public class EventTracer {
 	if ( tmp == null || tmp.size() == 0 ) {
 	    // System.err.println("vector: SourceTuple Not Found.");
 	    return null;
-	} 
-	
+	}
+
 	return tmp;
     }
 
     // find the room a user is in
     public String findUserRoom(String user) {
-	
+
 	user = user.toLowerCase();
 	ResultSet r = null;
-   
+
 	try {
 	    //System.err.println("Try to find " + url);
 	    r = statement.executeQuery("select * from ROOM where USER='"
@@ -552,8 +552,8 @@ public class EventTracer {
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return null;
-	} 
-	
+	}
+
 	if ( r == null) {
 	    //System.err.println("null SourceTuple Not FOUND.");
 	    return null;
@@ -565,18 +565,18 @@ public class EventTracer {
 	if ( tmp == null || tmp.size() == 0 ) {
 	    // System.err.println("vector: SourceTuple Not Found.");
 	    return null;
-	} 
-	
+	}
+
 	return ((RoomTuple)tmp.elementAt(0)).getUrl();
     }
-    
+
     // find all movements of an object
     public Vector findMovementTuple(String room, String obj) {
-	
+
 	room = room.toLowerCase();
 	obj = obj.toLowerCase();
 	ResultSet r = null;
-   
+
 	try {
 	    //System.err.println("Try to find " + url);
 	    r = statement.executeQuery("select * from MOVEMENT where ROOM='" +
@@ -584,8 +584,8 @@ public class EventTracer {
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return null;
-	} 
-	
+	}
+
 	if ( r == null) {
 	    //System.err.println("null SourceTuple Not FOUND.");
 	    return null;
@@ -597,18 +597,18 @@ public class EventTracer {
 	if ( tmp == null || tmp.size() == 0 ) {
 	    // System.err.println("vector: SourceTuple Not Found.");
 	    return null;
-	} 
-	
+	}
+
 	return tmp;
     }
 
     // find last movement of an object
     public MovementTuple findLastMovement(String room, String obj) {
-		
-	Vector v = findMovementTuple(room, obj);	
+
+	Vector v = findMovementTuple(room, obj);
 	if (v == null || v.size()==0)
 	    return null;
-	
+
 	return ((MovementTuple)v.elementAt(v.size()-1));
     }
 
@@ -617,23 +617,23 @@ public class EventTracer {
 	try {
 	    if (tableName.equals("ROOM")) {
 		Vector v = RoomTuple.parseResultSet(statement.executeQuery("select * from " + tableName ) );
-	    
+
 		System.out.println("\nThe current data table is:");
 		System.out.println(RoomTuple.tuplesToString(v));
 	    } else if (tableName.equals("MOVEMENT")) {
 		Vector v = MovementTuple.parseResultSet(statement.executeQuery("select * from " + tableName ) );
-		
+
 		System.out.println("\nThe current data table is:");
 		System.out.println(MovementTuple.tuplesToString(v));
 	    }
 	} catch (SQLException e) {
 	    System.err.println(e);
 	}
-    }	
+    }
 
-    
+
     public static void main(String argv[]) {
-	/* 
+	/*
 	   if (argv.length != 4) {
 	   System.err.println("4 Command-Line Arguments Expected for the DataServer.");
 	   System.exit(-1);
@@ -641,8 +641,8 @@ public class EventTracer {
 	*/
 
 	EventTracer tm = EventTracer.getInstance();
-	
-	
+
+
 	/*
 	  setRecent("select * from Customer");
 	  setRecent("select * from Customer where place<>3000");
@@ -658,17 +658,17 @@ public class EventTracer {
 
 	/*
 	  public void addTestData() {
-	
+
 	  addRoomTuple("http://www.columbia.edu/", "128.59.220.1");
 	  addRoomTuple("http://www.columbia.edu/", "128.59.220.2");
 	  addRoomTuple("http://www.columbia.edu/a/", "128.59.220.1");
-	  
+
 	  addMovementTuple("http://www.cnn.com/", "http://www.columbia.edu/a/", 1, 2, 3, 1.1, 2.2, 3.3);
 	  addMovementTuple("http://www.abc.com/", "http://www.columbia.edu/a/", 1, 1, 1, -1, -1, -1);
 	  addMovementTuple("http://www.abc.com/", "http://www.columbia.edu/", 1, 1, 1, -1, -1, -1);
 	  }
 	*/
- 
+
     }
 }
 
