@@ -7,6 +7,7 @@
 #include "csgeom/math3d.h"
 #include "csws/csws.h"
 
+
 // Scroll bar class default palette
 static int palette [] =
 {
@@ -144,27 +145,22 @@ public:
 };
 
 
-class InfoStorer
+class ChatArea : public csListBox
 {
-   //the username
-  char *username;
-  //the password
-  char *password;
-  //object to retrieve
-  char *object;
+	int chars_per_line;
+public:
+	ChatArea (int chars_per_line, csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
+	int GetCharsPerLine() { return chars_per_line; };
+	void SetCharsPerLine(int chars_per_line) { ChatArea::chars_per_line = chars_per_line; };
+};
 
+class ChatAreaItem : public csComponent
+{
 
-  //protocol to use
-  char *protocol;
+public:
+	ChatAreaItem( ChatArea *chat_area, const char *iText, int &iID, csListBoxItemStyle iStyle=cslisNormal);
+	FindSpace(const char* str, int max_chars, int *earliest_break, int *latest_break);
 
-  //siena location
-  char *siena_location;
-
-  //chat server to use
-  char *chat_server;
-
-  //chat port
-  char *port;
 };
 
 
@@ -173,9 +169,9 @@ class ChatWindow : public AlwaysVisibleWindow
 
 {
 
-  csInputLine *username;
-  csInputLine *password;
-  csInputLine *chime_server;
+  csInputLine *user_msg_line;
+  ChatArea *chat_area;
+  int last_ID;
 
   //void gui ();
 
@@ -184,6 +180,7 @@ public:
   ChatWindow(csComponent *iParent);
   virtual ~ChatWindow ();
   virtual bool HandleEvent (iEvent &Event);
+  void SubmitMessage(const char* msg);
   //virtual bool Initialize (const char *iConfigName);
 
 };
@@ -227,21 +224,6 @@ public:
 
 };
 
-class ChatArea : public csListBox
-{
-	int chars_per_line;
-public:
-	ChatArea (int chars_per_line, csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
-	int GetCharsPerLine() { return chars_per_line; };
-	void SetCharsPerLine(int chars_per_line) { ChatArea::chars_per_line = chars_per_line; };
-};
-
-class ChatAreaItem //: public csListBoxItem
-{
-
-public:
-	ChatAreaItem( ChatArea *chat_area, const char *iText, int iID=0, csListBoxItemStyle iStyle=cslisNormal);
-};
 
 
 #define GO_PRESSED 10000

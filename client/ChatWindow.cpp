@@ -27,12 +27,12 @@ ChatWindow::ChatWindow(csComponent *iParent)
   this->SetDragStyle (this->GetDragStyle () & ~CS_DRAG_SIZEABLE);
 
   //////////create the chat area box/////////////
-  ChatArea *chat_area = new ChatArea (24, d, CSLBS_HSCROLL | CSLBS_VSCROLL, cslfsThickRect);
+  chat_area = new ChatArea (35, d, CSLBS_HSCROLL | CSLBS_VSCROLL, cslfsThickRect);
   chat_area->SetRect (5, 5 + TitlebarHeight, bound.Width() - 10, bound.Height() / 8 * 4);
 
   //////////create the chat line////////////////
-  csInputLine *line = new csInputLine(d);
-  line->SetRect (5, bound.Height() / 8 * 4 + py, bound.Width() - 10, bound.Height() / 8 * 4 + 3 * py);
+  user_msg_line = new csInputLine(d);
+  user_msg_line->SetRect (5, bound.Height() / 8 * 4 + py, bound.Width() - 10, bound.Height() / 8 * 4 + 3 * py);
 
   // Now create the notebook
   csNotebook *nb = new csNotebook (d, CSNBS_TABPOS_TOP| CSNBS_PAGEFRAME | CSNBS_PAGEINFO);
@@ -59,54 +59,57 @@ ChatWindow::ChatWindow(csComponent *iParent)
   csListBox *page2_lb = new csListBox (page, CSLBS_VSCROLL, cslfsThinRect);
   page2_lb->SetSize (nb->bound.Width(), nb->bound.Height());
   
-  (void*) new ChatAreaItem(chat_area, "Hello are you there this is a test. Maybe separating by chars wasn not the best idea", 0);
+  last_ID = 0;
+  (void*) new ChatAreaItem(chat_area, "", last_ID);
+  //(void*) new ChatAreaItem(chat_area, "Hello are you there this is a test. Maybe separating by chars wasn not the best idea", last_ID);
+
 }
 
 
 bool ChatWindow::HandleEvent (iEvent &Event)
 {
 
-  if (AlwaysVisibleWindow::HandleEvent (Event))
-    return true;
-
-  switch (Event.Type)
+ switch (Event.Type)
   {
-
-    case csevCommand:
-      switch (Event.Command.Code)
-      {
-	    //OK button was pressed
-        case 66800:
-		  Close();
-		  return true;
-
-
-		 //Cancel Button has been pressed
-		case 66801:
-		  Close();
-		  return true;
-	  }
+	case csevKeyDown: 
+		if(Event.Key.Code == CSKEY_ENTER) {
+			SubmitMessage(user_msg_line->GetText());
+			user_msg_line->SetText("");
+			return true;
+		}
 
       break;
   }
 
+  if (AlwaysVisibleWindow::HandleEvent (Event))
+    return true;
+
   return false;
 }
 
-//the chat are used for chatting
+//submit the message to the chat area box
+void ChatWindow::SubmitMessage(const char* msg) {
+	new ChatAreaItem(chat_area, msg, last_ID);
+}
+	
+
+//the chat area used for chatting
 ChatArea::ChatArea(int chars_per_line, csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_DEFAULTVALUE, iFrameStyle=cslfsThickRect ) {
 	SetCharsPerLine(chars_per_line);
+	SetState(CSS_SELECTABLE, false);
 	csListBox::csListBox(iParent, iStyle, iFrameStyle);
 }
 
 //add an item to the chat area
-ChatAreaItem::ChatAreaItem(ChatArea *chat_area, const char *iText, int iID, csListBoxItemStyle iStyle) {//: csListBoxItem (chat_area, iText, iID=0, iStyle=cslisNormal) {
+ChatAreaItem::ChatAreaItem(ChatArea *chat_area, const char *iText, int &iID, csListBoxItemStyle iStyle) : csComponent (chat_area) {
 	int allowed_chars = chat_area->GetCharsPerLine();
+	int earliest_break;
+	int latest_break;
 	char *temp;
 	char *here;
 
-	temp = (char*) malloc(allowed_chars + 1);
-	here = (char*) malloc(strlen(iText) + 1);
+	temp = new char[allowed_chars + 1];
+	here = new char[strlen(iText) + 1];
 
 	//here points to the beginning of string
 	strcpy(here, iText);
@@ -116,17 +119,53 @@ ChatAreaItem::ChatAreaItem(ChatArea *chat_area, const char *iText, int iID, csLi
 
 		//if there are less chars to write than allowed then just write them
 		if (strlen(here) < allowed_chars) {
-			(void *) new csListBoxItem(chat_area, here, iID, iStyle);
+			csListBoxItem *item = new csListBoxItem(chat_area, here, iID, iStyle);
+			item->SetState(CSS_LISTBOXITEM_SELECTED, false);
 			iID++;
 			here = NULL; //that's it - enough
 		}
 
 		else {
-			strncpy(temp, here, allowed_chars);
-			(void *) new csListBoxItem(chat_area, temp, iID, iStyle);
+			//if you can find a space then do it
+			if (FindSpace(here, allowed_chars, &earliest_break, &latest_break)) {
+				strncpy(temp, here, latest_break);
+				here += latest_break;
+				here++; //just eat up the space
+			}
+
+			else {
+				strncpy(temp, here, allowed_chars);
+				here += allowed_chars;
+			}
+
+			csListBoxItem *item = new csListBoxItem(chat_area, temp, iID, iStyle);
+			item->SetState(CSS_LISTBOXITEM_SELECTED, false);
 			iID++;
-			here += allowed_chars;
+		
 		}
 	}
 
 }
+
+ChatAreaItem::FindSpace(const char* str, int max_chars, int *earliest_break, int *latest_break) {
+	int i;
+
+	//look through up until max_chars with 1/10 max_chars as leeway
+	for (i = 0; i < max_chars; i++) {
+		if (str[i] == ' ') {
+			*earliest_break = *latest_break;
+			*latest_break = i;
+		}
+	}
+
+	if (*earliest_break != 0 || *latest_break != 0)
+		return true;
+
+	else return false;
+}
+
+
+
+
+
+

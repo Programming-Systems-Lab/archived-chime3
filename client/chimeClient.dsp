@@ -198,6 +198,10 @@ SOURCE=.\ChimeWorldView.h
 
 SOURCE=.\comm_client\ClientComm.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\InfoStorer.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
