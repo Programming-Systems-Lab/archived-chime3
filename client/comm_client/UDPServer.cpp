@@ -48,13 +48,65 @@ UDPServer::UDPServer(int port, NavCallback *_nav) {
 
 }
 
+//parse the response for Navdeep
+void UDPServer::parseResponse(char *string) {
+	char *method = strtok(string, "\t");
+	char *params = strtok(NULL, "\t");
+
+	if (method != NULL && params != NULL) {
+		int meth = getMethod(method);
+		if (meth != -1)
+			nav->GetFunction(meth, params);
+	}
+}
+
+//get the method as an integer as specified by Navdeep
+int UDPServer::getMethod(char *method) {
+	
+	if (method == NULL)
+		return -1;
+
+	//client side methods
+	if (strstr(method, "c_connect") != NULL)
+		return c_connect;
+	else if (strstr(method, "c_getRoom") != NULL)
+		return c_getRoom;
+	else if (strstr(method, "c_moveObject") != NULL)
+		return c_moveObject;
+	else if (strstr(method, "c_moveUser") != NULL) 
+		return c_moveUser;
+	else if (strstr(method, "c_enteredRoom") != NULL)
+		return c_enteredRoom;
+	else if (strstr(method, "c_addObject") != NULL)
+		return c_addObject;
+	else if (strstr(method, "c_deleteObject") != NULL)
+		return c_deleteObject;
+	else if (strstr(method, "c_disconnect") != NULL) 
+		return c_disconnect;
+
+	//server side methods
+	else if (strstr(method, "s_moveObject") != NULL)
+		return s_moveObject;
+	else if (strstr(method, "s_moveUser") != NULL)
+		return s_moveUser;
+	else if (strstr(method, "s_AddObject") != NULL)
+		return s_AddObject;
+	else if (strstr(method, "s_deleteObject") != NULL) 
+		return s_deleteObject;
+	else if (strstr(method, "s_changeClass") != NULL)
+		return s_changeClass;
+	else if (strstr(method, "s_roomInfo") != NULL)
+		return s_roomInfo;
+	else
+		return -1;
+}
 
 
 //this will start a UDPServer
 //with a callback to Nav's Class
 int UDPServer::startServer() {
   
-	char recvString [1000];
+	char recvString [5000];
 	int nLen;
 	nLen = sizeof(SOCKADDR);
 
@@ -79,8 +131,9 @@ int UDPServer::startServer() {
 
 
 			if (recvString != NULL) {
-				nav->GetSienaFunction(recvString);
+				//nav->getFunction(recvString);
 				printf ("%s\n\n", recvString);
+				parseResponse(recvString);
 			}
 	}
 }

@@ -227,27 +227,88 @@ SOCKET SienaSubscriber::createSendSocket() {
 	}
 }
 
-
+//format the response as something which Navdeep is expecting
 void SienaSubscriber::formatResponse(char *string) {
 
-	char *data = strstr(string, "data");
-	printf("The first-first data is: %s\n", data);
+	char *data = getField("data", string);
+	int method = getMethod(string);
 
+	if (data != NULL && method != -1) { 
+		nav->GetFunction(method, data);
+	} else {
+		printf("Response couldn't be formatted properly\n Ignoring....\n");
+	}
 
-
-/*
-	if (strpbrk(string, "s_moveObject") != NULL)
-		nav->GetSienaFunction(s_moveObject, 
-	char *method = strtok(string, "method");
-	printf("The method string is %s", method);
-	method = strtok(method, "\"");
-	printf("The method string is %s", method);
-	sscanf(method, "%s\"", method);
-	printf("The method is: %s", method);
-	nav->GetSienaFunction(method);
-	*/
 }
 
+
+//get a particualr field from the siena string
+char *SienaSubscriber::getField(char *field, char *string) {
+	char *final = (char*) malloc(sizeof(string));
+	char *data = strstr(string, field);
+	
+	if (data != NULL)
+	{
+		data = strstr(data, "\"");
+		data = &data[1];	
+		char *end = strstr(data, "\" ");
+
+		//printf("The end is: %s", end);
+		//printf("The difference is: %d\n", end - data);
+		strncpy(final, data, end - data);
+		final[end-data] = NULL;
+		printf("The field \"%s\" is: %s\n", field, final);
+		return data;
+	}
+	else 
+	{
+		printf("Siena Subscriber Error: Incorrectly formatted string - can't get field\n");
+		return NULL;
+	}
+}
+
+//get the method from the siena string
+int SienaSubscriber::getMethod(char *string) {
+
+	char *method = getField("chime_method", string);
+
+	if (method == NULL)
+		return -1;
+
+	//client side methods
+	if (strstr(method, "c_connect") != NULL)
+		return c_connect;
+	else if (strstr(method, "c_getRoom") != NULL)
+		return c_getRoom;
+	else if (strstr(method, "c_moveObject") != NULL)
+		return c_moveObject;
+	else if (strstr(method, "c_moveUser") != NULL) 
+		return c_moveUser;
+	else if (strstr(method, "c_enteredRoom") != NULL)
+		return c_enteredRoom;
+	else if (strstr(method, "c_addObject") != NULL)
+		return c_addObject;
+	else if (strstr(method, "c_deleteObject") != NULL)
+		return c_deleteObject;
+	else if (strstr(method, "c_disconnect") != NULL) 
+		return c_disconnect;
+
+	//server side methods
+	else if (strstr(method, "s_moveObject") != NULL)
+		return s_moveObject;
+	else if (strstr(method, "s_moveUser") != NULL)
+		return s_moveUser;
+	else if (strstr(method, "s_AddObject") != NULL)
+		return s_AddObject;
+	else if (strstr(method, "s_deleteObject") != NULL) 
+		return s_deleteObject;
+	else if (strstr(method, "s_changeClass") != NULL)
+		return s_changeClass;
+	else if (strstr(method, "s_roomInfo") != NULL)
+		return s_roomInfo;
+	else
+		return -1;
+}
 
 
 void SienaSubscriber::startServer() {
@@ -268,15 +329,15 @@ void SienaSubscriber::startServer() {
 
 	// Infinite loop to keep receiving events for the client 
 	
-			if (listen (r, SOMAXCONN) == SOCKET_ERROR)
-			{
-				fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
-				closesocket (r);
-			}
+	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
+	{
+		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
+		closesocket (r);
+	}
 
 		
 	while(1)
-		{
+	{
 			SOCKET	remoteSocket;
 
 			printf("\n\nListening...\n\n");
@@ -288,21 +349,53 @@ void SienaSubscriber::startServer() {
 				closesocket (r);
 			}
 
+			char finalString [10000];
 			char recvString [5000]; 
-			int length = 0;
-			if ((length = recv (remoteSocket, recvString, 5000, 0)) == SOCKET_ERROR)
-			{
-				fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
-				closesocket (r);
-				closesocket (remoteSocket);
-			}
+			int length = 1;
+			memset(finalString, 0, sizeof(finalString));
+	
+		while(length != 0) 
+		{
+				memset(recvString, 0, sizeof(recvString));
 
-			if (recvString != NULL)
-				recvString[length] = NULL;
-				formatResponse(recvString);
-				//printf ("%s\n\n", recvString);
+				if ((length = recv (remoteSocket, recvString, sizeof(recvString), 0)) == SOCKET_ERROR)
+				{
+					fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
+					closesocket (r);
+					closesocket (remoteSocket);
+				}
+
+				//concatenate all accepts
+				//because Siena never fills out the buffer completely
+				//would have done blocking until buffer is full but can't find a siena message
+				//terminator to signify message end
+				if (recvString != NULL) 
+				{
+					recvString[length] = NULL;
+					printf("The receive String is: %s\n", recvString);
+					printf("The final String is: %s\n", finalString);
+
+					//make sure the string received fits in the buffer
+					if (strlen(finalString) + strlen(recvString) > sizeof(finalString)) {
+						printf("Subscriber Error: Siena Message too long - ignoring");
+						*finalString = NULL;
+					}
+					else  {
+						strncat(finalString, recvString, length);
+					}
+				}
 		}
 
+		closesocket(remoteSocket);
+
+		if (finalString != NULL) 
+		{
+			printf("The string is: %s\n", finalString);
+			formatResponse(finalString);
+			printf ("%s\n\n", recvString);
+		}
+		
+	}
 		
 	WSACleanup ();
 

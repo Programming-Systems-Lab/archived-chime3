@@ -19,8 +19,8 @@
 #define s_moveObject 8			//	"roomUrl objectUrl x y z"
 #define s_moveUser 9			//	"roomUrl userID	x y z"
 #define s_AddObject 10			//	"roomUrl objectUrl x y z"
-#define s_deletObject 11		//	"roomUrl objectUrl"
-#define s_changeCLass 12		//	"roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
+#define s_deleteObject 11		//	"roomUrl objectUrl"
+#define s_changeClass 12		//	"roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
 #define s_roomInfo	13			//	"roomUrl Width Height Length #ofObjects\n
 								//	ObjectUrl_1 shape class subClass default x y x \n
 								//	ObjectUrl_2 shape class subClass default x y x \n
@@ -37,13 +37,10 @@ public:
 	NavCallback() {
 	};
 
-	//just something to do 
-	void GetFunction(char* received) {
-		printf("\nNav's receiver just received: %s\n", received);
-	};
-
-	void GetSienaFunction(char *received) {
-		printf("\nNav's Siena receiver just received: %s\n", received);
+	void GetFunction(int method, char *received) {
+		printf("\n\nIn Navdeep's Receiver\n");
+		printf("\nThe method was: %d\n", method);
+		printf("\nThe parameters are: %s\n", received);
 	};
 };
 
@@ -69,6 +66,10 @@ class UDPServer {
    char		*recvString;
    SOCKET	remoteSocket;
 
+   private:
+	   void parseResponse(char *string);
+	   int getMethod(char *method);
+
    public:
 	   UDPServer(int port, NavCallback *_nav);
 	   //start the server
@@ -87,10 +88,12 @@ class UDPClient {
    int     Port;
    LPHOSTENT lpht;
 
+   private:
+	   char* getFunction(int method);
 
    public:
 	   UDPClient(int _port);
-	   void sendMess(char *IP_addr, char *function, char *params);
+	   void sendMess(char *IP_addr, int function, char *params);
 
 		//destructor
 	   ~UDPClient();
@@ -109,6 +112,8 @@ class SienaSubscriber {
 
 private:
 	void formatResponse(char *string);
+	char *getField(char *method, char *string);
+	int getMethod(char *method);
 
 public:
 	SienaSubscriber(char *host, short port, char *_username, NavCallback *_nav);
@@ -140,7 +145,6 @@ private:
 
 public:
 	SienaPublisher(char *host, short port, char *username, char *password);
-	~SienaPublisher();
 	void publish(char *method, char *params, char *address, char *prot);
 
 };
@@ -157,7 +161,7 @@ class ClientComm {
 
    public:
 	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, NavCallback *nav);
-	   bool SendUDPFunction(char *function, char *params, char *ip_addr) ;
+	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(char *function, char *params, char *address, char *prot);
 
    private:

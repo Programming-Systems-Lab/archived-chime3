@@ -18,9 +18,10 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
 	/*
 	cl = new UDPClient(port);
 	*/
+
 	
 	siena_publisher = new SienaPublisher(SAddress, Sport, username, password);
-
+	
 	/*
 	//spawn off a thread for the UDP server
 	uds = new UDPServer(port, nav); 
@@ -36,6 +37,7 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
     }
 	*/
 	 
+	
 	//spawn off a thread which will listen for Siena Events
 	siena_subscriber = new SienaSubscriber(SAddress, Sport, username, nav);
 
@@ -71,7 +73,7 @@ DWORD WINAPI StartSienaSubscriber(LPVOID lParam)
 
 
 
-bool ClientComm::SendUDPFunction(char *function, char *params, char *ip_addr) {
+bool ClientComm::SendUDPFunction(char *ip_addr, int function, char *params) {
 	cl->sendMess(ip_addr, function, params);
 	return true;
 }
@@ -86,8 +88,8 @@ int main(int argc, char *argv[])
 	NavCallback *nav = new NavCallback();
 	ClientComm *comm = new ClientComm(9999, "localhost", 1234, "denis", "denis", nav);
 	while(1) {
-		//comm->SendUDPFunction(1, "testing");
-		comm->SendSienaFunction("c_connect", "testing", "http://www.yahoo.com", "HTTP");
+		//comm->SendUDPFunction("192.168.1.100", 2, "room something others");
+		comm->SendSienaFunction("c_connect", "testing", "http://www.cs.brandeis.edu", "HTTP");
 		Sleep(10000);
 	}
 	return 0;

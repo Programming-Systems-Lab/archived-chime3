@@ -8,12 +8,12 @@
 #include <time.h>
 
 //create a publisher object which we can use
-SienaPublisher::SienaPublisher(char *host, short port, char *username, char *password) {
+SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *_password) {
 
-	SienaPublisher::port = port;
-	SienaPublisher::host = host;
-	SienaPublisher::username = username;
-	SienaPublisher::password = password;
+	port = _port;
+	host = _host;
+	username = _username;
+	password = _password;
 
 }
 
@@ -95,7 +95,7 @@ void SienaPublisher::publish(char *method, char *params, char *address, char *pr
 	sprintf (publishString, "%s password=\"%s\"", publishString, password);
 	sprintf (publishString, "%s prot=\"%s\"", publishString, prot);
 	sprintf (publishString, "%s address=\"%s\"", publishString, address);
-	sprintf (publishString, "%s method=\"%s\"", publishString, method);
+	sprintf (publishString, "%s chime_method=\"%s\"", publishString, method);
 	sprintf (publishString, "%s access=\"\"}", publishString);
 	printf("Sending: %s\n\n", publishString);
 	
@@ -106,12 +106,4 @@ void SienaPublisher::publish(char *method, char *params, char *address, char *pr
 	}
 
 	closesocket (s);
-}
-
-//destructor
-SienaPublisher::~SienaPublisher() {
-
-		closesocket (s);	
-		WSACleanup ();
-	
 }
