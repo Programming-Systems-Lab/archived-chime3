@@ -37,6 +37,7 @@ public class VemNotif implements Notifiable
 	{
 		util = new VemUtil ();
 		Default = util.GetDefault ();
+		myself = this;
 	}
 
 
@@ -62,9 +63,10 @@ public class VemNotif implements Notifiable
 
 
 		//return null; this doesn't seem to be adequate according to Shen's standard so I am making a default
-		//first object in the list is the default
+		//first object in the list as the default
 		VemObject obj = new VemObject();
 		obj.setUrl(url);
+		System.err.println("&&&&&&&&&&DEFAULT[0] is: " + Default[0].object);
 		obj.setProtocol(protocol);
 		obj.setShape(Default[0].object);
 		obj.setClasstype(Default[0].type);
@@ -92,6 +94,7 @@ public class VemNotif implements Notifiable
 		VemObject obj = new VemObject();
 		obj.setRoomUrl(roomUrl);
 		obj.setObjUrl(objUrl);
+		obj.setUrl(objUrl);
 		obj.setShape(Default[0].object);
 		obj.setClasstype(Default[0].type);
 		obj.setSubclass(Default[0].sub);
