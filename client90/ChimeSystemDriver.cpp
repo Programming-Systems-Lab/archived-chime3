@@ -1130,7 +1130,7 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 
   (void)new csMenuItem (menu, "", -1);
 
-  if (doorPoly -> GetAlpha() == 25)
+  if (doorPoly -> GetAlpha() == GetVisibleAlpha())
      (void)new csMenuItem (menu, "~Open this link", DOOR_OPEN_LINK);
 
   (void)new csMenuItem (menu, "~Link this somewhere else", DOOR_LINK_SOMEWHERE_ELSE);
@@ -2173,21 +2173,20 @@ bool ChimeSystemDriver::LoadMeshObj (char *filename, char *templatename, char* t
 iMeshWrapper* ChimeSystemDriver::AddMeshObj (char* tname, char* sname, iSector* where,
 	csVector3 const& pos, float size)
 {
- iMeshFactoryWrapper* tmpl = Sys->engine->GetMeshFactories ()->FindByName (tname);
+ iMeshFactoryWrapper* tmpl = engine->GetMeshFactories ()->FindByName (tname);
   if (!tmpl)
   {
-    Sys->Report (CS_REPORTER_SEVERITY_NOTIFY,
+    Sys->Report (0,
     	"Unknown mesh factory '%s'!", tname);
     return NULL;
   }
   iMeshWrapper* spr = Sys->engine->CreateMeshWrapper (tmpl, sname,
 						      where, pos);
   csMatrix3 m; m.Identity (); m = m * (size/15);
-  csZRotMatrix3 rot_m(-3.141);
-  m = rot_m;
-  //m = m * (size/15);
+  csXRotMatrix3 rot_m(-3.141/2);
+  m = rot_m * m;
 
-  spr->GetMovable ()->SetTransform (rot_m);
+  spr->GetMovable ()->SetTransform (m);
   spr->GetMovable ()->UpdateMove ();
 
   spr->DeferUpdateLighting (CS_NLIGHT_STATIC|CS_NLIGHT_DYNAMIC, 10);

@@ -742,12 +742,12 @@ bool ChimeSector::BuildStandardRoom(iSector *room, csVector3 const &size, csVect
 	srand( (unsigned)time( NULL ) );
 	int dice = rand() % 3;
 
-	if( dice == 0 )
+//	if( dice == 0 )
 		txt = engine->GetMaterialList()->FindByName ("brownfabric");
-	else if( dice == 1)
-		txt = engine->GetMaterialList()->FindByName ("glasswall");
-	else
-		txt = engine->GetMaterialList()->FindByName ("funkywall");
+//	else if( dice == 1)
+//		txt = engine->GetMaterialList()->FindByName ("glasswall");
+//	else
+//		txt = engine->GetMaterialList()->FindByName ("funkywall");
 
 
 	//Build front wall of the room
@@ -776,12 +776,12 @@ bool ChimeSector::BuildStandardRoom(iSector *room, csVector3 const &size, csVect
 	//Build Floor wall of the room
 	//Load sandard texure for walls
 	dice = rand() % 3;
-	if( dice == 0 )
+//	if( dice == 0 )
 		txt = engine->GetMaterialList()->FindByName ("woodfloor");
-	else if( dice == 1)
-		txt = engine->GetMaterialList()->FindByName ("tilefloor");
-	else
-		txt = engine->GetMaterialList()->FindByName ("checkerfloor");
+//	else if( dice == 1)
+//		txt = engine->GetMaterialList()->FindByName ("tilefloor");
+//	else
+//		txt = engine->GetMaterialList()->FindByName ("checkerfloor");
 
 	trans.Set(-size.x/2, 0, -size.z/2);
 	trans += pos;
