@@ -1,2 +1,1 @@
-To start testing data server: run.bat
-To start persistent data server: run2.bat
+Always start DataServer first.  It will create a copy of the EventTracer automatically.

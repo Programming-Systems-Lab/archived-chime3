@@ -228,7 +228,13 @@ public class DataServer {
 		//Document doc = builder.build( new StringReader(xmlsample));
 		System.err.println("I just got this event:");
 		System.err.println(doc);
+
+		// this is the new siena stuff
 		type = doc.getRootElement().getAttribute("type").getValue();
+		Subscriber subscriber = Subscriber.getInstance();
+		HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
+		SienaObject sienaObj = new SienaObject();
+		sienaObj.setDispatcher(dispatcher);
 
 		if (type.equals("dir")) {
 		    p = new DirParser(doc, data);
