@@ -44,6 +44,7 @@ import java.net.*;
 import java.util.*;
 import psl.chime.sienautils.*;
 import psl.chime.EventTracer.*;
+import psl.chime.vem.*;
 
 public class DataServer {
 
@@ -235,9 +236,14 @@ public class DataServer {
 		    p = new DirParser(doc, data);
 		    //p = new DirParser(doc, xmlsample);
 		    SourceTuple t = p.parseDoc();
-		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-		    // invoke VEM with t.getProtocol, t.getUrl()
 
+		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		    
+		    // invoke VEM with t.getProtocol(), t.getUrl()
+		    VemNotif vem = VemNotif.getInstance();
+		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+		    
 		    // create a table of links and images
 		    try {
 			String tableName = "table" + tupleID;
@@ -256,7 +262,10 @@ public class DataServer {
 			}
 
 			// invoke VEM with t.getUrl(), token
-
+			VemNotif vem = VemNotif.getInstance();
+			VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+			
 			printTable(tableName);
 
 		    } catch(SQLException e1) {
@@ -276,7 +285,10 @@ public class DataServer {
 		    SourceTuple t = p.parseDoc();
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
-		    // invoke VEM with t.getProtocol, t.getUrl
+		    // invoke VEM with t.getProtocol(), t.getUrl()
+		    VemNotif vem = VemNotif.getInstance();
+		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		    // create a table of links and images
 		    try {
@@ -303,7 +315,10 @@ public class DataServer {
 						   token +
 						   "', 'IMAGE', null, null, null, null)");
 			    // invoke VEM with t.getUrl(), token
-
+			    VemNotif vem = VemNotif.getInstance();
+			    VemObject vobj = vem.getLinkShape(t.getUrl(),token);
+			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
+			    
 			    System.err.println("one iteration " + idx1 + " " + idx2);
 			}
 
@@ -320,6 +335,10 @@ public class DataServer {
 						   token +
 						   "', 'LINK', null, null, null, null)");
 			    // invoke VEM with t.getUrl(), token
+			    VemNotif vem = VemNotif.getInstance();
+			    VemObject vobj = vem.getLinkShape(t.getUrl(),token);
+			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
+			    
 			}
 
 			printTable(tableName);
@@ -339,25 +358,30 @@ public class DataServer {
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
-
-		    // invoke VEM with t.getProtocol, t.getUrl()
-
+		    // invoke VEM with t.getProtocol(), t.getUrl()
+		    VemNotif vem = VemNotif.getInstance();
+		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else if (type.equals("txt")) {
 		    p = new TxtParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
-
-		    // invoke VEM with t.getProtocol, t.getUrl()
+		    // invoke VEM with t.getProtocol(), t.getUrl()
+		    VemNotif vem = VemNotif.getInstance();
+		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else if (type.equals("other")) {
 		    p = new OtherParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
-
-		    // invoke VEM with t.getProtocol, t.getUrl()
+		    // invoke VEM with t.getProtocol(), t.getUrl()
+		    VemNotif vem = VemNotif.getInstance();
+		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else {
 		    System.err.println("Type Not Found.");
@@ -369,6 +393,12 @@ public class DataServer {
 			p = new BscwParser(data);
 			SourceTuple t = p.parseDoc();
 			addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+			
+			// invoke VEM with t.getProtocol(), t.getUrl()
+			VemNotif vem = VemNotif.getInstance();
+			VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
+			
 		    } else {
 			ex.printStackTrace();
 		    }
