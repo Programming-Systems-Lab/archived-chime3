@@ -77,6 +77,10 @@ class ChimeApp;
 //define popup menu options for the door
 #define DOOR_OPEN_LINK 88810
 #define DOOR_LINK_SOMEWHERE_ELSE 88811
+#define SIDE_DOOR_OPEN_LINK 88812
+
+// define Side Door in the room for reqAtDoor
+#define SIDE_DOOR 88888
 
 class ChimeSystemDriver
 {
@@ -107,6 +111,8 @@ private:
 	ChimeApp *app;					//the app
 
 	ChimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
+	int sectorDirection[NUM_SECT];  //Direction of each sector
+
 	int curSector, nextSector;
 
 	bool freeLook;				//Toggle for turning free look on or off
@@ -126,6 +132,7 @@ private:
 	char reqRoomUrl[MAX_URL];
 	ChimeSector *reqAtSec;
 	int		   reqAtDoor;
+	int        reqAtSideDoor;
 
 
 	//the camera position
@@ -242,10 +249,16 @@ private:
 
 	//bring up the door menu
 	bool BringUpDoorMenu(int doorNum, csVector2 screenpoint);
+
+	//bring up the door menu in the room (NOT at hallway !!)
+	bool BringUpSideDoorMenu(int doorNum, csVector2 screenpoint);
 	
 	//open the door
 	//will work if reqAtDoor has been set otherwise will not do anything
 	bool OpenDoor(char *doorUrl=NULL);
+
+	//open the side door
+	bool OpenSideDoor(char *doorUrl=NULL);
 
 	//do all the necessary steps to setup the menu
 	bool SetupMenu();
@@ -261,6 +274,9 @@ private:
 
 	//update the link on the door
 	bool UpdateDoorLink(ChimeSector *sec, int doorNum, char *new_door_url);
+
+	//update the link on the side door
+	bool UpdateSideDoorLink(ChimeSector *sec, int doorNum, char *new_door_url);
 
 public:
 
@@ -382,6 +398,10 @@ public:
 
 	///Comm section
 	void GetFunction(int method, char *received);
+
+	// Create a side door behind the clicked object
+	int DrawSideDoor(csVector3 objPos, csVector3 offset, const char* url);
+
 };
 
 

@@ -121,6 +121,7 @@ ChimeSystemDriver::ChimeSystemDriver()
 
 	reqAtSec = NULL;
 	reqAtDoor = 0;
+	reqAtSideDoor = 0;
 	strcpy(reqRoomUrl, "");
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
@@ -654,6 +655,8 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 
 	ReadRoom(testRoom);
 
+
+//	DrawSideDoor((0,0,0),(0,0,0), "http://www.titech.ac.jp/"); //FIXIT: Temporal for testing. Delete it !
 
 	// Open the procedural textures after the main texture manager has been prepared
 	//if (!OpenProcTextures ())
@@ -1197,7 +1200,14 @@ bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
   int doorNum;
   int result;
 
-  if ((result = currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum)) != DOOR_NOT_FOUND)
+
+  if((result = currentSector->RoomHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum)) != DOOR_NOT_FOUND){
+	  csVector2   screenPoint;
+	  screenPoint.x = Event.Mouse.x;
+	  screenPoint.y = FrameHeight - Event.Mouse.y - 1;
+	  BringUpSideDoorMenu(doorNum, screenPoint);
+  }
+  else if ((result = currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum)) != DOOR_NOT_FOUND)
   {
 	  csVector2   screenPoint;
 	  screenPoint.x = Event.Mouse.x;
@@ -1368,7 +1378,10 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
 			OpenDoor();
 			MarkPopupMenuForDeletion();
 			return true;
-
+		case SIDE_DOOR_OPEN_LINK:
+			OpenSideDoor();
+			MarkPopupMenuForDeletion();
+			return true;
 		case DOOR_LINK_SOMEWHERE_ELSE:
 			SetupMenu();
 			(void)new GetObjectWindow(app);
@@ -1417,6 +1430,19 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 		csBox3 box;
 		csReversibleTransform t;
 		selectedMesh->GetTransformedBoundingBox(selectedMesh->GetMovable()->GetFullTransform().GetInverse() , box);
+
+// From here by Tak for now....
+
+		csVector3 origin2 = selectedMeshNewSect->GetOrigin();
+		csVector3 diff(5, 0, -2);
+		csVector3 offset;
+		csVector3 objPos;
+
+		offset = origin2 + diff;
+
+		objPos = selectedMesh->GetMovable()->GetPosition() - offset;
+
+		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); //FIXIT: Should be selectedMesh->GetName()
 
 	}
 	else
@@ -1677,8 +1703,12 @@ bool ChimeSystemDriver::HandleEventFromOtherWindow(iEvent &Event) {
 			
 			case GET_OBJECT_IDENTIFIER:
 					char url[1024];
-					if (info_event->getFirstToken(url))
+					if(reqAtDoor == SIDE_DOOR){
+						OpenSideDoor(url);
+					}else{
 						OpenDoor(url);
+					}
+
 					return true;
 
 			case VEM_IDENTIFIER:
@@ -2677,21 +2707,46 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 	{
 		if( sec1 )
 		{
-			sec1->GetHallwayDoorLoc(reqAtDoor, doorPos);
-			//sec1->GetDoorInfo(reqAtDoor, doorPos, doorPoly, hallway);
+			if(reqAtDoor == SIDE_DOOR){
+//				csVector3 temp(4.99, 0, 7);	//FIXIT: Should NOT be hard coded
+				doorPos = sec1->GetSideDoorLocation(reqAtSideDoor);
+				int sideDoorDirection = sec1->GetSideDoorDirection(reqAtSideDoor);
+				if(sideDoorDirection == RIGHT){
+					sectorDirection[nextSector] = (sectorDirection[nextSector-1] + 8)%4;
+				}
+				else if(sideDoorDirection == LEFT){
+					sectorDirection[nextSector] = (sectorDirection[nextSector-1] + 4)%4;
+				}
+			}else{	
+				sec1->GetHallwayDoorLoc(reqAtDoor, doorPos);
+				//sec1->GetDoorInfo(reqAtDoor, doorPos, doorPoly, hallway);
+				sectorDirection[nextSector] = sectorDirection[nextSector - 1];
+			}
+
 		}
 		else
 		{
+			sectorDirection[0] = FRONT;
 			nextSector++;	//This is the first chime sector of the chime world.
 		}
 
 		sec2 = new ChimeSector(Sys, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
 
+		if(reqAtDoor == SIDE_DOOR){ // FIXIT: Dummy IF for testing
+			iSector* room;
+			csVector3 axis(0, 10, 0);
+			room = sec2->GetRoom(0);
+//			room->GetPrivateObject()->GetCullerMesh()->GetMovable().GetFullTransform().RotateThis(axis, 90); //FIXIT
+		}
+
 		comm.SubscribeRoom(sec2->GetUrl(), my_username);
 
 		if( sec1 )
 		{
+			if(reqAtDoor == SIDE_DOOR)
+				sec1->ConnectSectors2(sec2, reqAtSideDoor);
+			else
 			  sec1->ConnectSectors(sec2, reqAtDoor);
 		}
 		else
@@ -2804,4 +2859,181 @@ void ChimeSystemDriver::ChangeMouseCursor() {
 
 	mousecursor = (mousecursor + 1) % (sizeof (mousecursors) / sizeof (int));
     app->SetMouse (mousecursors [mousecursor]);
+}
+
+//*********************************************************************************
+//*
+//* Open up a new room(sector) FIXIT: position of the door should not be hard coded
+//*
+//*********************************************************************************
+int ChimeSystemDriver::DrawSideDoor(csVector3 objPos, csVector3 offset, const char* url)
+{
+
+	csVector3 doorSize(10, 3, 2);
+	csVector3 meshPos;
+
+	// Door positoin for debugging is (x, y, z) = (5, 0, 7)	
+	meshPos.x = 4.99;
+	meshPos.y = 0;
+	meshPos.z = 7; 
+
+
+	iMaterialWrapper *mw = engine->GetMaterialList()->FindByName ("halldoor");
+
+	ChimeSector *&sec2 = sector[nextSector-1];
+
+	iMeshWrapper *doormesh = sec2->BuildSideDoor(sec2->GetRoom(0), objPos, offset, doorSize, mw, csVector3(2,3,0));
+
+
+	//Prepare the whole room.
+	iSector* room;
+	room = sec2->GetRoom(0);
+
+//	room->Prepare (room);
+//	room->InitLightMaps (false);
+//	room->ShineLights (); // move it after CreateLightMaps
+//	room->CreateLightMaps (System->G3D);
+	room->ShineLights ();
+//	room->DecRef();
+
+//	engine->Prepare();
+
+
+	//Add collision detection ??????????
+//	iPolygonMesh* mesh;
+//	iMeshObject *s = doormesh->GetMeshObject();
+//	mesh = SCF_QUERY_INTERFACE (s, iPolygonMesh);
+
+    sec2->SetSideDoorUrl(url); // Hard coded for testing purpose
+	return 1;
+
+}
+
+
+/****************************************************************************
+/*
+/* Bring up the menu for the door in the room (NOT at hallway !!)
+/*
+/****************************************************************************/
+bool ChimeSystemDriver::BringUpSideDoorMenu(int doorNum, csVector2 screenPoint) {
+
+  ChimeSector *&room = sector[nextSector-1];
+ 
+  
+  char name[500];
+
+  //do all the preliminary steps needed for menu creation
+  SetupMenu(); 
+
+  char *doorUrl;
+  reqAtSec = currentSector;	
+  reqAtDoor = SIDE_DOOR;
+  reqAtSideDoor  = doorNum;
+  doorUrl = room->GetSideDoorUrl(doorNum);
+
+  if (!doorUrl)
+	  strcpy(reqRoomUrl, "<NOWHERE>");
+
+  else
+	  strcpy(reqRoomUrl, doorUrl);
+
+  // Create a menu for all test dialogs we implement
+  menu = new csMenu (app, csmfs3D, 0);
+  csMenu *submenu = new csMenu (NULL);
+
+  if (reqRoomUrl != NULL) {	 
+	  strcpy(name, "Link to: ");
+	  strcat(name, reqRoomUrl);
+	  (void)new csMenuItem (menu, name, -1);
+	  submenu = new csMenu (NULL);
+
+  }
+
+  (void)new csMenuItem (menu, "", -1);
+
+  (void)new csMenuItem (menu, "~Open this link", SIDE_DOOR_OPEN_LINK);
+
+  (void)new csMenuItem (menu, "~Link this somewhere else", DOOR_LINK_SOMEWHERE_ELSE);
+
+  menu->SetPos (screenPoint.x - 3, FrameHeight - (screenPoint.y - 3));
+  menu_drawn = true;
+  
+  return true;
+}
+
+
+/**************************************************************************
+/* 
+/*        Open the indicated side door.
+/*  Note: Will work if reqAtDoor and reqAtSec are set. Otherwise
+/*        nothing will happen
+/*
+/**************************************************************************/
+bool ChimeSystemDriver::OpenSideDoor(char *doorUrl) {
+
+	char username[50];
+	info->GetUsername(username);
+
+	UpdateSideDoorLink(reqAtSec, reqAtSideDoor, doorUrl);
+	ChimeSector *&room = sector[nextSector-1];
+
+	if (strcmp(username, "") == 0)
+		return false;
+
+	if (reqAtDoor != 0 && reqAtSec != NULL) {
+		if (!doorUrl)
+			doorUrl = room->GetSideDoorUrl(reqAtSideDoor);
+		strcpy(reqRoomUrl, doorUrl);
+		comm.SubscribeRoom(doorUrl, username);
+		comm.GetRoom(doorUrl);
+		return true;
+	}
+
+	else
+		return false;
+}
+
+/**************************************************************************
+/* 
+/*        Update the link to which this door leads
+/*	Also uypdates the physical mesh object which represents the door
+/*			in the room.
+/*
+/**************************************************************************/
+bool ChimeSystemDriver::UpdateSideDoorLink(ChimeSector *sec, int doorNum, char *new_door_url) {
+
+	csVector3 doorPos;
+	iPolygon3D *doorPoly;
+
+	doorPos = sec->GetSideDoorLocation(doorNum);
+	doorPoly = sec->GetSideDoor(doorNum);
+
+	char orig_door_url[100];
+	
+	if (!sec->GetSideDoorUrl(doorNum))
+		strcpy(orig_door_url, "<NOWHERE>"); 
+	else
+		strcpy(orig_door_url, sec->GetDoorUrl(doorNum));
+
+	if (!new_door_url)
+		return false;
+
+	if (strcmp(new_door_url, orig_door_url) == 0)
+		return false;	
+		
+// Comment out ONLY when you want to change the object's URL when the side door's URL is changed
+/*********
+	csMeshWrapper *object = sec -> FindObject(orig_door_url, room);
+
+	// Object must exist !!
+	if (!object) 
+		return false;
+	else 
+		object->SetName(new_door_url);
+**********/
+
+	sec ->ReplaceSideDoorUrl(doorNum, new_door_url);
+	doorPoly->SetAlpha(25);
+
+	return true;
 }

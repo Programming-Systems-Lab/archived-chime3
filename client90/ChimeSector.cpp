@@ -35,6 +35,8 @@ ChimeSector::ChimeSector()
 	InitStdVectors();
 	camLocation.Set(0,0,0);
 
+	nextSideDoorNum = 0;
+
 	linkedDoor = -1;
 	linkedSector = NULL;
 
@@ -52,6 +54,8 @@ ChimeSector::ChimeSector(ChimeSystemDriver  *Sys, iEngine *e)
 	memset(roomList, 0, 2*sizeof(csSector*));
 	InitStdVectors();
 	camLocation.Set(0,0,0);
+
+	nextSideDoorNum = 0;
 
 	linkedDoor = -1;
 	linkedSector = NULL;
@@ -151,11 +155,22 @@ bool ChimeSector::InitDoors()
 	conn2BackDoor = &doorList[numDoors];
 	numDoors += 1;
 
+	sideDoor = &doorList[numDoors];
+	numDoors += MAX_SIDE_DOOR;
+
 	for(int i = 0; i < MAX_DOOR; i++)
 	{
 		doorSec[i] = NULL;
 		strcpy(doorUrl[i], "");
 	}
+
+	for(i=0; i < MAX_SIDE_DOOR; i++){
+		csVector3 temp(0,0,0);
+		sideDoorDirection[i] = NULL;
+		sideDoorLocation[i] = temp;
+		sideDoorSec[i] = NULL;
+	}
+
 	return true;
 }
 
@@ -407,7 +422,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	//setup lighting for the room
 	iStatLight* light;
 	light_list = room->GetLights();
-	light = engine -> CreateLight (NULL, csVector3(0+curPos.x, 4.9+curPos.y, 0+curPos.z), 20, csColor(1, 1, 1), false);
+	light = engine -> CreateLight (NULL, csVector3(0+curPos.x, 4.9+curPos.y, 0+curPos.z), 80, csColor(1, 1, 1), false);
 	light_list->Add (light->QueryLight());
 	light->DecRef();
 	
@@ -1487,18 +1502,35 @@ bool ChimeSector::DisconnectSector()
 {
 	if(!linkedSector ) return false;
 
-	iPolygon3D *linkedSectorDoor = linkedSector->GetHallwayDoor(linkedDoor);
+	if(linkedDoor >= MAX_DOOR){
 
-	linkedSectorDoor->GetPortal()->SetSector(NULL);
-//	linkedSectorDoor->CreateNullPortal();
-	linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
-//	conn1BackDoor[0]->CreateNullPortal();
-	conn1BackDoor[0]->GetPortal()->SetSector(NULL);
-	conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
+		linkedDoor = linkedDoor - MAX_DOOR;
 
-	linkedSector->SetDoorSector(linkedDoor, NULL);
-	linkedSector = NULL;
-	linkedDoor = -1;
+		iPolygon3D *linkedSectorDoor = linkedSector->GetSideDoor(linkedDoor);
+
+		linkedSectorDoor->GetPortal()->SetSector(NULL);
+		linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
+		conn1BackDoor[0]->GetPortal()->SetSector(NULL);
+		conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
+
+		linkedSector->SetSideDoorSector(linkedDoor, NULL); 
+		linkedSector = NULL;
+		linkedDoor = -1;
+	}else{
+
+		iPolygon3D *linkedSectorDoor = linkedSector->GetHallwayDoor(linkedDoor);
+
+		linkedSectorDoor->GetPortal()->SetSector(NULL);
+//		linkedSectorDoor->CreateNullPortal();
+		linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
+//		conn1BackDoor[0]->CreateNullPortal();
+		conn1BackDoor[0]->GetPortal()->SetSector(NULL);
+		conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
+
+		linkedSector->SetDoorSector(linkedDoor, NULL);
+		linkedSector = NULL;
+		linkedDoor = -1;
+	}
 
 	return true;
 }
@@ -1833,6 +1865,168 @@ int ChimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, c
 	}
 
 	return DOOR_NOT_FOUND;
+}
+
+// Build a side door in the room
+iMeshWrapper* ChimeSector::BuildSideDoor(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize)
+{
+
+	iMeshWrapper *doormesh = engine -> CreateSectorWallsMesh(room, "side_door");
+	iThingState *sidedoor = SCF_QUERY_INTERFACE(doormesh->GetMeshObject(), iThingState);
+
+	csVector3 pos(4.9999, 0, 7); //FIXIT: Should NOT be hardcoded
+	pos.z = objPos.z;
+//	pos.x = 4.9999 //FIXIT: This is not smart way
+
+	if(objPos.x > 0){
+		pos += offset;
+
+		iPolygon3D* sideDoorTemp;
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, RIGHT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, RIGHT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}else{
+		pos.x = -pos.x;
+		pos += offset;
+
+		iPolygon3D* sideDoorTemp;
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, LEFT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, LEFT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}
+
+	++nextSideDoorNum;
+
+	return doormesh;
+}
+
+//get the side door url associated with this doornum
+char* ChimeSector::GetSideDoorUrl(int doorNum)
+{
+	int numActive = connList2.Length();
+
+	if( doorNum >= 0 && doorNum < numActive)
+	{
+		return connList2.Get(doorNum);
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+//Get given side door of this chime sector.
+iPolygon3D*  ChimeSector::GetSideDoor(int sideDoorNum)
+{
+	if( sideDoorNum >= 0 && sideDoorNum < MAX_SIDE_DOOR)
+	{
+		return sideDoor[sideDoorNum];
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
+bool ChimeSector::SetSideDoorSector(int doorNum, ChimeSector *sec)
+{
+	if( doorNum >= 0 && doorNum < MAX_SIDE_DOOR)
+	{
+		sideDoorSec[doorNum] = sec;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool ChimeSector::SetSideDoor(iPolygon3D* doorPolygon, int sideDoorNum)
+{
+	if(sideDoorNum < MAX_SIDE_DOOR){
+		sideDoor[sideDoorNum] = doorPolygon;
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool ChimeSector::ReplaceSideDoorUrl(int doorNum, char *doorUrl) {
+	
+	if (!doorUrl) 
+		return false;
+
+	char *tmp = new char[strlen(doorUrl)+1];
+	strcpy(tmp, doorUrl);
+
+	if( doorNum >= 0 && doorNum < connList2.Length()) {
+		connList2.Replace(doorNum, tmp);
+		return true;
+	
+	} else {
+		return false;
+	}
+}
+
+
+//*********************************************************************************
+//*
+//* Check If a given beam intersects any of the active hallway doors of this sector
+//*
+//*********************************************************************************
+int ChimeSector::RoomHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum)
+{
+	doorNum = -1;
+	iPolygon3D* p = NULL;
+	p = roomList[0]->HitBeam(start, end, isect);
+	int numActiveDoor = connList2.Length();
+
+	//Check if intersecting polygon is a door
+	if(p){
+		for(int i=0; i < numActiveDoor; i++){
+			if(p == sideDoor[i]){
+				doorNum = i;
+				return 1;
+			}
+		}
+	}
+
+	return DOOR_NOT_FOUND;
+}
+
+//connect "otherSect" to the "atDoor" hallway door of this sector.
+bool ChimeSector::ConnectSectors2(ChimeSector *otherSect, int atDoor)
+{
+	if( !otherSect ) return false;
+
+	iPolygon3D *door = sideDoor[atDoor];
+	iPolygon3D *otherSectorBackDoor = otherSect->GetBackDoor();
+
+	if (!door->GetPortal())
+		door->CreatePortal (otherSect->GetConn1());
+	else
+		door->GetPortal()->SetSector(otherSect->GetConn1());
+	
+	door->SetAlpha(0);
+
+	if (!otherSectorBackDoor->GetPortal())
+		otherSectorBackDoor->CreatePortal (hallway);
+	
+	else
+		otherSectorBackDoor->GetPortal()->SetSector(roomList[0]);
+
+	otherSectorBackDoor->SetAlpha(0);
+	sideDoorSec[atDoor] = otherSect;
+
+	otherSect->SetLinkedSectorInfo(this, MAX_DOOR + atDoor);
+
+	return true;
 }
 
 

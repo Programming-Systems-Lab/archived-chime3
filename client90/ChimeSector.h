@@ -14,9 +14,9 @@
 #include "cstool/collider.h"
 
 
-#define LEFT	0
-#define RIGHT	4
-#define FRONT	8
+#define LEFT	8
+#define RIGHT	0
+#define FRONT	4
 #define BACK	12
 #define FLOOR	16
 #define ROOF	20
@@ -42,6 +42,7 @@ class ChimeSystemDriver;
 struct iCollideSystem;
 
 #define MAX_DOOR	20		//Maximum number of doors in the sector
+#define MAX_SIDE_DOOR 30    //Maximum number of side doors in the room
 #define MAX_URL		200		//Maximum length of a url
 
 #define DOOR_NOT_FOUND -1
@@ -73,10 +74,11 @@ class ChimeSector
 	csVector3 hallwaySize;
 
 	csStrVector	connList;				//List of connectors
+	csStrVector connList2;				//List of connectors for side doors
 	csStrVector userList;				//List of users in the room
 	csStrVector containerList;			//List of containers
 
-	iPolygon3D *doorList[MAX_DOOR];
+	iPolygon3D *doorList[MAX_DOOR + MAX_SIDE_DOOR];
 
 	//Polygons representing doors of the hallway
 	iPolygon3D **hallRightDoor;
@@ -94,8 +96,17 @@ class ChimeSector
 	iPolygon3D **conn2FrontDoor;
 	iPolygon3D **conn2BackDoor;
 
+	//Polygons representing doors in the room
+	iPolygon3D **sideDoor;
+	int nextSideDoorNum;
+
 	char doorUrl[MAX_DOOR][MAX_URL];
+	int sideDoorDirection[MAX_SIDE_DOOR]; // direction of side doors. Initialized by 0
+	csVector3 sideDoorLocation[MAX_SIDE_DOOR]; // location of side doors, Initialized by (0, 0, 0)
+
+
 	ChimeSector *doorSec[MAX_DOOR];		//sectors represented by the hallway doors
+	ChimeSector *sideDoorSec[MAX_SIDE_DOOR]; // sectors represented by the side doors
 
 	int linkedDoor;
 	ChimeSector *linkedSector;
@@ -110,6 +121,9 @@ class ChimeSector
 	bool BuildHallway(iSector *room, csVector3 const &size, csVector3 const &pos);
 	// Build a standard connector that connects a oom with a hallway
 	bool BuildStandardConnector(iSector *room, csVector3 const &size, csVector3 const &pos, int type);
+
+	
+	
 	//Build a given wall of a given room
 	
 	iPolygon3D *BuildWall(iThingState *walls, char *wall_name, csVector3 const &size, csVector3 const &pos, 
@@ -162,12 +176,18 @@ public:
 	bool SetLinkedSectorInfo(ChimeSector *sect, int doorNum);
 	//Get given halway door of this chime sector.
 	iPolygon3D*  GetHallwayDoor(int doorNum);
+	//Get given side door of this chime sector.
+	iPolygon3D*  GetSideDoor(int sideDoorNum);
+	//Set the side door to *sidedoor[]
+	bool SetSideDoor(iPolygon3D* doorPolygon, int sideDoorNum);
 	//Get BackDoor of this chime sector.
 	iPolygon3D*  GetBackDoor();
 	//Get spatial location of a given hallway door.
 	bool GetHallwayDoorLoc(int doorNum, csVector3 & location);
 	//connect "otherSect" to the "atDoor" hallway door of this sector.
 	bool ConnectSectors(ChimeSector *otherSect, int atDoor);
+	//connect "otherSect" to the "atSideDoor" room door of this sector.
+	bool ConnectSectors2(ChimeSector *otherSect, int atDoor);
 	//diconnect this sector from the linked sector
 	bool DisconnectSector();
 	//Add user name to the list of users in the sector
@@ -178,11 +198,15 @@ public:
 
 	bool Connect(iPolygon3D *door, iSector *hallway);
 	bool SetDoorSector(int doorNum, ChimeSector *sec);
+	bool SetSideDoorSector(int doorNum, ChimeSector* sec);
 	bool Disconnect();
 	bool UnlinkHallwayDoors();
 
 	ChimeSector* GetDoorSector(int doorNum);
 	char* GetDoorUrl(int doorNum);
+	char* GetSideDoorUrl(int doorNum);
+	void  SetSideDoorUrl(const char* url){ connList2.Push((void*)url); }
+
 	//Check If a given room belongs to this chime sector
 	int IsRoomOf(iSector *room);
 	//Find the room of a sector that contains this point
@@ -191,6 +215,8 @@ public:
 	bool HitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect);
 	//Check If a given beam intersects any of the hallway doors of this sector
 	int HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
+	//Check If a given beam intersects any of the room side doors of this sector
+	int RoomHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
 	// Find  an object in this sector
 	iMeshWrapper* FindObject(char *objectUrl, iSector *&room);
 	//check if a given beam hits any of the meshes in this sector.
@@ -228,6 +254,25 @@ public:
 									 int type, iMaterialWrapper *txt, csVector3 const &txtSize);
 	//replace a door url with something else
 	bool ReplaceDoorUrl(int doorNum, char *string);
+
+	//replace a door url with something else
+	bool ReplaceSideDoorUrl(int doorNum, char *string);
+
+	// Build a side door in the room
+	iMeshWrapper* BuildSideDoor(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize);
+
+	// Get side door's direction (so far, right or left)
+	int GetSideDoorDirection(int sideDoorNum){ return sideDoorDirection[sideDoorNum];}
+
+	// Set side door's direction (so far, right or left)
+	void SetSideDoorDirection(int sideDoorNum, int direction){ sideDoorDirection[sideDoorNum] = direction;}
+	// Get side door's location
+	csVector3 GetSideDoorLocation(int sideDoorNum){ return sideDoorLocation[sideDoorNum];}
+
+	// Set side door's location
+	void SetSideDoorLocation(int sideDoorNum, csVector3 location){sideDoorLocation[sideDoorNum]= location;}
+
+
 
 };
 
