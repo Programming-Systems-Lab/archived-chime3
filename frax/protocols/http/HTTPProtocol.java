@@ -61,6 +61,9 @@ public class HTTPProtocol extends FRAXProtocol  {
 
 	    HTTPConnection con = new HTTPConnection(dest);
 	    con.setAllowUserInteraction(false);
+	    if (siena_obj.getRealm() != null)
+	    	con.addBasicAuthorization(siena_obj.getRealm(), siena_obj.getUsername(), siena_obj.getPassword());
+
 	    rsp = con.Get(dest.getPath());
 
 	    if (rsp.getStatusCode() >= 300 && rsp.getStatusCode() < 400) {

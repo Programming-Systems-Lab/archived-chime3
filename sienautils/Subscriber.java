@@ -306,7 +306,7 @@ public class Subscriber {
 
 	//call the method which deals with an event that is interesting to a theme manager
 	EventTracer ev = EventTracer.getInstance();
-	ev.eventReceived(s);
+	//ev.eventReceived(s);
 
     }
 

@@ -12,6 +12,7 @@ public class SienaObject {
     public String Saddress;
     public String Sprotocol;
     public String Smethod;
+    public String Srealm = null;
     HierarchicalDispatcher Ssiena;
 
     /**
@@ -74,8 +75,10 @@ public class SienaObject {
 
 	if (not.getAttribute("chime_method") != null)
 		setMethod(not.getAttribute("chime_method").stringValue());
-    }
 
+	if (not.getAttribute("realm") != null)
+			setMethod(not.getAttribute("realm").stringValue());
+    }
 
     /**
      * get the Notification object associated with this siena object
@@ -92,9 +95,27 @@ public class SienaObject {
 	e.putAttribute("address", getAddress());
 	e.putAttribute("access", getAccess());
 	e.putAttribute("chime_method", getMethod());
+	e.putAttribute("realm", getRealm());
 	return e;
     }
 
+
+	/**
+	 * get the realm for which this pass/user is valid
+	 */
+
+	public String getRealm() {
+		return Srealm;
+	}
+
+
+	/**
+	 * set the realm for this pass/user
+	 */
+
+	 public void setRealm(String realm) {
+		 Srealm = realm;
+	 }
 
     /**
      * get the hierarchical dispatcher associated with this object

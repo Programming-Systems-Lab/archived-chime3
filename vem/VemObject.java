@@ -4,6 +4,7 @@ import java.lang.*;
 
 public class VemObject {
 
+	public String shape2d = "";
 	public String classtype = "";
 	public String subtype = "";
 	public String shape = "";
@@ -67,5 +68,13 @@ public class VemObject {
 
 	public void setRoomUrl(String _roomUrl) {
 		roomUrl = _roomUrl;
+	}
+
+	public void setShape2D(String _shape2d) {
+		shape2d = _shape2d;
+	}
+
+	public String getShape2D() {
+		return shape2d;
 	}
 }

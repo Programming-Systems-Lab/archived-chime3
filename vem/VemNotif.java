@@ -8,7 +8,7 @@ import siena.*;
 // Part of VEM client on the Data Server Side
 // Used to parse the recieved events from the
 // siena server and then take the appropriate action
-class VemNotif implements Notifiable
+public class VemNotif implements Notifiable
 {
     public static VemNode Default [];
     VemUtil util;
@@ -60,7 +60,16 @@ class VemNotif implements Notifiable
 			}
 		}
 
-		return null;
+
+		//return null; this doesn't seem to be adequate according to Shen's standard so I am making a default
+		//first object in the list is the default
+		VemObject obj = new VemObject();
+		obj.setUrl(url);
+		obj.setProtocol(protocol);
+		obj.setShape(Default[0].object);
+		obj.setClasstype(Default[0].type);
+		obj.setSubclass(Default[0].sub);
+		return obj;
 	}
 
 
@@ -77,7 +86,16 @@ class VemNotif implements Notifiable
 				return obj;
 			}
 		}
-		return null;
+
+		//return null; this doesn't seem to be adequate according to Shen's standard so I am making a default
+		//first object in the list is the default
+		VemObject obj = new VemObject();
+		obj.setRoomUrl(roomUrl);
+		obj.setObjUrl(objUrl);
+		obj.setShape(Default[0].object);
+		obj.setClasstype(Default[0].type);
+		obj.setSubclass(Default[0].sub);
+		return obj;
 	}
 
 

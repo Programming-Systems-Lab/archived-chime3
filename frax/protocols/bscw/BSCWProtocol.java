@@ -63,6 +63,9 @@ public class BSCWProtocol extends FRAXProtocol {
 
 	    HTTPConnection con = new HTTPConnection(dest.toURL());
 	    con.setAllowUserInteraction(false);  //will allow UI for demo
+	    if (siena_obj.getRealm() != null)
+			con.addBasicAuthorization(siena_obj.getRealm(), siena_obj.getUsername(), siena_obj.getPassword());
+
 	    rsp = con.Get(dest.getPath());
 	    NVPair[] test = con.getDefaultHeaders();
 
