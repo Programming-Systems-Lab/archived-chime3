@@ -9,7 +9,7 @@
 #include <time.h>
 
 //create a publisher object which we can use
-SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *_password, ChimeSystemDriver *_System) {
+SienaPublisher::SienaPublisher(const char *_host, short _port, const char *_username, const char *_password, ChimeSystemDriver *_System) {
 
 	port = _port;
 	host = _host;

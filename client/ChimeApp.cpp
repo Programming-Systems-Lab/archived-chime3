@@ -35,9 +35,11 @@ ChimeApp::~ChimeApp ()
 
 }
 
-bool ChimeApp::Initialize (const char *iConfigName)
+bool ChimeApp::Initialize (const char *iConfigName, InfoStorer *info)
 {
   
+  ChimeApp::info = info;
+
   if (!csApp::Initialize (iConfigName))
     return false;
 
@@ -225,8 +227,9 @@ SKIN_DECLARE_DEFAULT (DefaultSkin);
 int main (int argc, char* argv[])
 {
   ChimeSystemDriver System;
+  InfoStorer info;
 
-  if (!System.Initialize (argc, argv, "/config/chime.cfg"))
+  if (!System.Initialize (argc, argv, "/config/chime.cfg", &info))
     return -1;
 
   /*if (!System.Open ("CHIME (Columbia Hypermedia Immersion Environment)"))
@@ -241,7 +244,7 @@ int main (int argc, char* argv[])
   // Create our application object
   ChimeApp app (&System, DefaultSkin);
 
-  if (app.Initialize ("/lib/csws/csws.cfg"))
+  if (app.Initialize ("/lib/csws/csws.cfg", &info))
 
 	  //pass a reference of the app to the ChimeSystemDriver System
 	  System.setCSApp(&app);

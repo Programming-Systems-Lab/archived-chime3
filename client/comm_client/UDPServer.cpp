@@ -90,6 +90,8 @@ int UDPServer::getMethod(char *method) {
 		return c_disconnect;
 	else if (strstr(method, "c_unsubscribeRoom") != NULL) 
 		return c_disconnect;
+	else if (strstr(method, "c_talk") != NULL) 
+		return c_talk;
 
 	//server side methods
 	else if (strstr(method, "s_moveObject") != NULL)

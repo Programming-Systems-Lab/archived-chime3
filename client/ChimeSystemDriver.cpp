@@ -87,7 +87,7 @@ ChimeSystemDriver::ChimeSystemDriver()
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "124.1.12.24 mdl1 User User 1\n");
+	strcat(testRoom, "192.168.1.101 mdl1 User User 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
 	strcat(testRoom, "124.1.12.23 ninja User User 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
@@ -330,8 +330,9 @@ void ChimeSystemDriver::UserMoved()
 //* Crystal-Space engine.
 //*
 //**********************************************************************
-bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const char *iConfigName)
+bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const char *iConfigName, InfoStorer* info)
 {
+	ChimeSystemDriver::info = info;
 	historyWindow = NULL;
 	
 	srand (time (NULL));
@@ -384,10 +385,19 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
-	strcpy(username, "denis");
-
-	comm_client = new ClientComm(9999, "eagle", 1234, username, "denis", this);
+	
+	
+	info->SetUsername("denis");
+	info->SetPassword("denis");
+	info->SetSienaLocation("eagle");
+	info->SetSienaPort(1234);
+	info->SetChatPort(9999);
+	
+	comm_client = new ClientComm(info->GetChatPort(), info->GetSienaLocation(), 
+		info->GetSienaPort(), info->GetUsername(), info->GetPassword(), this);
+	
 	comm.SetChimeCom(comm_client, this);
+	info->SetCommObject(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
 
@@ -560,13 +570,13 @@ void ChimeSystemDriver::writeMessage()
 	iFontServer *fs = G2D->GetFontServer ();
 	courierFont = fs->LoadFont (CSFONT_COURIER);
 	ChimeSector *curSect = GetCurChimeSector();
-	if (curSect != NULL && username != NULL) {
+	if (curSect != NULL && info->GetUsername() != NULL) {
 		char displayString[1000];
 		if (selectedMesh) {
 			sprintf(displayString, "Selected Mesh: %s", selectedMesh->GetName());
 			G2D->Write(courierFont, 2, G2D->GetHeight() - 40, write_colour, -1, displayString);
 		}
-		sprintf(displayString, "Username: %s", username);
+		sprintf(displayString, "Username: %s", info->GetUsername());
 		G2D->Write(courierFont, 2, G2D->GetHeight() - 30, write_colour, -1, displayString);
 		sprintf(displayString, "Room Location: %s", curSect->GetUrl());
 		G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, displayString);
@@ -1689,12 +1699,43 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 	case s_roomInfo:
 		{
 			result = ReadRoom(params);
+			break;
+		}
+
+	case c_talk:
+		{
+			char ip[20];
+			char username[50];
+			char msg[1000];
+
+			sscanf(params, "%s %s", ip, username);
+			
+			char *p = &params[strlen(ip) + strlen(username) + 2];
+
+			if (!p)
+				return false;
+
+			strcpy(msg, p);
+			result = ReceivedTalkMessage(username, ip, msg);
+			break;
 		}
 	}
 
 	return result;
-
 }
+
+
+
+//*********************************************************************************
+//*
+//* Talk message has been received.
+//*
+//*********************************************************************************
+bool ChimeSystemDriver::ReceivedTalkMessage(const char *username, const char* ip, const char* msg) {
+	app->chatWindow->ShowMessage(username, msg);
+	return true;
+}
+
 
 //*********************************************************************************
 //*

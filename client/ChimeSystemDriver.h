@@ -29,6 +29,7 @@ class chimeComm;
 class ChimeSystemDriver;
 class ChimeSector;
 struct iCollideSystem;
+class InfoStorer;
 
 #include "ChimeApp.h"
 #include "ChimeWindow.h"
@@ -67,14 +68,14 @@ class ChimeSystemDriver: public SysSystemDriver
 
 private:
 
+	InfoStorer *info;				//pointer to all the info about this session
 	csComponent *CoordinateConvertor;		//use this to convert coordinates to Chime World Coordinates
 	csMenu *menu;					//the popup menu object
 	bool menu_drawn;				//whether the popup menu is currently on the screen
 
 	ChimeApp *app;					//the app
-	char username[80];				//the username of the user using CHIME
 
-    csView      *view;				//View of the curSector.
+	csView      *view;				//View of the curSector.
 	csEngine* engine;				//Pointer to the Crystal-Space engine;
 	ChimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
 	int curSector, nextSector;
@@ -177,6 +178,8 @@ private:
 	int mousecursor;
 	void ChangeMouseCursor();
 
+	//when a talk message has been received
+	bool ReceivedTalkMessage(const char *username, const char* ip, const char* msg);
 
 public:
 
@@ -242,7 +245,7 @@ public:
 	//Start updating 3D view
 	void Start3D ();
 	//Method to initialize crystal-space engine.
-	virtual bool Initialize (int argc, const char* const argv[],const char *iConfigName);
+	virtual bool Initialize (int argc, const char* const argv[],const char *iConfigName, InfoStorer* info);
 	//Default constructor
 	ChimeSystemDriver();
 	//write a small message in the bottom left corner

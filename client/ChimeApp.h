@@ -8,17 +8,22 @@
 #include "csws/csws.h"
 
 #include "ChimeWindow.h"
+#include "InfoStorer.h"
 
 /*  main app of menu */
 class ChimeApp : public csApp
 {
 
+  InfoStorer *info;
   /// reliable fonts, for display
   iFont *mainfont, *tinyfont;
   /// menu item to gray or not
   csMenuItem *saveitem, *closeitem;
 
 public:
+
+  //get a pointer to info
+  InfoStorer* GetInfo() { return info; };
 
   //pointer to the history window
   HistoryWindow *historyWindow;
@@ -38,7 +43,7 @@ public:
   //handle an event
   virtual bool HandleEvent (iEvent &Event);
 
-  virtual bool Initialize (const char *iConfigName);
+  virtual bool Initialize (const char *iConfigName, InfoStorer *info);
 
   void Refresh3D();
 

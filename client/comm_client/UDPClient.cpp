@@ -46,6 +46,8 @@ char* UDPClient::getFunction(int func) {
 		return "c_subscribeRoom";
 	else if (func == c_unsubscribeRoom) 
 		return "c_unsubscribeRoom";
+	else if (func == c_talk)
+		return "c_talk";
 
 	//server side methods
 	else if (func == s_moveObject)

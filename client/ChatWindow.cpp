@@ -6,7 +6,8 @@
 #include "ifontsrv.h"
 #include "icfgnew.h"
 #include "ChimeWindow.h"
-
+#include "ChimeApp.h"
+#include "comm_client/ClientComm.h"
 
 // Scroll bar class default palette
 ChatWindow::~ChatWindow() {}
@@ -72,7 +73,7 @@ bool ChatWindow::HandleEvent (iEvent &Event)
   {
 	case csevKeyDown: 
 		if(Event.Key.Code == CSKEY_ENTER) {
-			SubmitMessage(user_msg_line->GetText());
+			SendMessage("192.168.1.100", user_msg_line->GetText());
 			user_msg_line->SetText("");
 			return true;
 		}
@@ -86,11 +87,27 @@ bool ChatWindow::HandleEvent (iEvent &Event)
   return false;
 }
 
-//submit the message to the chat area box
-void ChatWindow::SubmitMessage(const char* msg) {
-	new ChatAreaItem(chat_area, msg, last_ID);
+//send a message to someone
+void ChatWindow::SendMessage(char *ip_address, const char *msg) {
+	char temp[1000];
+	sprintf(temp, "%s %s %s",((ChimeApp*) app)->GetInfo()->GetLocalIP(), ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
+	((ChimeApp*) app)->GetInfo()->GetCommObject()->SendUDPFunction(ip_address, c_talk, temp);
 }
-	
+
+//show the message in the chat area box
+void ChatWindow::ShowMessage(const char* msg) {
+	char temp[1000];
+	sprintf(temp, "%s: %s", ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
+	new ChatAreaItem(chat_area, temp, last_ID);
+}
+
+//show the message in the chat area box
+void ChatWindow::ShowMessage(const char *username, const char* msg) {
+	char temp[1000];
+	sprintf(temp, "%s: %s", username, msg);
+	new ChatAreaItem(chat_area, temp, last_ID);
+}
+
 
 //add local users to the chat window
 void ChatWindow::AddLocalUsers(csStrVector *user_list) {

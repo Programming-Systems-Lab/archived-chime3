@@ -185,7 +185,9 @@ public:
   ChatWindow(csComponent *iParent);
   virtual ~ChatWindow ();
   virtual bool HandleEvent (iEvent &Event);
-  void SubmitMessage(const char* msg);
+  void SendMessage(char *ip_address, const char *msg);
+  void ShowMessage(const char* msg);
+  void ShowMessage(const char *username, const char* msg);
   void AddLocalUsers(csStrVector *users);
   void AddGlobalUsers(csStrVector *users);
   void AddLocalUser(char *userID);

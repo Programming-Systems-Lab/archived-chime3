@@ -1,15 +1,23 @@
+#ifndef __INFOSTORER_H_
+#define __INFOSTORER_H_
+
+//forward declarations
+class ClientComm;
+
 class InfoStorer {
 
 //this class will probably need a Mutex...
 //will keep this in the back of my head for now
 private:
-	 //the username
-  char *username;
+	 
+  //the username
+  char username[50];
+  
   //the password
-  char *password;
+  char password[50];
 
   //siena location
-  char *siena_location;
+  char siena_location[50];
 
   //siena port
   int siena_port;
@@ -17,13 +25,19 @@ private:
   //chat port to use
   int chat_port;
 
-  //chat port
-  char *port;
+  //communication object
+  ClientComm *comm_object;
 
 
 public:
 	//setup internal things
 	InfoStorer::InfoStorer();
+
+	//get the client comm object
+	ClientComm* GetCommObject();
+
+	//set the communications object
+	void SetCommObject(ClientComm *comm_object);
 
 	//get the username
 	const char* GetUsername();
@@ -55,4 +69,7 @@ public:
 	//set the port on which Siena is listening
 	void SetSienaPort(int siena_port);
 
+	char* GetLocalIP();
 };
+
+#endif

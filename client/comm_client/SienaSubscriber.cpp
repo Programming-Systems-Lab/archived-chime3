@@ -10,7 +10,7 @@
 
 //create a subscriber that will create a filter for all packets going to client and having the
 //client's username
-SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, ChimeSystemDriver *_nav) {
+SienaSubscriber::SienaSubscriber(const char *_host, short _port, const char *_username, ChimeSystemDriver *_nav) {
 
 	System = _nav;
 	username = _username;

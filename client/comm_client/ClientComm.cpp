@@ -11,8 +11,20 @@
 DWORD WINAPI StartUDPListener(LPVOID Lparam);
 DWORD WINAPI StartSienaSubscriber(LPVOID Lparam);
 
+ClientComm::~ClientComm() {
+	delete siena_publisher;
+	delete cl;
 
-ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, ChimeSystemDriver *_nav) {
+	//now stop the threads
+	CloseHandle(proc);
+	CloseHandle(siena_proc);
+
+	//now destroy their object
+	delete uds;
+	delete siena_subscriber;
+}
+
+ClientComm::ClientComm(int port, const char *SAddress, int Sport, const char *_username, const char *_password, ChimeSystemDriver *_nav) {
 	password = _password;
 	username = _username;
 	nav = _nav;
@@ -25,7 +37,7 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
 	uds = new UDPServer(port, nav); 
 
 	DWORD nThreadID;
-	HANDLE proc;
+	//HANDLE proc;
 	proc = CreateThread(NULL,0,StartUDPListener,uds,0,&nThreadID);
 
 	if ( proc == NULL )
@@ -40,7 +52,7 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
 	siena_subscriber = new SienaSubscriber(SAddress, Sport, username, nav);
 
 	DWORD nThreadID2;
-	HANDLE siena_proc;
+	//HANDLE siena_proc;
 	siena_proc = CreateThread(NULL,0,StartSienaSubscriber, siena_subscriber,0,&nThreadID2);
 
 	if ( siena_proc == NULL )

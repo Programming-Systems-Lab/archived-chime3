@@ -22,16 +22,17 @@
 #define c_leftRoom	8			//  "userID oldRoomUrl"
 #define c_subscribeRoom	9		//  "roomUrl userID"
 #define c_unsubscribeRoom 10		//  "roomUrl userID"
+#define c_talk 11
 
 ////////////////SERVER SIDE METHODS/////////////////////////
-#define s_moveObject 8			//	"roomUrl objectUrl x y z"
-#define s_moveUser 9			//	"roomUrl userID	x y z"
-#define s_addObject 10			//	"roomUrl objectUrl x y z"
-#define s_deleteObject 11		//	"roomUrl objectUrl"
-#define s_changeClass 12		//	"roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
-#define s_enteredRoom 14		//	"userID newRoomUrl x y z"
-#define s_leftRoom	15			//	"userID oldRoomUrl"
-#define s_roomInfo	13			//	"roomUrl Width Height Length #ofObjects\n
+#define s_moveObject 12			//	"roomUrl objectUrl x y z"
+#define s_moveUser 13			//	"roomUrl userID	x y z"
+#define s_addObject 14			//	"roomUrl objectUrl x y z"
+#define s_deleteObject 15		//	"roomUrl objectUrl"
+#define s_changeClass 16		//	"roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
+#define s_enteredRoom 17		//	"userID newRoomUrl x y z"
+#define s_leftRoom	18			//	"userID oldRoomUrl"
+#define s_roomInfo	19			//	"roomUrl Width Height Length #ofObjects\n
 								//	ObjectUrl_1 shape class subClass default x y x \n
 								//	ObjectUrl_2 shape class subClass default x y x \n
 								//	ObjectUrl_3 shape class subClass default x y x \n
@@ -117,8 +118,8 @@ class UDPClient {
 class SienaSubscriber {
 	char subscribeString [1000]; 
 	ChimeSystemDriver *System;
-	char *username;
-	char *host;
+	const char *username;
+	const char *host;
 	int port;
 	char Component[50];
 
@@ -132,7 +133,7 @@ private:
 	int getMethod(char *method);
 
 public:
-	SienaSubscriber(char *host, short port, char *_username, ChimeSystemDriver *_nav);
+	SienaSubscriber(const char *host, short port, const char *_username, ChimeSystemDriver *_nav);
 	bool subscribeRoom(char *room);
 	bool subscribeClient();
 	bool subscribeMethod(char *method, bool include_myself);
@@ -151,11 +152,11 @@ class SienaPublisher {
 
 	ChimeSystemDriver *System;
 	char headerString [1000]; 
-	char *username;
-	char *password;
+	const char *username;
+	const char *password;
 	char hostname[1000];
 	int port;
-	char *host;
+	const char *host;
 	char Component[50];
 
 private:
@@ -163,7 +164,7 @@ private:
 	char* getLocalIP();
 
 public:
-	SienaPublisher(char *host, short port, char *username, char *password, ChimeSystemDriver *_System);
+	SienaPublisher(const char *host, short port, const char *username, const char *password, ChimeSystemDriver *_System);
 	bool publish(int function, char *params, char *address, char *prot);
 	char* getFunction(int func);
 
@@ -201,11 +202,14 @@ class ClientComm {
    SienaSubscriber *siena_subscriber;
    SienaPublisher *siena_publisher;
    ChimeSystemDriver *nav;
-   char *username;
-   char *password;
+   const char *username;
+   const char *password;
+   HANDLE proc;
+   HANDLE siena_proc;
 
    public:
-	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, ChimeSystemDriver *_nav);
+	   ~ClientComm();
+	   ClientComm(int port, const char *SAddress, int Sport, const char *_username, const char *_password, ChimeSystemDriver *_nav);
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 	   //subscribe to all events in a room
