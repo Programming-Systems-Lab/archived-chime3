@@ -233,7 +233,7 @@ public class DataServer {
 		type = doc.getRootElement().getAttribute("type").getValue();
 		Subscriber subscriber = Subscriber.getInstance();
 		HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
-		SienaObject sienaObj = new SienaObject();
+		SienaObject sienaObj = new SienaObject("","","data_server","","","",false);
 		sienaObj.setDispatcher(dispatcher);
 
 		if (type.equals("dir")) {
