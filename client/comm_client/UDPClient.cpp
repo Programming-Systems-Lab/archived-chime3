@@ -5,12 +5,12 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
-#include "udp.h"
+#include "ClientComm.h"
 #include <iostream.h>
 
 
 //this will just setup the socket for communication
-UDPClient::UDPClient(int _port, chimeBrowser *_System) {
+UDPClient::UDPClient(int _port, ChimeSystemDriver *_System) {
  
    Port = _port;
    System = _System;

@@ -9,14 +9,14 @@
 
 #include "cssysdef.h"
 #include "chimeComm.h"
-#include "comm_client/udp.h"
+#include "comm_client/ClientComm.h"
 
 chimeComm::chimeComm()
 {
 
 }
 
-chimeComm::chimeComm(ClientComm *client_comm, chimeBrowser *System)
+chimeComm::chimeComm(ClientComm *client_comm, ChimeSystemDriver *System)
 {
 
 	chimeComm::System = System;
@@ -28,7 +28,7 @@ chimeComm::~chimeComm()
 
 }
 
-void chimeComm::SetChimeCom(ClientComm *client_comm, chimeBrowser *System)
+void chimeComm::SetChimeCom(ClientComm *client_comm, ChimeSystemDriver *System)
 {
 	chimeComm::System = System;
 	chimeComm::client_comm = client_comm;

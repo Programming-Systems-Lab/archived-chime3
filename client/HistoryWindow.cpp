@@ -5,10 +5,10 @@
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
-#include "chimemenu.h"
-#include "chimeBrowser.h"
+#include "ChimeWindow.h"
+#include "ChimeSystemDriver.h"
 
-class chimeBrowser;
+class ChimeSystemDriver;
 
 // Scroll bar class default palette
 HistoryWindow::~HistoryWindow() {}
@@ -100,7 +100,7 @@ bool HistoryWindow::HandleEvent (iEvent &Event)
 			if (selected) {
 				//int temp;
 				//sscanf(selected, "%d. %s", &temp, selected);
-				((chimeBrowser *)System)->TransportToRoom(selected);
+				((ChimeSystemDriver *)System)->TransportToRoom(selected);
 			}
 		return true;
 

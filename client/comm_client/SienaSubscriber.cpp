@@ -4,13 +4,13 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
-#include "udp.h"
+#include "ClientComm.h"
 #include <iostream.h>
 
 
 //create a subscriber that will create a filter for all packets going to client and having the
 //client's username
-SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chimeBrowser *_nav) {
+SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, ChimeSystemDriver *_nav) {
 
 	System = _nav;
 	username = _username;

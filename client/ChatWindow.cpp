@@ -5,7 +5,7 @@
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
-#include "chimemenu.h"
+#include "ChimeWindow.h"
 
 
 // Scroll bar class default palette

@@ -4,7 +4,7 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
-#include "udp.h"
+#include "ClientComm.h"
 #include <iostream.h>
 
 //using namespace std;
@@ -12,7 +12,7 @@ DWORD WINAPI StartUDPListener(LPVOID Lparam);
 DWORD WINAPI StartSienaSubscriber(LPVOID Lparam);
 
 
-ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *_nav) {
+ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, ChimeSystemDriver *_nav) {
 	password = _password;
 	username = _username;
 	nav = _nav;
@@ -127,7 +127,7 @@ bool ClientComm::SendSienaFunction(int function, char *params, char *address, ch
 
 /*int main(int argc, char *argv[])
 {
-	chimeBrowser *nav = new chimeBrowser();
+	ChimeSystemDriver *nav = new ChimeSystemDriver();
 	ClientComm *comm = new ClientComm(9999, "localhost", 1234, "denis", "denis", nav);
 	while(1) {
 		comm->SendUDPFunction("192.168.1.100", 2, "room something others");

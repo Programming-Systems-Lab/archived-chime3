@@ -5,13 +5,13 @@
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
-#include "chimemenu.h"
+#include "ChimeWindow.h"
 
 
-SienaDialog::~SienaDialog() {}
+SienaWindow::~SienaWindow() {}
 
 
-SienaDialog::SienaDialog(csComponent *iParent)
+SienaWindow::SienaWindow(csComponent *iParent)
   : csWindow(iParent, "Siena Settings", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
@@ -87,7 +87,7 @@ SienaDialog::SienaDialog(csComponent *iParent)
 
 
 
-bool SienaDialog::HandleEvent (iEvent &Event)
+bool SienaWindow::HandleEvent (iEvent &Event)
 {
 
   if (csWindow::HandleEvent (Event))

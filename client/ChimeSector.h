@@ -1,9 +1,9 @@
-// chimeSector.h: interface for the chimeSector class.
+// ChimeSector.h: interface for the ChimeSector class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_CHIMESECTOR_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)
-#define AFX_CHIMESECTOR_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_
+#if !defined(AFX_ChimeSector_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)
+#define AFX_ChimeSector_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -38,7 +38,7 @@ struct iCollideSystem;
 
 #define MAX_DOOR	20		//Maximum number of doors in the sector
 #define MAX_URL		200		//Maximum length of a url
-class chimeSector
+class ChimeSector
 {
 	char roomUrl[MAX_URL];				//Url represented by this sector
 	csSector* roomList[2];				//List of all the rooms in the sector
@@ -82,10 +82,10 @@ class chimeSector
 	csPolygon3D **conn2BackDoor;
 
 	char doorUrl[MAX_DOOR][MAX_URL];
-	chimeSector *doorSec[MAX_DOOR];		//sectors represented by the hallway doors
+	ChimeSector *doorSec[MAX_DOOR];		//sectors represented by the hallway doors
 
 	int linkedDoor;
-	chimeSector *linkedSector;
+	ChimeSector *linkedSector;
 
 	//Initializes standard vectors.
 	bool InitStdVectors();
@@ -134,7 +134,7 @@ public:
 	bool GetDoorInfo(int doorNum, csVector3 &location, csPolygon3D* &door, csSector* &h);
 
 	//Set linked chime sector info
-	bool SetLinkedSectorInfo(chimeSector *sect, int doorNum);
+	bool SetLinkedSectorInfo(ChimeSector *sect, int doorNum);
 	//Get given halway door of this chime sector.
 	csPolygon3D*  GetHallwayDoor(int doorNum);
 	//Get BackDoor of this chime sector.
@@ -142,7 +142,7 @@ public:
 	//Get spatial location of a given hallway door.
 	bool GetHallwayDoorLoc(int doorNum, csVector3 & location);
 	//connect "otherSect" to the "atDoor" hallway door of this sector.
-	bool ConnectSectors(chimeSector *otherSect, int atDoor);
+	bool ConnectSectors(ChimeSector *otherSect, int atDoor);
 	//diconnect this sector from the linked sector
 	bool DisconnectSector();
 	//Add user name to the list of users in the sector
@@ -151,17 +151,17 @@ public:
 	bool deleteUser(char *userID);
 
 	bool Connect(csPolygon3D *door, csSector *hallway);
-	bool SetDoorSector(int doorNum, chimeSector *sec);
+	bool SetDoorSector(int doorNum, ChimeSector *sec);
 	bool Disconnect();
 	bool UnlinkHallwayDoors();
 
-	chimeSector* GetDoorSector(int doorNum);
+	ChimeSector* GetDoorSector(int doorNum);
 	char* GetDoorUrl(int doorNum);
 	//Check If a given room belongs to this chime sector
 	int IsRoomOf(csSector *room);
 	//Find the room of a sector that contains this point
 	csSector* FindRoomContainingPoint(csVector3 p);
-	// Check If a given beam intersects any of the walls of the chimesector
+	// Check If a given beam intersects any of the walls of the ChimeSector
 	bool HitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect);
 	//Check If a given beam intersects any of the hallway doors of this sector
 	bool HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
@@ -193,10 +193,10 @@ public:
 	//Remove a container from the list of containers
 	bool DeleteContainer(char *location);
 
-	chimeSector();
-	chimeSector(csSystemDriver  *Sys, csEngine *e);
-	virtual ~chimeSector();
+	ChimeSector();
+	ChimeSector(csSystemDriver  *Sys, csEngine *e);
+	virtual ~ChimeSector();
 
 };
 
-#endif // !defined(AFX_CHIMESECTOR_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)
+#endif // !defined(AFX_ChimeSector_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)

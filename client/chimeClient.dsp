@@ -92,11 +92,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\Chat.cpp
+SOURCE=.\ChatWindow.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChimeBrowser.cpp
+SOURCE=.\ChimeApp.cpp
 # End Source File
 # Begin Source File
 
@@ -104,11 +104,11 @@ SOURCE=.\ChimeComm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChimeMenu.cpp
+SOURCE=.\ChimeSector.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChimeSector.cpp
+SOURCE=.\ChimeSystemDriver.cpp
 # End Source File
 # Begin Source File
 
@@ -116,47 +116,47 @@ SOURCE=.\ChimeWorldView.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\clientcomm.cpp
+SOURCE=.\comm_client\ClientComm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\connect.cpp
+SOURCE=.\ConnectWindow.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\getobject.cpp
+SOURCE=.\GetObjectWindow.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\History.cpp
+SOURCE=.\HistoryWindow.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\info_storer.cpp
+SOURCE=.\InfoStorer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\siena_publisher.cpp
+SOURCE=.\comm_client\SienaPublisher.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\siena_subscriber.cpp
+SOURCE=.\comm_client\SienaSubscriber.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\sienadialog.cpp
+SOURCE=.\SienaWindow.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\udpclient.cpp
+SOURCE=.\comm_client\UDPClient.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\udpserver.cpp
+SOURCE=.\comm_client\UDPServer.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\vem\vem.cpp
+SOURCE=.\VEMWindow.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -164,7 +164,7 @@ SOURCE=.\vem\vem.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\ChimeBrowser.h
+SOURCE=.\ChimeApp.h
 # End Source File
 # Begin Source File
 
@@ -172,11 +172,15 @@ SOURCE=.\ChimeComm.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChimeMenu.h
+SOURCE=.\ChimeSector.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\ChimeSector.h
+SOURCE=.\ChimeSystemDriver.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChimeWindow.h
 # End Source File
 # Begin Source File
 
@@ -184,7 +188,7 @@ SOURCE=.\ChimeWorldView.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm_client\udp.h
+SOURCE=.\comm_client\ClientComm.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

@@ -4,12 +4,12 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
-#include "udp.h"
+#include "ClientComm.h"
 #include <iostream.h>
 #include <time.h>
 
 //create a publisher object which we can use
-SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *_password, chimeBrowser *_System) {
+SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *_password, ChimeSystemDriver *_System) {
 
 	port = _port;
 	host = _host;

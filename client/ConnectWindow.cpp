@@ -5,14 +5,14 @@
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
-#include "chimemenu.h"
+#include "ChimeWindow.h"
 
 
 // Scroll bar class default palette
-ConnectDialog::~ConnectDialog() {}
+ConnectWindow::~ConnectWindow() {}
 
 
-ConnectDialog::ConnectDialog(csComponent *iParent)
+ConnectWindow::ConnectWindow(csComponent *iParent)
   : csWindow(iParent, "Connection Box", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
@@ -93,7 +93,7 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
 }
 
 
-bool ConnectDialog::HandleEvent (iEvent &Event)
+bool ConnectWindow::HandleEvent (iEvent &Event)
 {
 
   if (csWindow::HandleEvent (Event))

@@ -1,31 +1,11 @@
-/*
-    Copyright (C) 1998-2000 by Jorrit Tyberghein
-    Copyright (C) 2001 by W.C.A. Wijngaards
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public
-    License along with this library; if not, write to the Free
-    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#ifndef CHIMEMENU_H
-#define CHIMEMENU_H
+#ifndef CHIMEWINDOW_H
+#define CHIMEWINDOW_H
 
 #include <stdarg.h>
 #include "cssys/sysdriv.h"
 #include "csgeom/math2d.h"
 #include "csgeom/math3d.h"
 #include "csws/csws.h"
-
 
 // Scroll bar class default palette
 static int palette [] =
@@ -40,11 +20,11 @@ static int palette [] =
 
 
 //VEM stuff
-class ChimeVEM : public csWindow
+class VEMWindow : public csWindow
 {
   public:
-	ChimeVEM(csComponent *iParent);
-	~ChimeVEM() {} ;
+	VEMWindow(csComponent *iParent);
+	~VEMWindow() {} ;
  };
 
 
@@ -99,7 +79,7 @@ class VeM : public csDialog
 
 //Connect stuff
 
-class ConnectDialog : public csWindow
+class ConnectWindow : public csWindow
 
 {
 
@@ -111,8 +91,8 @@ class ConnectDialog : public csWindow
 
 public:
 
-  ConnectDialog(csComponent *iParent);
-  virtual ~ConnectDialog ();
+  ConnectWindow(csComponent *iParent);
+  virtual ~ConnectWindow ();
   virtual bool HandleEvent (iEvent &Event);
   //virtual bool Initialize (const char *iConfigName);
 
@@ -120,7 +100,7 @@ public:
 
 
 //ObjectToRetrieve
-class ObjectToRetrieveDialog : public csWindow
+class GetObjectWindow : public csWindow
 {
   csInputLine *object;
   csInputLine *protocol;
@@ -128,8 +108,8 @@ class ObjectToRetrieveDialog : public csWindow
 
 public:
 
-  ObjectToRetrieveDialog(csComponent *iParent);
-  virtual ~ObjectToRetrieveDialog ();
+  GetObjectWindow(csComponent *iParent);
+  virtual ~GetObjectWindow ();
   virtual bool HandleEvent (iEvent &Event);
   //virtual bool Initialize (const char *iConfigName);
 };
@@ -138,7 +118,7 @@ public:
 
 //Siena Setting dialog
 //Connect stuff
-class SienaDialog : public csWindow
+class SienaWindow : public csWindow
 {
   csListBox *lbFile;
   csListBox *lbType;
@@ -148,8 +128,8 @@ class SienaDialog : public csWindow
   //void gui ();
 public:
 
-  SienaDialog(csComponent *iParent);
-  virtual ~SienaDialog ();
+  SienaWindow(csComponent *iParent);
+  virtual ~SienaWindow ();
   virtual bool HandleEvent (iEvent &Event);
   //virtual bool Initialize (const char *iConfigName);
 };
@@ -237,43 +217,4 @@ public:
 
 };
 
-
-
-
-/*  main app of menu */
-class ChimeMenu : public csApp
-{
-
-  /// reliable fonts, for display
-  iFont *mainfont, *tinyfont;
-  /// menu item to gray or not
-  csMenuItem *saveitem, *closeitem;
-
-public:
-
-  //pointer to the history window
-  HistoryWindow *historyWindow;
-
-  //encapsulate all the engine views
-  csVector engine_views;
-
-  /// Initialize maze editor
-  ChimeMenu (iSystem *SysDriver, csSkin &Skin);
-
-  /// Initialize maze editor
-  virtual ~ChimeMenu ();
-
-  //handle an event
-  virtual bool HandleEvent (iEvent &Event);
-
-  virtual bool Initialize (const char *iConfigName);
-
-  void Refresh3D();
-
-  virtual void Draw ();
-};
-
-
-
-#endif // CHIMEMENU_H
-
+#endif //CHIME_WINDOW_H

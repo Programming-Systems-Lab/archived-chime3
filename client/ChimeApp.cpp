@@ -110,10 +110,10 @@ bool ChimeApp::Initialize (const char *iConfigName)
   historyWindow = new HistoryWindow(this);
 
   //put in a VEM window
-  (void) new ChimeVEM(this);
+  (void) new VEMWindow(this);
 
   //popup the connection dialog box
-  (void) new ConnectDialog(this);
+  (void) new ConnectWindow(this);
 
   
   return true;
@@ -151,7 +151,7 @@ bool ChimeApp::HandleEvent (iEvent &Event)
 			  //a new connection has been opened
 		  case 66600:
 			  {
-				  (void)new ConnectDialog(this);
+				  (void)new ConnectWindow(this);
 				  return true;
 			  }
 
@@ -159,21 +159,21 @@ bool ChimeApp::HandleEvent (iEvent &Event)
 
 		  case 66601:
 			  {
-				  (void)new ObjectToRetrieveDialog(this);
+				  (void)new GetObjectWindow(this);
 				  return true;
 			  }
 
 			  //a VEM console is requested
 		  case 66602:
 			  {
-				  (void)new ChimeVEM(this);
+				  (void)new VEMWindow(this);
 				  return true;
 			  }
 
 		//Siena settings need to be updated
         case 66701:
         {
-			(void)new SienaDialog(this);
+			(void)new SienaWindow(this);
 			return true;
         }
 

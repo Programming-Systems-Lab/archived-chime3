@@ -1,9 +1,9 @@
-// chimeSector.cpp: implementation of the chimeSector class.
+// ChimeSector.cpp: implementation of the ChimeSector class.
 //
 //////////////////////////////////////////////////////////////////////
 #include "cssysdef.h"
 #include "cssys/system.h"
-#include "chimeSector.h"
+#include "ChimeSector.h"
 
 #include "csengine/sector.h"
 #include "csengine/engine.h"
@@ -22,7 +22,7 @@
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-chimeSector::chimeSector()
+ChimeSector::ChimeSector()
 {
 	connector1= connector2 = NULL;
 	hallway = NULL;
@@ -40,7 +40,7 @@ chimeSector::chimeSector()
 }
 
 
-chimeSector::chimeSector(csSystemDriver  *Sys, csEngine *e)
+ChimeSector::ChimeSector(csSystemDriver  *Sys, csEngine *e)
 {
 	connector1= connector2 = NULL;
 	hallway = NULL;
@@ -56,7 +56,7 @@ chimeSector::chimeSector(csSystemDriver  *Sys, csEngine *e)
 	InitDoors();
 }
 
-chimeSector::~chimeSector()
+ChimeSector::~ChimeSector()
 {
 
 	//FIXIT: Other rooms need to be freed.
@@ -68,7 +68,7 @@ chimeSector::~chimeSector()
 //* Convert all newlines to \\n due to Siena problem
 //*
 //*******************************************************************************
-int chimeSector::escapeEndlines(char *buf)
+int ChimeSector::escapeEndlines(char *buf)
 {
 
 	int len = strlen(buf);
@@ -91,7 +91,7 @@ int chimeSector::escapeEndlines(char *buf)
 	return 1;
 }
 
-int chimeSector::getStrLine(const char *buf, char *line)
+int ChimeSector::getStrLine(const char *buf, char *line)
 {
 	int i = 0;
 	int len = strlen(buf);
@@ -112,7 +112,7 @@ int chimeSector::getStrLine(const char *buf, char *line)
 //* Initializes door pointers
 //*
 //*********************************************************************************
-bool chimeSector::InitDoors()
+bool ChimeSector::InitDoors()
 {
 	numDoors = 0;
 
@@ -162,7 +162,7 @@ bool chimeSector::InitDoors()
 //* Initializes standard vectors.
 //*
 //*********************************************************************************
-bool chimeSector::InitStdVectors()
+bool ChimeSector::InitStdVectors()
 {
 	stdVector[LEFT+0].Set(0,1,0);
 	stdVector[LEFT+1].Set(0,1,1);
@@ -204,7 +204,7 @@ bool chimeSector::InitStdVectors()
 //* Create Dummy room
 //*
 //*******************************************************************************
-bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
+bool ChimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
 
@@ -335,7 +335,7 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 //* Build dynamic room as a function of number of objects in the room ( NOT USED)
 //*
 //*******************************************************************************
-bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollideSystem* collide_system)
+bool ChimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
 
@@ -542,7 +542,7 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 //* Build dynamic room as a function of number of objects in the room
 //*
 //*******************************************************************************
-bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iCollideSystem* collide_system)
+bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
 
@@ -774,7 +774,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 //* Add Collision Detection to a room
 //*
 //*******************************************************************************
-bool chimeSector::AddCollisionDetection(csSector *room, iCollideSystem* collide_system) {
+bool ChimeSector::AddCollisionDetection(csSector *room, iCollideSystem* collide_system) {
 	iPolygonMesh* mesh;
 	mesh = QUERY_INTERFACE (room, iPolygonMesh);
     (void)new csCollider (*room, collide_system, mesh);
@@ -787,7 +787,7 @@ bool chimeSector::AddCollisionDetection(csSector *room, iCollideSystem* collide_
 //* Get the ith room
 //*
 //*******************************************************************************
-csSector* chimeSector::GetRoom(int index)
+csSector* ChimeSector::GetRoom(int index)
 {
 	return roomList[index];
 }
@@ -797,7 +797,7 @@ csSector* chimeSector::GetRoom(int index)
 //* Add mesh object in a given room at a given location.
 //*
 //*********************************************************************************
-iMeshWrapper* chimeSector::AddMeshObj (char* tname, char* sname, csSector* where,
+iMeshWrapper* ChimeSector::AddMeshObj (char* tname, char* sname, csSector* where,
 	csVector3 const& pos, float size)
 {
 
@@ -825,7 +825,7 @@ iMeshWrapper* chimeSector::AddMeshObj (char* tname, char* sname, csSector* where
 //* Build a standard room of a given size at given location
 //*
 //*********************************************************************************
-bool chimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVector3 const &pos)
+bool ChimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVector3 const &pos)
 {
 	csMaterialWrapper* txt;
 	csVector3 trans(0,0,0);
@@ -892,7 +892,7 @@ bool chimeSector::BuildStandardRoom(csSector *room, csVector3 const &size, csVec
 //* Build a standard connector that connects a room with a hallway
 //*
 //*********************************************************************************
-bool chimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, csVector3 const &pos, int type)
+bool ChimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, csVector3 const &pos, int type)
 {
 	csMaterialWrapper* txt;
 	csVector3 trans(0,0,0);
@@ -953,7 +953,7 @@ bool chimeSector::BuildStandardConnector(csSector *room, csVector3 const &size, 
 //* Build a standard hallway of a given size at given location
 //*
 //*********************************************************************************
-bool chimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 const &pos)
+bool ChimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 const &pos)
 {
 	csMaterialWrapper* txt;
 	csVector3 trans(0,0,0);
@@ -1003,7 +1003,7 @@ bool chimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 
 //* Build a given wall of a room
 //*
 //*********************************************************************************
-csPolygon3D * chimeSector::BuildWall(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csMaterialWrapper *txt, csVector3 const &txtSize)
+csPolygon3D * ChimeSector::BuildWall(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csMaterialWrapper *txt, csVector3 const &txtSize)
 {
 
 	csVector3 v1;
@@ -1046,7 +1046,7 @@ csPolygon3D * chimeSector::BuildWall(csSector *room, csVector3 const &size, csVe
 	return p;
 }
 //Build right wall with doors
-bool chimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
+bool ChimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
@@ -1090,7 +1090,7 @@ bool chimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVe
 }
 
 //Build left wall with doors
-bool chimeSector::buildLeftDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
+bool ChimeSector::buildLeftDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
@@ -1134,7 +1134,7 @@ bool chimeSector::buildLeftDoorWall(csSector *room, csVector3 const &size, csVec
 
 
 //Build front wall with doors
-bool chimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
+bool ChimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
@@ -1181,7 +1181,7 @@ bool chimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 
 
 //Build front wall with doors
-bool chimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
+bool ChimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
@@ -1230,7 +1230,7 @@ bool chimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVec
 //* Return Default camera location of this sector
 //*
 //*********************************************************************************
-csVector3* chimeSector::GetCamLocation()
+csVector3* ChimeSector::GetCamLocation()
 {
 	return &camLocation;
 }
@@ -1240,7 +1240,7 @@ csVector3* chimeSector::GetCamLocation()
 //* Return location and hallway of a given hallway-door of this chime sector
 //*
 //*********************************************************************************
-bool chimeSector::GetDoorInfo(int doorNum, csVector3 &location, csPolygon3D* &door, csSector* &h)
+bool ChimeSector::GetDoorInfo(int doorNum, csVector3 &location, csPolygon3D* &door, csSector* &h)
 {
 	location = firstDoorLocation;
 	location.x += 4*doorNum;
@@ -1250,7 +1250,7 @@ bool chimeSector::GetDoorInfo(int doorNum, csVector3 &location, csPolygon3D* &do
 }
 
 //Set linked chime sector info
-bool chimeSector::SetLinkedSectorInfo(chimeSector *sect, int doorNum)
+bool ChimeSector::SetLinkedSectorInfo(ChimeSector *sect, int doorNum)
 {
 	linkedSector = sect;
 	linkedDoor = doorNum;
@@ -1258,7 +1258,7 @@ bool chimeSector::SetLinkedSectorInfo(chimeSector *sect, int doorNum)
 }
 
 //Get given halway door of this chime sector.
-csPolygon3D*  chimeSector::GetHallwayDoor(int doorNum)
+csPolygon3D*  ChimeSector::GetHallwayDoor(int doorNum)
 {
 	if( doorNum >= 0 && doorNum < 10)
 	{
@@ -1271,20 +1271,20 @@ csPolygon3D*  chimeSector::GetHallwayDoor(int doorNum)
 }
 
 //Get BackDoor of this chime sector.
-csPolygon3D*  chimeSector::GetBackDoor()
+csPolygon3D*  ChimeSector::GetBackDoor()
 {
 	return conn1BackDoor[0];
 }
 
 //Get spatial location of a given hallway door.
-bool chimeSector::GetHallwayDoorLoc(int doorNum, csVector3 & location)
+bool ChimeSector::GetHallwayDoorLoc(int doorNum, csVector3 & location)
 {
 	location = firstDoorLocation;
 	location.x += 4*doorNum;
 	return true;
 }
 
-bool chimeSector::Connect(csPolygon3D *door, csSector *hallway)
+bool ChimeSector::Connect(csPolygon3D *door, csSector *hallway)
 {
 	door->SetCSPortal(connector1);
 	door->SetAlpha(0);
@@ -1294,7 +1294,7 @@ bool chimeSector::Connect(csPolygon3D *door, csSector *hallway)
 }
 
 //find the type of the link
-int chimeSector::findType(const char *thing) 
+int ChimeSector::findType(const char *thing) 
 {
 	for(int i = 0; i < containerList.Length(); i++)
 	{
@@ -1327,7 +1327,7 @@ int chimeSector::findType(const char *thing)
 
 
 //Add user name to the list of users in the sector
-bool chimeSector::AddUser(char *userID)
+bool ChimeSector::AddUser(char *userID)
 {
 	if(!userID) return false;
 
@@ -1338,7 +1338,7 @@ bool chimeSector::AddUser(char *userID)
 }
 
 //Delete user name from the list of users in the sector
-bool chimeSector::deleteUser(char *userID)
+bool ChimeSector::deleteUser(char *userID)
 {
 	if(!userID) return false;
 
@@ -1356,7 +1356,7 @@ bool chimeSector::deleteUser(char *userID)
 
 
 //Add a container to a list of containers
-bool chimeSector::AddContainer(char *location)
+bool ChimeSector::AddContainer(char *location)
 {
 	if(!location) return false;
 
@@ -1368,7 +1368,7 @@ bool chimeSector::AddContainer(char *location)
 
 
 //Remove a container from the list of containers
-bool chimeSector::DeleteContainer(char *location) 
+bool ChimeSector::DeleteContainer(char *location) 
 {
 	if(!location) return false;
 
@@ -1385,7 +1385,7 @@ bool chimeSector::DeleteContainer(char *location)
 }
 
 //connect "otherSect" to the "atDoor" hallway door of this sector.
-bool chimeSector::ConnectSectors(chimeSector *otherSect, int atDoor)
+bool ChimeSector::ConnectSectors(ChimeSector *otherSect, int atDoor)
 {
 	if( !otherSect ) return false;
 
@@ -1404,7 +1404,7 @@ bool chimeSector::ConnectSectors(chimeSector *otherSect, int atDoor)
 }
 
 //diconnect this sector from the linked sector
-bool chimeSector::DisconnectSector()
+bool ChimeSector::DisconnectSector()
 {
 	if(!linkedSector ) return false;
 
@@ -1422,16 +1422,16 @@ bool chimeSector::DisconnectSector()
 	return true;
 }
 
-bool chimeSector::Disconnect()
+bool ChimeSector::Disconnect()
 {
 	conn1BackDoor[0]->SetCSPortal(NULL);
 	conn1BackDoor[0]->SetAlpha(100);
 	return true;
 }
 
-bool chimeSector::UnlinkHallwayDoors()
+bool ChimeSector::UnlinkHallwayDoors()
 {
-	chimeSector *sec;
+	ChimeSector *sec;
 
 	for(int i = 0; i < 10; i++)
 	{
@@ -1444,7 +1444,7 @@ bool chimeSector::UnlinkHallwayDoors()
 	return true;
 }
 
-bool chimeSector::SetDoorSector(int doorNum, chimeSector *sec)
+bool ChimeSector::SetDoorSector(int doorNum, ChimeSector *sec)
 {
 	if( doorNum >= 0 && doorNum < MAX_DOOR)
 	{
@@ -1457,7 +1457,7 @@ bool chimeSector::SetDoorSector(int doorNum, chimeSector *sec)
 	}
 }
 
-chimeSector* chimeSector::GetDoorSector(int doorNum)
+ChimeSector* ChimeSector::GetDoorSector(int doorNum)
 {
 	if( doorNum >= 0 && doorNum < MAX_DOOR)
 	{
@@ -1469,7 +1469,7 @@ chimeSector* chimeSector::GetDoorSector(int doorNum)
 	}
 }
 
-char* chimeSector::GetDoorUrl(int doorNum)
+char* ChimeSector::GetDoorUrl(int doorNum)
 {
 	int numActive = connList.Length();
 
@@ -1483,7 +1483,7 @@ char* chimeSector::GetDoorUrl(int doorNum)
 	}
 }
 // Find  an object in this sector
-csMeshWrapper* chimeSector::FindObject(char *objectUrl, csSector *&room)
+csMeshWrapper* ChimeSector::FindObject(char *objectUrl, csSector *&room)
 {
 	room = NULL;
 	int i;
@@ -1541,7 +1541,7 @@ csMeshWrapper* chimeSector::FindObject(char *objectUrl, csSector *&room)
 }
 
 //check if a given beam hits any of the meshes in this sector.
-csMeshWrapper* chimeSector::SelectMesh (const csVector3 &start, const csVector3 &end, csVector3 &isect, float &dist)
+csMeshWrapper* ChimeSector::SelectMesh (const csVector3 &start, const csVector3 &end, csVector3 &isect, float &dist)
 {
 	int i;
 	csSector *room;
@@ -1595,7 +1595,7 @@ csMeshWrapper* chimeSector::SelectMesh (const csVector3 &start, const csVector3 
 
 //Find the room of a sector that contains this point
 //Note: heuristics and shape of the sector are being used for the test
-csSector* chimeSector::FindRoomContainingPoint(csVector3 p)
+csSector* ChimeSector::FindRoomContainingPoint(csVector3 p)
 {
 	float start = roomOrigin.z - connSize.z;
 	float end = roomOrigin.z;
@@ -1633,7 +1633,7 @@ csSector* chimeSector::FindRoomContainingPoint(csVector3 p)
 //* Check If a given room belongs to this chime sector
 //*
 //*********************************************************************************
-int chimeSector::IsRoomOf(csSector *room)
+int ChimeSector::IsRoomOf(csSector *room)
 {
 	int type = UNKNOWN;
 
@@ -1652,10 +1652,10 @@ int chimeSector::IsRoomOf(csSector *room)
 
 //*********************************************************************************
 //*
-//* Check If a given beam intersects any of the polygons of the chimesector
+//* Check If a given beam intersects any of the polygons of the ChimeSector
 //*
 //*********************************************************************************
-bool chimeSector::HitBeam(const csVector3 &start, const csVector3 &end, csVector3 &isect)
+bool ChimeSector::HitBeam(const csVector3 &start, const csVector3 &end, csVector3 &isect)
 {
 
 	csPolygon3D* p = NULL;
@@ -1677,7 +1677,7 @@ bool chimeSector::HitBeam(const csVector3 &start, const csVector3 &end, csVector
 //* Check If a given beam intersects any of the active hallway doors of this sector
 //*
 //*********************************************************************************
-bool chimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum)
+bool ChimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum)
 {
 
 	doorNum = -1;

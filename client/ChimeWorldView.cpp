@@ -3,14 +3,15 @@
 
 #include "cssys/sysdriv.h"
 #include "csws/csws.h"
-#include "chimemenu.h"
+//#include "chimemenu.h"
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
 #include <sys/stat.h>
 #include "csutil/csrect.h"
 
-#include "chimeBrowser.h"
+#include "ChimeWindow.h"
+#include "ChimeSystemDriver.h"
 
 #include "csengine/engine.h"
 #include "csengine/csview.h"
@@ -33,7 +34,7 @@
 //* Create a ChimeWorldView which is just a window in the CSWS
 //*
 //*****************************************************************
-ChimeWorldView::ChimeWorldView (csComponent *iParent, chimeBrowser *System)
+ChimeWorldView::ChimeWorldView (csComponent *iParent, ChimeSystemDriver *System)
   	: csComponent (iParent)
 {
 
@@ -63,7 +64,7 @@ ChimeWorldView::ChimeWorldView (csComponent *iParent, chimeBrowser *System)
 ChimeWorldView::~ChimeWorldView ()
 {
   delete view;
-  ChimeMenu* lapp = (ChimeMenu*)app;
+  ChimeApp* lapp = (ChimeApp*)app;
   lapp->engine_views.Delete (lapp->engine_views.Find (this));
 }
 
@@ -100,14 +101,14 @@ bool ChimeWorldView::HandleEvent (iEvent &Event)
 	if (csComponent::HandleEvent(Event))
 		return true;
 
-    //make the ChimeBrowser handle all events
+    //make the ChimeSystemDriver handle all events
 	if (app->System != NULL && !called_out) {
 		called_out = true;
 
 		//if (Event.Type == csevMouseDown)
 		//	parent->LocalToGlobal(Event.Mouse.x, Event.Mouse.y);
 
-  		((chimeBrowser*)app->System)->HandleEvent(Event);
+  		((ChimeSystemDriver*)app->System)->HandleEvent(Event);
 		called_out = false;
 	}
 

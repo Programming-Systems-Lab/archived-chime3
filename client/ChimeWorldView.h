@@ -7,11 +7,11 @@
 class ChimeWorldView : public csComponent
 {
   csView *view;
-  chimeBrowser *System;					//the ChimeSystem
+  ChimeSystemDriver *System;					//the ChimeSystem
   bool called_out;						//HandleEvent has called out on another Handle Event
 
 public:
-  ChimeWorldView (csComponent *iParent, chimeBrowser *System);
+  ChimeWorldView (csComponent *iParent, ChimeSystemDriver *System);
   virtual ~ChimeWorldView ();
 
   // Track movement of the window and update engine.

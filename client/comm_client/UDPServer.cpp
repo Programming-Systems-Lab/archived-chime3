@@ -4,11 +4,11 @@
 #include <winsock.h>
 #include <stdlib.h>
 #include <string.h>
-#include "udp.h"
+#include "ClientComm.h"
 #include <iostream.h>
 
 
-UDPServer::UDPServer(int port, chimeBrowser *_nav) {
+UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
 
    Port = port;
    nav = _nav;

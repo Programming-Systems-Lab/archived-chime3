@@ -5,14 +5,14 @@
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
-#include "chimemenu.h"
+#include "ChimeWindow.h"
 
 
 // Scroll bar class default palette
-ObjectToRetrieveDialog::~ObjectToRetrieveDialog() {}
+GetObjectWindow::~GetObjectWindow() {}
 
 
-ObjectToRetrieveDialog::ObjectToRetrieveDialog(csComponent *iParent)
+GetObjectWindow::GetObjectWindow(csComponent *iParent)
   : csWindow(iParent, "Retrieve Object", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
@@ -72,7 +72,7 @@ ObjectToRetrieveDialog::ObjectToRetrieveDialog(csComponent *iParent)
 }
 
 
-bool ObjectToRetrieveDialog::HandleEvent (iEvent &Event)
+bool GetObjectWindow::HandleEvent (iEvent &Event)
 {
   if (csWindow::HandleEvent (Event))
     return true;

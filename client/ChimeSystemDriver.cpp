@@ -1,6 +1,6 @@
 //*******************************************************************
 //*
-//* Implementation of ChimeBrowser class.
+//* Implementation of ChimeSystemDriver class.
 //*
 //*******************************************************************
 
@@ -9,14 +9,15 @@
 
 #include "cssys/sysdriv.h"
 #include "csws/csws.h"
-#include "chimemenu.h"
+//#include "chimemenu.h"
 #include "version.h"
 #include "ifontsrv.h"
 #include "icfgnew.h"
 #include <sys/stat.h>
 #include "csutil/csrect.h"
 
-#include "chimeBrowser.h"
+#include "ChimeApp.h"
+#include "ChimeSystemDriver.h"
 #include "ChimeWorldView.h"
 
 #include "csengine/engine.h"
@@ -47,12 +48,12 @@ void Cleanup()
 	delete System;
 }
 
-chimeBrowser::chimeBrowser()
+ChimeSystemDriver::ChimeSystemDriver()
 {
 	//create the Mutex object the first time we create this class
 	hMutex=CreateMutex(NULL,FALSE,NULL); // create a mutex object with no name
 
-	chimeBrowser::app = NULL;
+	ChimeSystemDriver::app = NULL;
 	engine = NULL;
 	curSector = NULL;
 	currentSector = NULL;
@@ -116,9 +117,9 @@ chimeBrowser::chimeBrowser()
 //* Transport to an optimal location within a room
 //*
 //**********************************************************************
-bool chimeBrowser::TransportToRoom(char *name) {
+bool ChimeSystemDriver::TransportToRoom(char *name) {
 	csVector3 *camLocation;
-	chimeSector *sec = FindSector(name);
+	ChimeSector *sec = FindSector(name);
 	
 	if(sec) {
 		camLocation = sec->GetCamLocation();
@@ -135,7 +136,7 @@ bool chimeBrowser::TransportToRoom(char *name) {
 //* We need this because the Chime System is responsible for everything
 //*
 //**********************************************************************
-bool chimeBrowser::ConvertCoordinates(csVector2 *screenCoord) {
+bool ChimeSystemDriver::ConvertCoordinates(csVector2 *screenCoord) {
 	int x = (int) screenCoord->x;
 	int y = (int) screenCoord->y;
 	CoordinateConvertor->LocalToGlobal(x, y);
@@ -151,7 +152,7 @@ bool chimeBrowser::ConvertCoordinates(csVector2 *screenCoord) {
 //* Environment
 //*
 //**********************************************************************
-void chimeBrowser::setCoordinateConvertor(csComponent *Parent) {
+void ChimeSystemDriver::setCoordinateConvertor(csComponent *Parent) {
 	CoordinateConvertor = Parent;
 }
 
@@ -161,7 +162,7 @@ void chimeBrowser::setCoordinateConvertor(csComponent *Parent) {
 //* Destructor
 //*
 //**********************************************************************
-chimeBrowser::~chimeBrowser()
+ChimeSystemDriver::~ChimeSystemDriver()
 {
 	 if (collide_system) collide_system->DecRef ();
 }
@@ -169,11 +170,11 @@ chimeBrowser::~chimeBrowser()
 //**********************************************************************
 //*
 //* This function is a callback function from the communicator class. 
-//* Whenever a network event comes in that concerns the chimeBrowser it gets
+//* Whenever a network event comes in that concerns the ChimeSystemDriver it gets
 //* routed here
 //*
 //**********************************************************************
-void chimeBrowser::GetFunction(int method, char *received)
+void ChimeSystemDriver::GetFunction(int method, char *received)
 {
 	//Communication thread waits here until main thread
 	//releases the lock on hMutex
@@ -190,9 +191,9 @@ void chimeBrowser::GetFunction(int method, char *received)
 //* Find room corresponding to a given room url
 //*
 //**********************************************************************
-csSector* chimeBrowser::FindRoom(char *roomUrl)
+csSector* ChimeSystemDriver::FindRoom(char *roomUrl)
 {
-	chimeSector *sec = NULL;
+	ChimeSector *sec = NULL;
 	csSector	*room = NULL;
 
 	for(int i = 0; i < NUM_SECT; i++)
@@ -212,9 +213,9 @@ csSector* chimeBrowser::FindRoom(char *roomUrl)
 //* Find sector corresponding to a given room url
 //*
 //********************************************************************** 
-chimeSector* chimeBrowser::FindSector(char *roomUrl)
+ChimeSector* ChimeSystemDriver::FindSector(char *roomUrl)
 {
-	chimeSector *sec = NULL;
+	ChimeSector *sec = NULL;
 
 	for(int i = 0; i < NUM_SECT; i++)
 	{
@@ -232,9 +233,9 @@ chimeSector* chimeBrowser::FindSector(char *roomUrl)
 //* Find sector corresponding to a given room
 //*
 //********************************************************************** 
-chimeSector* chimeBrowser::FindSector(csSector *room)
+ChimeSector* ChimeSystemDriver::FindSector(csSector *room)
 {
-	chimeSector *sec = NULL;
+	ChimeSector *sec = NULL;
 
 	for(int i = 0; i < NUM_SECT; i++)
 	{
@@ -252,7 +253,7 @@ chimeSector* chimeBrowser::FindSector(csSector *room)
 //* Find  an object in a given room
 //*
 //********************************************************************** 
-csMeshWrapper* chimeBrowser::FindObject(csSector *room, char *objectUrl)
+csMeshWrapper* ChimeSystemDriver::FindObject(csSector *room, char *objectUrl)
 {
 	csMeshWrapper* obj = NULL;
 	for (int i = 0 ; i < room->meshes.Length(); i++)
@@ -274,10 +275,10 @@ csMeshWrapper* chimeBrowser::FindObject(csSector *room, char *objectUrl)
 //* User has moved send notification to all clients.
 //*
 //********************************************************************** 
-void chimeBrowser::UserMoved()
+void ChimeSystemDriver::UserMoved()
 {
 	csVector3 newPos, roomOrigin;
-	chimeSector  *sec, *prevSector;
+	ChimeSector  *sec, *prevSector;
 	char *roomUrl;
 
 	prevSector = currentSector;
@@ -328,7 +329,7 @@ void chimeBrowser::UserMoved()
 //* Crystal-Space engine.
 //*
 //**********************************************************************
-bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iConfigName)
+bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const char *iConfigName)
 {
 	historyWindow = NULL;
 	
@@ -422,7 +423,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 //* Refresh 3D Display
 //*
 //**********************************************************************
-void chimeBrowser::Refresh3D ()
+void ChimeSystemDriver::Refresh3D ()
 {
 //	SysSystemDriver::NextFrame ();
 	if (!G3D->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_3DGRAPHICS))
@@ -449,7 +450,7 @@ void chimeBrowser::Refresh3D ()
 //* Stop updating 3D view
 //*
 //**********************************************************************
-void chimeBrowser::Stop3D ()
+void ChimeSystemDriver::Stop3D ()
 {
 
 	active = false;
@@ -460,7 +461,7 @@ void chimeBrowser::Stop3D ()
 //* Start updating 3D view
 //*
 //**********************************************************************
-void chimeBrowser::Start3D ()
+void ChimeSystemDriver::Start3D ()
 {
 	active = true;
 }
@@ -471,7 +472,7 @@ void chimeBrowser::Start3D ()
 //* to be displayed.
 //*
 //**********************************************************************
-void chimeBrowser::NextFrame ()
+void ChimeSystemDriver::NextFrame ()
 {
   SysSystemDriver::NextFrame ();
   cs_time elapsed_time, current_time;
@@ -548,14 +549,14 @@ void chimeBrowser::NextFrame ()
 //* Write a message at the bottom of the screen
 //*
 //**********************************************************************
-void chimeBrowser::writeMessage() 
+void ChimeSystemDriver::writeMessage() 
 {
 	iTextureManager *tm = G3D->GetTextureManager ();
 	int write_colour = tm->FindRGB (255, 255, 255);
 	iFont *courierFont = NULL;
 	iFontServer *fs = G2D->GetFontServer ();
 	courierFont = fs->LoadFont (CSFONT_COURIER);
-	chimeSector *curSect = GetCurChimeSector();
+	ChimeSector *curSect = GetCurChimeSector();
 	if (curSect != NULL && username != NULL) {
 		char displayString[1000];
 		if (selectedMesh) {
@@ -576,7 +577,7 @@ void chimeBrowser::writeMessage()
 //* Transport user from one sector to a another sector.
 //*
 //**********************************************************************
-bool chimeBrowser::Transport(csSector *room, csVector3 pos, csVector3 lookPos, csVector3 lookUp)
+bool ChimeSystemDriver::Transport(csSector *room, csVector3 pos, csVector3 lookPos, csVector3 lookUp)
 {
 	if(!room)
 		return false;
@@ -594,9 +595,9 @@ bool chimeBrowser::Transport(csSector *room, csVector3 pos, csVector3 lookPos, c
 //* Returns the current chime sector of a user/camera
 //*
 //**********************************************************************
-chimeSector * chimeBrowser::GetCurChimeSector()
+ChimeSector * ChimeSystemDriver::GetCurChimeSector()
 {
-	chimeSector *chimeSec = NULL;
+	ChimeSector *chimeSec = NULL;
 	csSector *room;
 	room = view->GetCamera ()->GetSector();
 
@@ -617,7 +618,7 @@ chimeSector * chimeBrowser::GetCurChimeSector()
 //* Build and link sec2 to a given hallway-door of sec1
 //*
 //**********************************************************************
-bool chimeBrowser::LinkChimeSectors(chimeSector *sec1, int doorNum, chimeSector *&sec2, char *link)
+bool ChimeSystemDriver::LinkChimeSectors(ChimeSector *sec1, int doorNum, ChimeSector *&sec2, char *link)
 {
 	if(!sec1) return false;
 
@@ -630,7 +631,7 @@ bool chimeBrowser::LinkChimeSectors(chimeSector *sec1, int doorNum, chimeSector 
 	csSector* hallway;
 
 	sec1->GetDoorInfo(doorNum, doorPos, doorPoly, hallway);
-	sec2 = new chimeSector(System, engine);
+	sec2 = new ChimeSector(System, engine);
 	sec2->BuildDynamicRoom(link, doorPos, collide_system);
 	sec2->Connect(doorPoly, hallway);
 
@@ -644,7 +645,7 @@ bool chimeBrowser::LinkChimeSectors(chimeSector *sec1, int doorNum, chimeSector 
 //* else User is presented with pull down menu for list availaible links.
 //*
 //************************************************************************
-bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
+bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
 {
 
 	//Check if user clicked on one of the rooms
@@ -657,7 +658,7 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
   csVector3 origin = view->GetCamera ()->GetW2CTranslation ();
   csVector3 isect;
 
-  chimeSector *currentSector = GetCurChimeSector();
+  ChimeSector *currentSector = GetCurChimeSector();
   int doorNum;
 
   if(currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum))
@@ -697,20 +698,20 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
 
 //*************************************************************************
 //*
-//* Tell ChimeBrowser System where to find the App
+//* Tell ChimeSystemDriver System where to find the App
 //*
 //************************************************************************
-void chimeBrowser::setCSApp(ChimeMenu *app) {
-	chimeBrowser::app = app;
+void ChimeSystemDriver::setCSApp(ChimeApp *app) {
+	ChimeSystemDriver::app = app;
 }
 
 //*************************************************************************
 //*
-//* Tell ChimeBrowser System where to find the History Window
+//* Tell ChimeSystemDriver System where to find the History Window
 //*
 //************************************************************************
-void chimeBrowser::SetHistoryWindow(HistoryWindow *historyWindow) {
-	chimeBrowser::historyWindow = historyWindow;
+void ChimeSystemDriver::SetHistoryWindow(HistoryWindow *historyWindow) {
+	ChimeSystemDriver::historyWindow = historyWindow;
 }
 
 
@@ -719,7 +720,7 @@ void chimeBrowser::SetHistoryWindow(HistoryWindow *historyWindow) {
 //* Draws a menu
 //*
 //************************************************************************
-bool chimeBrowser::DrawMenu(csVector2 screenPoint) {
+bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
 
   //disable all movement
   Stop3D();
@@ -765,7 +766,7 @@ bool chimeBrowser::DrawMenu(csVector2 screenPoint) {
 //* Get rid of Popup menu
 //*
 //************************************************************************
-bool chimeBrowser::WipePopupMenu()
+bool ChimeSystemDriver::WipePopupMenu()
 {
 	if (menu_drawn) {
 		menu->Close();
@@ -781,7 +782,7 @@ bool chimeBrowser::WipePopupMenu()
 //* Handle All Events that emerge from the popup menu
 //*
 //************************************************************************
-bool chimeBrowser::HandleMenuEvent(iEvent &Event) 
+bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event) 
 {
   //if (superclass::HandleEvent (Event))
   // return true;
@@ -816,7 +817,7 @@ bool chimeBrowser::HandleMenuEvent(iEvent &Event)
 //* else User is presented with pull down menu for list availaible links.
 //*
 //************************************************************************
-bool chimeBrowser::HandleLeftMouseClick(iEvent &Event)
+bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 {
 
 	csVector2   screenPoint;
@@ -859,7 +860,7 @@ bool chimeBrowser::HandleLeftMouseClick(iEvent &Event)
 //* Handle double click on the left mouse button
 //*
 //*************************************************************************
-bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
+bool ChimeSystemDriver::HandleLeftMouseDoubleClick(iEvent &Event)
 {
 	csMeshWrapper *m;
 	csVector2   screenPoint;
@@ -868,7 +869,7 @@ bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
 	screenPoint.y = FrameHeight - Event.Mouse.y - 1;
 	m = SelectMesh(view->GetCamera(), &screenPoint, selectedMeshDist);
 
-	chimeSector *curSect = GetCurChimeSector();
+	ChimeSector *curSect = GetCurChimeSector();
 	
 	if (curSect == NULL) {
 		return false; //this should never be the case because we are always somewhere
@@ -899,7 +900,7 @@ bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
 //* Move selected mesh as mouse moves.
 //*
 //************************************************************************
-bool chimeBrowser::MoveSelectedMesh(iEvent &Event)
+bool ChimeSystemDriver::MoveSelectedMesh(iEvent &Event)
 {
 	csVector3 trans;
 	csVector3 newMeshPos;
@@ -907,7 +908,7 @@ bool chimeBrowser::MoveSelectedMesh(iEvent &Event)
 	csVector3 v, offset;
 	csVector3 start, end, tol, isect;
 
-	chimeSector *curSect = GetCurChimeSector();
+	ChimeSector *curSect = GetCurChimeSector();
 
 	if (curSect == NULL) {
 		//this should never be the case but what the heck
@@ -971,7 +972,7 @@ bool chimeBrowser::MoveSelectedMesh(iEvent &Event)
 //* Find a sector containing a particular point
 //*
 //************************************************************************
-csSector* chimeBrowser::FindSectContainingPoint(csVector3 &pos, chimeSector *&newSect)
+csSector* ChimeSystemDriver::FindSectContainingPoint(csVector3 &pos, ChimeSector *&newSect)
 {
 	csSector *room = NULL;
 	newSect = NULL;
@@ -997,7 +998,7 @@ csSector* chimeBrowser::FindSectContainingPoint(csVector3 &pos, chimeSector *&ne
 //* Function responsible for handling keyboard events only
 //*
 //**********************************************************************
-bool chimeBrowser::HandleKeyEvent (iEvent &Event)
+bool ChimeSystemDriver::HandleKeyEvent (iEvent &Event)
 {
 	//Camera speed
 
@@ -1081,7 +1082,7 @@ bool chimeBrowser::HandleKeyEvent (iEvent &Event)
 //* keyboard and broadcast events.
 //*
 //**********************************************************************
-bool chimeBrowser::HandleEvent (iEvent &Event)
+bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 {
 	//Check if the event is for the superclass
 	if (superclass::HandleEvent (Event))
@@ -1244,7 +1245,7 @@ int main (int argc, char* argv[])
 //* Load chime objects and textures
 //*
 //**********************************************************************
-bool chimeBrowser::LoadChimeLib(char *fileName)
+bool ChimeSystemDriver::LoadChimeLib(char *fileName)
 {
 	//Initialize Texture manager
 	iTextureManager* txtmgr = G3D->GetTextureManager ();
@@ -1347,7 +1348,7 @@ bool chimeBrowser::LoadChimeLib(char *fileName)
 //*
 //*********************************************************************************
 
-bool chimeBrowser::LoadMeshObj (char *filename, char *templatename, char* txtname)
+bool ChimeSystemDriver::LoadMeshObj (char *filename, char *templatename, char* txtname)
 {
   // First check if the texture exists.
   if (!engine->GetMaterials ()->FindByName (txtname))
@@ -1389,7 +1390,7 @@ bool chimeBrowser::LoadMeshObj (char *filename, char *templatename, char* txtnam
 //* Add mesh object in a given room at a given location.
 //*
 //*********************************************************************************
-iMeshWrapper* chimeBrowser::AddMeshObj (char* tname, char* sname, csSector* where,
+iMeshWrapper* ChimeSystemDriver::AddMeshObj (char* tname, char* sname, csSector* where,
 	csVector3 const& pos, float size)
 {
   iMeshFactoryWrapper* tmpl = engine->FindMeshFactory (tname);
@@ -1416,7 +1417,7 @@ iMeshWrapper* chimeBrowser::AddMeshObj (char* tname, char* sname, csSector* wher
 //* Delete mesh object in a given room at a given location.
 //*
 //*********************************************************************************
-bool chimeBrowser::DeleteMeshObj(csMeshWrapper *mesh)
+bool ChimeSystemDriver::DeleteMeshObj(csMeshWrapper *mesh)
 {
     if (mesh)
 	{
@@ -1434,7 +1435,7 @@ bool chimeBrowser::DeleteMeshObj(csMeshWrapper *mesh)
 //* Remove selected chime sector.
 //*
 //*********************************************************************************
-bool chimeBrowser::RemoveChimeSector(chimeSector* &sec)
+bool ChimeSystemDriver::RemoveChimeSector(ChimeSector* &sec)
 {
 	//sec->UnlinkHallwayDoors();
 	sec->DisconnectSector();
@@ -1451,7 +1452,7 @@ bool chimeBrowser::RemoveChimeSector(chimeSector* &sec)
 //*
 //*********************************************************************************
 
-bool chimeBrowser::ReshuffleSectors()
+bool ChimeSystemDriver::ReshuffleSectors()
 {
 	sector[1]->DisconnectSector();
 	delete sector[0];
@@ -1469,7 +1470,7 @@ bool chimeBrowser::ReshuffleSectors()
 //* Find closest mesh to the clicked screen coordinate
 //*
 //*********************************************************************************
-csMeshWrapper* chimeBrowser::FindNextClosestMesh (csMeshWrapper *baseMesh,
+csMeshWrapper* ChimeSystemDriver::FindNextClosestMesh (csMeshWrapper *baseMesh,
 	csCamera *camera, csVector2 *screenCoord)
 {
   int meshIndex;
@@ -1521,7 +1522,7 @@ csMeshWrapper* chimeBrowser::FindNextClosestMesh (csMeshWrapper *baseMesh,
 //* Find closest mesh to the clicked screen coordinate
 //*
 //*********************************************************************************
-csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoord, float &dist)
+csMeshWrapper* ChimeSystemDriver::SelectMesh (csCamera *camera, csVector2 *screenCoord, float &dist)
 {
 
 	selectedMeshSect = NULL;
@@ -1535,7 +1536,7 @@ csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoor
 	csVector3 origin = camera->GetW2CTranslation ();
 	csVector3 isect;
 
-	chimeSector *curSect = GetCurChimeSector();
+	ChimeSector *curSect = GetCurChimeSector();
 	closestMesh = curSect->SelectMesh(origin, origin + (vw-origin) * 20, isect, dist);
 	if( closestMesh )
 	{
@@ -1550,7 +1551,7 @@ csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoor
 //* check if there is a collision
 //*
 //*********************************************************************************
-bool chimeBrowser::CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *room)
+bool ChimeSystemDriver::CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *room)
 {
 	bool rc;
 
@@ -1583,7 +1584,7 @@ bool chimeBrowser::CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *r
 //*
 //*********************************************************************************
 
-bool chimeBrowser::UpdateObjPos()
+bool ChimeSystemDriver::UpdateObjPos()
 {
 	if(!meshSelected) return false;
 
@@ -1601,11 +1602,11 @@ bool chimeBrowser::UpdateObjPos()
 
 //*********************************************************************************
 //*
-//* handle all nework events which are received by chimeBrowser::GetFunction()
+//* handle all nework events which are received by ChimeSystemDriver::GetFunction()
 //*
 //*********************************************************************************
 
-bool chimeBrowser::HandleNetworkEvent(int method, char *params)
+bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 {
 	bool result = false;
 
@@ -1694,9 +1695,9 @@ bool chimeBrowser::HandleNetworkEvent(int method, char *params)
 //* Move a specified object.
 //*
 //*********************************************************************************
-bool chimeBrowser::MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z)
+bool ChimeSystemDriver::MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z)
 {
-	chimeSector *sec = NULL;
+	ChimeSector *sec = NULL;
 	csSector	*room = NULL;
 
 	sec = FindSector( roomUrl );
@@ -1724,9 +1725,9 @@ bool chimeBrowser::MoveObject(char *roomUrl, char *objectUrl, float x, float y, 
 //* Move a specified user.
 //*
 //*********************************************************************************
-bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float z)
+bool ChimeSystemDriver::MoveUser(char *roomUrl, char *userID, float x, float y, float z)
 {
-	chimeSector *sec = NULL;
+	ChimeSector *sec = NULL;
 	csSector	*room = NULL;
 
 	sec = FindSector( roomUrl );
@@ -1757,11 +1758,11 @@ bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float
 //*
 //*********************************************************************************
 
-bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
+bool ChimeSystemDriver::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z)
 {
 
-	chimeSector *sec = FindSector( roomUrl );
+	ChimeSector *sec = FindSector( roomUrl );
 	if(!sec) return false;
 
 	csSector *room = sec->GetRoom(0);
@@ -1797,9 +1798,9 @@ bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *
 //* Delete a specified object
 //*
 //*********************************************************************************
-bool chimeBrowser::DeleteObject(char *roomUrl, char *objectUrl)
+bool ChimeSystemDriver::DeleteObject(char *roomUrl, char *objectUrl)
 {
-	chimeSector *sec = FindSector( roomUrl );
+	ChimeSector *sec = FindSector( roomUrl );
 	if( !sec ) return false;
 
 	csSector * room;
@@ -1839,10 +1840,10 @@ bool chimeBrowser::DeleteObject(char *roomUrl, char *objectUrl)
 //* Add a specified user in a given room
 //*
 //*********************************************************************************
-bool chimeBrowser::AddUser(char *roomUrl, char *userID, char *shape, float x, float y, float z)
+bool ChimeSystemDriver::AddUser(char *roomUrl, char *userID, char *shape, float x, float y, float z)
 {
 
-	chimeSector *sec = FindSector( roomUrl );
+	ChimeSector *sec = FindSector( roomUrl );
 	if(!sec) return false;
 
 	csSector *room = sec->GetRoom(0);
@@ -1881,9 +1882,9 @@ bool chimeBrowser::AddUser(char *roomUrl, char *userID, char *shape, float x, fl
 //* Delete a specified user from a given room
 //*
 //*********************************************************************************
-bool chimeBrowser::DeleteUser(char *roomUrl, char *userID)
+bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *userID)
 {
-	chimeSector *sec = FindSector( roomUrl );
+	ChimeSector *sec = FindSector( roomUrl );
 	if( !sec ) return false;
 
 	csSector * room;
@@ -1926,7 +1927,7 @@ bool chimeBrowser::DeleteUser(char *roomUrl, char *userID)
 //*
 //*********************************************************************************
  
-bool chimeBrowser::ChangeClass(char *desc)
+bool ChimeSystemDriver::ChangeClass(char *desc)
 {
 	//Future work
 
@@ -1938,20 +1939,20 @@ bool chimeBrowser::ChangeClass(char *desc)
 //* Read a given room description
 //*
 //*********************************************************************************
-bool chimeBrowser::ReadRoom(char *desc)
+bool ChimeSystemDriver::ReadRoom(char *desc)
 {
 	char roomUrl[200];
 	csVector3 doorPos(0, 0, 0);
-	chimeSector *sec1 = reqAtSec;
+	ChimeSector *sec1 = reqAtSec;
 
 	if( nextSector == NUM_SECT )
 	{
 		//Remove the firstSector from the chime world to
-		//make room for new chimeSector;
+		//make room for new ChimeSector;
 		ReshuffleSectors();
 	}
 
-	chimeSector *&sec2 = sector[nextSector];
+	ChimeSector *&sec2 = sector[nextSector];
 
 	//If chime sector already exist at next sector location, remove it.
 	if( sec2 )
@@ -1973,7 +1974,7 @@ bool chimeBrowser::ReadRoom(char *desc)
 			nextSector++;	//This is the first chime sector of the chime world.
 		}
 
-		sec2 = new chimeSector(System, engine);
+		sec2 = new ChimeSector(System, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
 
 		comm.SubscribeRoom(sec2->GetUrl(), userID);
@@ -2004,7 +2005,7 @@ bool chimeBrowser::ReadRoom(char *desc)
 //*
 //*********************************************************************************
 
-char* chimeBrowser::getLocalIP()
+char* ChimeSystemDriver::getLocalIP()
 {
 
 	WSAData wsaData;
@@ -2044,7 +2045,7 @@ char* chimeBrowser::getLocalIP()
 //* print an error using the error box
 //*
 //*********************************************************************************
-void chimeBrowser::ShowError(const char *component, const char* error_msg, const char *variable) {
+void ChimeSystemDriver::ShowError(const char *component, const char* error_msg, const char *variable) {
 	char tmp[50];
 	sprintf(tmp, "%s\n%s : %s\n", component, error_msg, variable);
 	Alert(tmp);
@@ -2055,7 +2056,7 @@ void chimeBrowser::ShowError(const char *component, const char* error_msg, const
 //* print an error using the error box
 //*
 //*********************************************************************************
-void chimeBrowser::ShowError(const char *component, const char* error_msg) {
+void ChimeSystemDriver::ShowError(const char *component, const char* error_msg) {
 	char tmp[50];
 	sprintf(tmp, "%s\n%s\n", component, error_msg);
 	Alert(tmp);
