@@ -20,6 +20,7 @@ SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *
 }
 
 
+//setup the socket we're going to use
 void SienaPublisher::setupSocket() {
 
 	printf("The port we're publishing on is: %d\n", port);
@@ -181,7 +182,7 @@ void SienaPublisher::subscribeClient() {
 }
 
 
-void SienaPublisher::subscribeMethod(char *method) {
+void SienaPublisher::subscribeMethod(char *method, bool include_myself) {
 		setupSocket();
 		
 		char subscribeString [1000]; 
@@ -197,7 +198,12 @@ void SienaPublisher::subscribeMethod(char *method) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+
+		if (include_myself)
+			sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		else
+			sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+
 		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
 		printf("Sending filter request: %s\n\n", subscribeString);
 

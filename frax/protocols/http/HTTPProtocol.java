@@ -38,6 +38,12 @@ public class HTTPProtocol extends FRAXProtocol  {
      * makes a url object - for internal use only
      */
     private URL makeURLObj(String object) {
+	object = object.trim();
+
+	if (!object.startsWith("http"))
+		object = "http://" + object;
+
+
 	try {
 	    dest = new URL(object);
 	} catch (Exception e) {

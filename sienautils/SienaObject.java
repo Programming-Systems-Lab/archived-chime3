@@ -122,7 +122,7 @@ public class SienaObject {
      */
 
     public HierarchicalDispatcher getDispatcher() {
-	return Ssiena;
+		return Ssiena;
     }
 
     /**
@@ -138,7 +138,8 @@ public class SienaObject {
      */
 
     public void publish() throws Exception {
-	new PublishObject(getDispatcher(), getNotification());
+		System.err.println("*********Publishing:********\n" + getNotification());
+		new PublishObject(getDispatcher(), getNotification());
     }
 
 	/**

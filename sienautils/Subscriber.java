@@ -142,7 +142,7 @@ public class Subscriber {
     public void fraxSubscriber() throws Exception {
 	Filter f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("from_component", Op.EQ, "data_server");
 	f.addConstraint("chime_method", Op.EQ, "s_queryFrax");
 
 

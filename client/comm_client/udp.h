@@ -127,7 +127,7 @@ public:
 	SienaSubscriber(char *host, short port, char *_username, chimeBrowser *_nav);
 	void subscribeRoom(char *room);
 	void subscribeClient();
-	void subscribeMethod(char *method);
+	void subscribeMethod(char *method, bool include_myself);
 	void unsubscribeClient();
 	void unsubscribeRoom(char *room);
 	void startServer();
@@ -164,7 +164,7 @@ public:
 	void subscribeClient();
 
 	//subscribe to all events of some method
-	void subscribeMethod(char *method);
+	void subscribeMethod(char *method, bool include_myself);
 
 	//unsubscribe from all events of some room
 	void unsubscribeRoom(char *room);
@@ -195,7 +195,7 @@ class ClientComm {
 	   bool subscribeClient();
 
 	   //subscribe to all events of some method
-	   bool subscribeMethod(char *method);
+	   bool subscribeMethod(char *method, bool include_myself);
 
 	   //unsubscribe from all events of some room
 	   bool unsubscribeRoom(char *room);

@@ -185,20 +185,23 @@ public class HTMLPlug extends FRAXPlug {
 	    //System.err.println("The path is: " + path);
 
 	    if (path.startsWith("http://"))
-		return path;
+			return path;
 
 	    if (path.startsWith("/")) {
-		if (address.getPort() != -1) {
-		    return address.getHost() + ":" + address.getPort() + "/" + path;
-		} else {
-		    return address.getHost() + "/" + path;
+
+			if (address.getPort() != -1) {
+		    	return "http://" + address.getHost() + ":" + address.getPort() + path;
+
+			} else {
+		    	return "http://" + address.getHost() + path;
+			}
 		}
-	    }
 
 	    else {
-		String temp = address.toString();
-		temp = temp.substring(0, temp.lastIndexOf("/"));
-		return temp + "/" + path;
+
+			String temp = address.toString();
+			temp = temp.substring(0, temp.lastIndexOf("/"));
+			return temp + "/" + path;
 	    }
 
 	}

@@ -84,8 +84,8 @@ bool ClientComm::subscribeClient() {
 }
 
 //subscribe to all events of some method
-bool ClientComm::subscribeMethod(char *method) {
-	siena_publisher->subscribeMethod(method);
+bool ClientComm::subscribeMethod(char *method, bool include_myself) {
+	siena_publisher->subscribeMethod(method, include_myself);
 	return true;
 }
 

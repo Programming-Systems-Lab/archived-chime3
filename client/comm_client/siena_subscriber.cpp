@@ -112,7 +112,7 @@ void SienaSubscriber::subscribeClient() {
 }
 
 
-void SienaSubscriber::subscribeMethod(char *method) {
+void SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
 		SOCKET s = createSendSocket();
 
 		char subscribeString [1000]; 
@@ -128,7 +128,12 @@ void SienaSubscriber::subscribeMethod(char *method) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+
+		if (include_myself)
+			sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		else
+			sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+
 		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
@@ -354,14 +359,14 @@ void SienaSubscriber::startServer() {
 	//subscribeClient();
 
 	//let's just subscribe the client to all the methods that he wants
-	subscribeMethod("s_moveObject");
-	subscribeMethod("s_moveUser");
-	subscribeMethod("s_addObject");
-	subscribeMethod("s_enteredRoom");
-	subscribeMethod("s_leftRoom");
-	subscribeMethod("s_deleteObject");
-	subscribeMethod("s_changeClass");
-	subscribeMethod("s_roomInfo");
+	subscribeMethod("s_moveObject", true);
+	subscribeMethod("s_moveUser", true);
+	subscribeMethod("s_addObject", true);
+	subscribeMethod("s_enteredRoom", true);
+	subscribeMethod("s_leftRoom", true);
+	subscribeMethod("s_deleteObject", true);
+	subscribeMethod("s_changeClass", true);
+	subscribeMethod("s_roomInfo", true);
 
 	// Infinite loop to keep receiving events for the client 
 	

@@ -162,21 +162,21 @@ public class DataServer {
     }
 
     // handle an event
-    public void eventReceived(SienaObject e) {
+    public synchronized void eventReceived(SienaObject e) {
 	String fromComponent = e.getFromComponent();
 	String method = e.getMethod();
 
 	System.err.println("DS New Events Received.");
 	System.err.println("from_component: " + fromComponent);
 	System.err.println("method: " + method);
-		
+
 	String protocol = e.getProtocol();
 	String data = e.getData();
 	StringTokenizer st;
 
 	// FRAX Call
 	if (fromComponent.equals("frax")) {
-	    
+
 	    System.err.println("DS METHOD CALL: FRAX");
 
 	    String type;
@@ -198,12 +198,12 @@ public class DataServer {
 		    SourceTuple t = p.parseDoc();
 
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-		    
+
 		    // invoke VEM with t.getProtocol(), t.getUrl()
 		    vem = VemNotif.getInstance();
 		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-		    
+
 		    // create a table of links and images
 		    try {
 			String tableName = "table" + tupleID;
@@ -225,7 +225,7 @@ public class DataServer {
 			vem = VemNotif.getInstance();
 			vobj = vem.getShape(t.getProtocol(),t.getUrl());
 			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-			
+
 			printTable(tableName);
 
 		    } catch(SQLException e1) {
@@ -278,7 +278,7 @@ public class DataServer {
 			    vem = VemNotif.getInstance();
 			    vobj = vem.getLinkShape(t.getUrl(),token);
 			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
-			    
+
 			    System.err.println("one iteration " + idx1 + " " + idx2);
 			}
 
@@ -298,7 +298,7 @@ public class DataServer {
 			    vem = VemNotif.getInstance();
 			    vobj = vem.getLinkShape(t.getUrl(),token);
 			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
-			    
+
 			}
 
 			printTable(tableName);
@@ -353,13 +353,13 @@ public class DataServer {
 			p = new BscwParser(data);
 			SourceTuple t = p.parseDoc();
 			addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-			
+
 			// invoke VEM with t.getProtocol(), t.getUrl()
 			vem = VemNotif.getInstance();
 			vobj = vem.getShape(t.getProtocol(),t.getUrl());
-			
+
 			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
-			
+
 		    } else {
 			ex.printStackTrace();
 		    }
@@ -369,10 +369,10 @@ public class DataServer {
 	    }
 
 	    printTable("SOURCE");
-	    
+
 	    System.err.println("END OF DS METHOD CALL PROCESS");
 	}
-	
+
 	// CLIENT CALL
 	else if (fromComponent.equals("client")) {
 
@@ -395,7 +395,7 @@ public class DataServer {
 		    e.setFromComponent("client");
 		    e.setMethod("c_getRoom");
 
-		    // eventReceived(e); // call the method again
+			//eventReceived(e); // call the method again
 		} else {
 		    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
 		    v = findLinkTuple(tableName);
@@ -431,14 +431,14 @@ public class DataServer {
 			System.err.println(ex);
 		    }
 		}
-		
+
 		System.err.println("END OF DS METHOD CALL PROCESS");
-		
+
 	}
 
 	// method: c_addObject
 	else if (method.equals("c_addObject")) {
-	    
+
 	    System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
 
 		st = new StringTokenizer(data, " ");
