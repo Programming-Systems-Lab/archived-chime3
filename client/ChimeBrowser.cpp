@@ -263,6 +263,14 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 		return false;
 	}
 
+	/** Set up communication class **/
+	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
+	WaitForSingleObject(hMutex,INFINITE); 
+	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
+	comm.SetChimeCom(comm_client);
+
+//	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
+
 
 	// csView is a view encapsulating both a camera and a clipper.
 	// You don't have to use csView as you can do the same by
@@ -286,10 +294,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	
 	engine->Prepare ();	
 
-/*	WaitForSingleObject(hMutex,INFINITE); 
-	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
-	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
-*/
+
 	return true;
 }
 
@@ -409,7 +414,15 @@ void chimeBrowser::NextFrame ()
   // Print the final output.
   G3D->Print (NULL);
 
-//  ReleaseMutex(hMutex);
+  //Give communication thread a chance to update any new events
+  ReleaseMutex(hMutex);
+
+  //NOTE:
+  //Get Function is possibly called by ClientComm during this period.
+
+  WaitForSingleObject(hMutex,INFINITE); 
+  //Block communication thread after letting it process atleast one event
+
 
 }
 

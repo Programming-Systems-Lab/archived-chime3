@@ -80,7 +80,7 @@ bool chimeComm::GetRoom(char *url)
 {
 	strcpy(command, url);
 
-//	client_comm->SendSienaFunction(c_getRoom, command,"","");
+	client_comm->SendSienaFunction(c_getRoom, command, url,"HTTP");
 	return true;
 }
 
@@ -94,7 +94,7 @@ bool chimeComm::MoveObject(char *roomUrl, char *objectUrl, float x, float y, flo
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
 
-//	client_comm->SendSienaFunction(c_moveObject, command,"","");
+	client_comm->SendSienaFunction(c_moveObject, command, roomUrl, "HTTP");
 	return true;
 }
 
@@ -108,7 +108,11 @@ bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z,
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
 	 
-//	client_comm->SendUDPFunction("IP", c_moveUser, command);
+	//Send signal to all the user in this room
+	for(int i = 0 ; i < userList->Length(); i++)
+	{
+		client_comm->SendUDPFunction(userList->Get(i), c_moveUser, command);
+	}
 	return true;
 }
 
@@ -122,7 +126,7 @@ bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
 
-//	client_comm->SendSienaFunction(c_enteredRoom, command,"","");
+	client_comm->SendSienaFunction(c_enteredRoom, command, newRoomUrl,"HTTP");
 	return true;
 }
 
@@ -133,7 +137,7 @@ bool chimeComm::UserLeftRoom(char *userID, char *oldRoomUrl)
 	strcpy(command, userID);
 	AppendToken(command, oldRoomUrl);	
 
-//	client_comm->SendSienaFunction(c_leftRoom, command,"","");
+	client_comm->SendSienaFunction(c_leftRoom, command, oldRoomUrl,"HTTP");
 	return true;
 }
 
@@ -146,7 +150,7 @@ bool chimeComm::AddObject(char *roomUrl, char *objectUrl, float x, float y, floa
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
 
-//	client_comm->SendSienaFunction(c_addObject, command,"","");
+	client_comm->SendSienaFunction(c_addObject, command, roomUrl,"HTTP");
 	return true;
 }
 
@@ -156,7 +160,7 @@ bool chimeComm::DeleteObject(char *roomUrl, char *objectUrl)
 	strcpy(command, roomUrl);
 	AppendToken(command, objectUrl);
 
-//	client_comm->SendSienaFunction(c_deleteObject, command,"","");
+	client_comm->SendSienaFunction(c_deleteObject, command, roomUrl,"HTTP");
 	return true;
 }
 
@@ -166,7 +170,7 @@ bool chimeComm::SubscribeRoom(char *roomUrl, char *userID)
 	strcpy(command, roomUrl);
 	AppendToken(command, userID);
 
-//	client_comm->SendSienaFunction(c_subscribeRoom, command,"","");
+	client_comm->SendSienaFunction(c_subscribeRoom, command, roomUrl,"HTTP");
 	return true;
 }
 //Unsubscribe for events of this room
@@ -175,7 +179,7 @@ bool chimeComm::UnsubscribeRoom(char *roomUrl, char *userID)
 	strcpy(command, roomUrl);
 	AppendToken(command, userID);
 
-//	client_comm->SendSienaFunction(c_unsubscribeRoom, command,"","");
+	client_comm->SendSienaFunction(c_unsubscribeRoom, command, roomUrl,"HTTP");
 	return true;
 }
 
@@ -183,6 +187,7 @@ bool chimeComm::UnsubscribeRoom(char *roomUrl, char *userID)
 bool chimeComm::Disconnect(char *userID)
 {
 	strcpy(command, userID);
-	//SendFunction(c_disconnect, command);
+
+//	client_comm->SendSienaFunction(c_disconnect, command, roomUrl,"HTTP");
 	return true;
 }
