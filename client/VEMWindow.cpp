@@ -93,8 +93,8 @@ int VeMnb::GetDefaults ()
 
 	FILE *fileData;
 
-	if ((fileData = fopen ("VeM_Default", "r")) == NULL)
-		printf ("\n\nERROR: The file \"files.txt\" cannot be found.\n\n");
+	if ((fileData = fopen ("VeM_Default.dat", "r")) == NULL)
+		printf ("\n\nERROR: The file \"VeM_Default.dat\" cannot be found.\n\n");
 	else
 	{
 		while (flag == 0)
@@ -107,7 +107,7 @@ int VeMnb::GetDefaults ()
 
 		files = (FileData *) calloc (count, sizeof (FileData));
 
-		fileData = fopen ("VeM_Default", "r");
+		fileData = fopen ("VeM_Default.dat", "r");
 
 		for (i = 0; i < count; i++)
 			fscanf (fileData, "%s %s %s %s\n", &files [i].file, &files [i].type, &files [i].sub, &files [i].object); 
@@ -215,7 +215,7 @@ void VeM::Gui (int user)
   lbType -> SetRect (155, 5, 375, 152);
   lbType -> id = 2001;
 
-  FillListBox ("VeM_Types", lbType);
+  FillListBox ("VeM_Types.dat", lbType);
 
   csButton *butAcceptType = new csButton (page2, 70003);
   butAcceptType -> id = 4003;
@@ -229,7 +229,7 @@ void VeM::Gui (int user)
   lbSub -> SetRect (155, 5, 375, 152);
   lbSub -> id = 2002;
 
-  FillListBox ("VeM_Subs", lbSub);
+  FillListBox ("VeM_Subs.dat", lbSub);
 
   csButton *butAcceptSub = new csButton (page3, 70004);
   butAcceptSub -> id = 4004;
@@ -248,7 +248,7 @@ void VeM::Gui (int user)
   st = new csStatic (page4, NULL, "Preview");
   st->SetPos (50, 17);
 
-  FillListBox ("VeM_Objects", lbObject);
+  FillListBox ("VeM_Objects.dat", lbObject);
 
   csButton *butAcceptObject = new csButton (page4, 70005);
   butAcceptObject -> id = 4005;
@@ -266,8 +266,8 @@ void VeM::FillFiles ()
 
 	FILE *fileData;
 
-	if ((fileData = fopen ("VeM_Default", "r")) == NULL)
-		printf ("\n\nERROR: The file \"files.txt\" cannot be found.\n\n");
+	if ((fileData = fopen ("VeM_Default.dat", "r")) == NULL)
+		printf ("\n\nERROR: The file \"VeM_Default.dat\" cannot be found.\n\n");
 	else
 	{
 		while ((fscanf (fileData, "%s %s %s %s", &x, &y, &w, &z)) != EOF)
