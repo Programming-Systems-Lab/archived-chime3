@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2001: The Trustees of Columbia University 
+ * Copyright (c) 2001: The Trustees of Columbia University
  * in the City of New York.  All Rights Reserved.
  *
  * RoomParser.java
@@ -18,15 +18,15 @@ import org.jdom.input.*;
 
 
 public class RoomParser {
-    
+
     private Document doc;
     private String data;
-    
+
     public RoomParser(Document arg, String s) {
 	doc = arg;
 	data = s;
     }
-    
+
     public RoomTuple parseDoc() {
 	String user=null;
 	String url=null;
@@ -35,7 +35,9 @@ public class RoomParser {
 	root = doc.getRootElement();
 	user = root.getChild("User").getText();
 	url = root.getChild("Url").getText();
-			
-	return new RoomTuple(url, user);
-    }    
+
+	String userIP = root.getChild("UserIP").getText();
+
+	return new RoomTuple(url, user, userIP);
+    }
 }

@@ -8,7 +8,7 @@
 
 //*********************************************************************************
 //*
-//*  ChimeComm.cpp  responsible for all comunication with 
+//*  ChimeComm.cpp  responsible for all comunication with
 //*	 Chime Server and all other clients.
 //*
 //*********************************************************************************
@@ -23,22 +23,22 @@ class ClientComm;
 class chimeComm
 {
 
-private:	
+private:
    char *userID;
    char command[500];
    ClientComm *client_comm;
 
    //Append given token to a string.
 	bool AppendToken(char *command, char *token);
-public:		
-	//Default constructor  
-	chimeComm(); 
-	//Constructor  
+public:
+	//Default constructor
+	chimeComm();
+	//Constructor
 	chimeComm(ClientComm *client_comm);
 	//Destructor to clean up and shutdown the engine.
-	~chimeComm(); 
+	~chimeComm();
 	void SetChimeCom(ClientComm *client_comm);
-	
+
 	//Connect to a given Chime Server
 	bool connect(char *server, char *userID, char *password);
 	//Connect to a given CHIME Server
@@ -67,7 +67,7 @@ public:
 
 	//Utility function to convert float to string
 	static char* ftoa(float num);
-	
+
 };
 
 

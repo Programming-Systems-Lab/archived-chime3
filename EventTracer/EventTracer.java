@@ -49,7 +49,7 @@ public class EventTracer {
 
     // SQL statements to create the tables
     private static String[] tableCreationSQL = {
-	"create table ROOM (url varchar(255), user varchar(255), PRIMARY KEY (url, user))",
+	"create table ROOM (url varchar(255), username varchar(255), userip varchar(255), PRIMARY KEY (url, username))",
        	"create index url on ROOM(url)",
 	"create table MOVEMENT (room varchar(255), obj varchar(255), x0 real, y0 real, z0 real, x1 real, y1 real, z1 real)",
 	"create index obj on MOVEMENT(obj)"
@@ -213,7 +213,7 @@ public class EventTracer {
 		   return;
 	       st.nextToken();
 	       String user = st.nextToken();
-	       addRoomTuple("default", user);
+	       //addRoomTuple("default", user); //This method never gets called
 
 	       System.err.println("END OF METHOD CALL PROCESS.");
 	    }
@@ -244,16 +244,22 @@ public class EventTracer {
 		e.setFromComponent("event_tracer");
 		e.setMethod("s_moveObject");
 
+
+		try {
+		//DON'T see any apparent reason for sending this to each user
+		//just needs to be sent once per room
+		/*
 		try {
 		    Vector v = findRoomTuple(roomUrl);
 		    if (v == null) {
-				System.err.println("Room tuple not found");
+				System.err.println("No users in room: " + roomUrl);
 				return;
 			}
 
 			//commenting this out... no need to publish for every user to see
 		    //for (int idx=0; idx < v.size(); idx++) {
 			//e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
+		*/
 			e.publish();
 		} catch (Exception ex) {
 		    System.err.println(ex);
@@ -270,19 +276,27 @@ public class EventTracer {
 
 		if (st.countTokens() < 2)
 		    return;
-		String user = st.nextToken();
+		String userIP = st.nextToken();
 		String roomUrl = st.nextToken();
+		String username = e.getUsername();
 
 		// notify users in the old room
 		String oldRoom = null;
 		Vector v = null;
 		String roommate;
-		oldRoom = findUserRoom(user);
+		oldRoom = findUserRoom(username);
 		if (oldRoom != null && !oldRoom.equals("default")) {
 		    v = findRoomTuple(oldRoom);
 		    e.setMethod("s_leftRoom");
-
+		    e.setData(userIP + " " + oldRoom);
 		    try {
+				e.publish();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			//again don't need to tell each user - just tell the entire room once
+			/*
 			if (v!=null) {
 			    for (int idx=0; idx<v.size(); idx++) {
 				roommate = ((RoomTuple)v.elementAt(idx)).getUser();
@@ -297,18 +311,28 @@ public class EventTracer {
 			System.err.println(ex);
 			return;
 		    }
+		    */
 		}
 
 		// add user to the new room
-		addRoomTuple(roomUrl, user);
+		addRoomTuple(roomUrl, username, userIP);
 
-		// notify the new user about its roommates
 		// notify the roomates about the new user
-		v = null;
-		roommate = null;
+		//v = null;
+		//roommate = null;
+
 		v = findRoomTuple(roomUrl);
 		e.setMethod("s_enteredRoom");
+		e.setData(userIP + " " + roomUrl);
 
+		try {
+			e.publish();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		//no need to notify everyone separately - just use the notification above once
+		/*
 		try {
 		    if (v!=null) {
 			for (int idx=0; idx<v.size(); idx++) {
@@ -328,6 +352,7 @@ public class EventTracer {
 		    System.err.println(ex);
 		    return;
 		}
+		*/
 
 		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
@@ -343,7 +368,7 @@ public class EventTracer {
 		String roomUrl = st.nextToken();
 
 		// add user to the new room
-		addRoomTuple(roomUrl, user);
+		//addRoomTuple(roomUrl, user);  //This never gets called so scrap this
 
 		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
@@ -357,6 +382,7 @@ public class EventTracer {
 		    return;
 		String user = st.nextToken();
 		String roomUrl = st.nextToken();
+
 
 		// notify users in the old room
 		String oldRoom = null;
@@ -488,17 +514,23 @@ public class EventTracer {
 
     // insert a tuple into the database, if not already there.
     // all string arguments must be enclosed by '' except url.
-    public boolean addRoomTuple(String url, String user) {
+    public boolean addRoomTuple(String url, String user, String userIP) {
 
-		System.err.println("Adding room " + url + " and user " + user);
+	System.err.println("Adding room " + url + " and user " + user + " and userIP " + userIP);
 
 	user = user.toLowerCase();
 	url = url.toLowerCase();
 
 	try {
+		System.err.println("Executing query: " + "insert into ROOM values ('" +
+				   url + "','" +
+				   user + "','" +
+				   userIP + "')");
+
 	    statement.executeQuery("insert into ROOM values ('" +
 				   url + "','" +
-				   user + "')");
+				   user + "','" +
+				   userIP + "')");
 	} catch(SQLException e) {
 	    System.err.println(e);
 	    return false;
@@ -647,8 +679,9 @@ public class EventTracer {
 	ResultSet r = null;
 
 	try {
-	    //System.err.println("Try to find " + url);
-	    r = statement.executeQuery("select * from ROOM where USER='"
+	    System.err.println("Executing query: " + "select * from ROOM where USERNAME='"
+				       + user + "'");
+	    r = statement.executeQuery("select * from ROOM where USERNAME='"
 				       + user + "'");
 	} catch(SQLException e) {
 	    System.err.println(e);
@@ -656,7 +689,7 @@ public class EventTracer {
 	}
 
 	if ( r == null) {
-	    //System.err.println("null SourceTuple Not FOUND.");
+	    System.err.println("User not found");
 	    return null;
 	}
 

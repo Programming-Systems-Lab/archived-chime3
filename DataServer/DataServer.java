@@ -322,6 +322,7 @@ public class DataServer {
 		System.err.println("DS METHOD CALL: CLIENT.C_GETROOM");
 		String protocol = e.getProtocol();
 		String data = e.getData();
+		String current_user = e.getUsername();
 		StringTokenizer st;
 		String roomUrl = data;
 
@@ -329,8 +330,6 @@ public class DataServer {
 
 			if (v == null)
 				System.err.println("The vector doesn't exist");
-			else
-				System.out.println("The vector size is: " + v.size());
 
 			// query frax
 			if ( v == null || v.size() == 0 ) {
@@ -340,7 +339,7 @@ public class DataServer {
 			    try {
 				e.publish();
 			    } catch (Exception ex) {
-				System.err.println(ex);
+					System.err.println(ex);
 			    }
 			    //e.setFromComponent("client");
 			    //e.setMethod("c_getRoom");
@@ -348,53 +347,118 @@ public class DataServer {
 				//eventReceived(e); // call the method again
 			} else {
 			    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
-			    v = findLinkTuple(tableName);
-			    if (v == null || v.size() == 0 ) {
+			    Vector objects = findLinkTuple(tableName);
+			    if (objects == null || objects.size() == 0 ) {
 					e.setData(data + " 10 5 1 0\n");
 			    } else {
-					int ctr = v.size();
+					int ctr = objects.size();
+					Vector users = et.findRoomTuple(roomUrl);
+
 					int length = 2* (ctr + 1);
 					if (length < 10)
 					    length = 10;
 					LinkTuple tmp;
 					int isDefault;
+
 					data += " 10 5 " + length + " " + ctr + "\n";
-					for (int i=0; i<ctr; i++) {
-					    tmp = ((LinkTuple)v.elementAt(i));
-					    data += tmp.getLink() + " " +
-						tmp.getShape() + " " +
-						tmp.getClasstype() + " " +
-						tmp.getSubtype() + " ";
 
-						MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
+					//let's get the list of users in the room first
+					data += generateListOfUsersInRoom(roomUrl, users, current_user);
 
-						if (mv != null) {
-							isDefault = 0; //not the default
-							data += isDefault + " " +
-							mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
-						}
+					//let's get the list of objects in the room now
+					data += generateListOfObjectsInRoom(roomUrl, objects);
 
-						else {
-							isDefault = 1;
-							double x = 0;
-							double y = 0;
-							double z = 0;
-							data += isDefault + " " + x + " " + y + " " + z + "\n";
-						}
-					}
 					e.setData(data);
-				    }
-				    e.setFromComponent("data_server");
-				    e.setMethod("s_roomInfo");
-				    try {
-					e.publish();
-				    } catch (Exception ex) {
-					System.err.println(ex);
-				    }
 				}
 
-				System.err.println("END OF DS METHOD CALL PROCESS");
+				e.setFromComponent("data_server");
+				e.setMethod("s_roomInfo");
+				try {
+					e.publish();
+				} catch (Exception ex) {
+					System.err.println(ex);
+				}
 			}
+
+				System.err.println("END OF DS METHOD CALL PROCESS");
+	}
+
+
+	//generate list of Objects in a particular room
+	public String generateListOfObjectsInRoom(String roomUrl, Vector objects) {
+		String data = "";
+		LinkTuple tmp;
+		int isDefault;
+
+		if (objects == null) {
+			System.err.println("There are no objects in: " + roomUrl);
+			return "";
+		}
+
+		for (int i=0; i<objects.size(); i++) {
+		    tmp = ((LinkTuple)objects.elementAt(i));
+		    data += tmp.getLink() + " " +
+			tmp.getShape() + " " +
+			tmp.getClasstype() + " " +
+			tmp.getSubtype() + " ";
+
+			MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
+
+			if (mv != null) {
+				isDefault = 0; //not the default
+				data += isDefault + " " +
+				mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
+
+			} else {
+				isDefault = 1;
+				double x = 0;
+				double y = 0;
+				double z = 0;
+				data += isDefault + " " + x + " " + y + " " + z + "\n";
+			}
+		}
+
+		return data;
+	}
+
+	//generate list of Users in a particular room
+	public String generateListOfUsersInRoom(String roomUrl, Vector users, String current_user) {
+		String data = "";
+		int isDefault;
+		System.err.println("**********The current user is: " + current_user);
+
+		if (users == null) {
+			System.err.println("There are no users in: " + roomUrl);
+			return "";
+		}
+
+		for (int idx=0; idx<users.size(); idx++) {
+			String user = ((RoomTuple)users.elementAt(idx)).getUser();
+			String userIP = ((RoomTuple)users.elementAt(idx)).getUserIP();
+
+			//make sure to only show other users in the room - ignore myself...
+			if (!user.equals(current_user)) {
+
+				data += userIP + " mdl1 User User ";
+
+				MovementTuple mv = et.findLastMovement(roomUrl, user);
+
+				if (mv != null) {
+					isDefault = 0; //not the default
+					data += isDefault + " " +
+					mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
+				} else {
+					isDefault = 1;
+					double x = 0;
+					double y = 0;
+					double z = 0;
+					data += isDefault + " " + x + " " + y + " " + z + "\n";
+				}
+			}
+		}
+
+		return data;
+	}
 
 
 	//handle an event that is from FRAX
@@ -601,6 +665,7 @@ public class DataServer {
 				if (optional.trim().equals("true")) {
 					e.setFromComponent("client");
 					e.setMethod("c_getRoom");
+					e.setOptional("false");
 					e.setData(e.getAddress());
 					handleGetRoomRequest(e);
 				}
