@@ -74,10 +74,13 @@ chimeBrowser::chimeBrowser()
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube txt txt 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "124.1.12.24 mdl1 User User 1\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "124.1.12.23 ninja User User 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.suhit.com/ stool Connector Connector 1\n");
+	strcat(testRoom, "124.1.12.22 mdl1 User User 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 /*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
@@ -301,7 +304,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	ReadRoom(testRoom);
 	
 	curSector = 0;
-	AddUser("http://www.yahoo.com/", "1.1.1.1", "mdl1", 5, 0, 5);
+	//AddUser("http://www.yahoo.com/", "1.1.1.1", "mdl1", 5, 0, 5);
 	//AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
 
 //	view->SetSector (sector[curSector]->GetRoom(0));

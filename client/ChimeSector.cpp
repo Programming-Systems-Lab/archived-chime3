@@ -641,6 +641,12 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			location = objPos;
 		}
 
+
+		if (!strcmp(Class, "User")) 
+		{
+			AddUser(objUrl);  //add the user to the list of users
+		}
+
 		if(!strcmp(Class, "Connector"))
 		{
 			char *tmp = new char[strlen(objUrl)+1];
@@ -650,7 +656,7 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		
 		buf += count;
 
-		AddMeshObj (shape, objUrl, room,location, 1);		
+		AddMeshObj (shape, objUrl, room,location, 1);
 	}		
 	
 	room->SetAmbientColor(50,50,50);
