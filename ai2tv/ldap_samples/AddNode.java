@@ -15,7 +15,7 @@ public class AddNode {
       /* Note that in your code you will most likely have to support
        * more than just these primitives
        */
-      System.out.println("usage: java AddService <LDAP server:port> <org_unit> <name_of_node>");
+      System.out.println("usage: java AddNode <LDAP server:port> <org_unit> <name_of_node>");
       System.exit(-1);
     }
 
