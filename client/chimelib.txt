@@ -1,0 +1,8 @@
+;Load all the necessary textures
+TEXT brownfabric /lib/chime/brownfabric1.jpg
+TEXT greywall /lib/chime/greywall.jpg
+TEXT tilefloor1 /lib/chime/tilefloor1.jpg
+TEXT woodfloor /lib/chime/woodfloor.jpg
+TEXT marble1 /lib/chime/marble1.gif
+;Load all the necessary 3D objects
+OBJ  balloons lib/chime/BALLOONS.3DS brownfabric
