@@ -1,0 +1,39 @@
+1
+250 localhost
+http://www.cs.columbia.edu/~dk315/ai2tv/1
+frame_index.txt
+-------------------------------------------------------
+
+	Project:	AI2TV SYSTEM 0
+	Date:		12/20/2001
+	Author:		Dov B. Katz (dk315@columbia.edu)
+	Filename:	session.txt
+
+Number of clients here for a given video session
+This information will eventually be fed into the
+AI2TV system via some sort of workgroup calendar
+which is currently a work in progress. The syntax
+for this file is fairly simple, and it's simplicity
+is what allows for unlimited unmarked commenting
+at the bottom.  Basically, it is of the following
+format:
+
+[N] // The number of clients in the list
+{[ClientID] [ClientIPAddr]}+
+[URL OF DIRECTORY HOLDING JPEGS]
+[FILENAME of Frame List, relative to above URL]
+
+
+The second line is repeated N times, and beyond that
+the downloaded file is not read. Hence, the comments.
+
+So, basically, prepare yourself for a scanf which will
+read the first line with a "%d" and each successive 
+line as "%d %s" and then a "%s" for the base URL, and a
+"%s" for the filename of the frame index.
+
+
+/// OLD URL http://www.cs.columbia.edu/~dk315/ai2tv/1
+/// other old url http://localhost/aivid_2
+
+  
