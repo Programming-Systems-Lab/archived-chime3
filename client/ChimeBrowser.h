@@ -183,6 +183,9 @@ public:
 	//write a small message in the bottom left corner
 	void writeMessage();
 
+	//get the IP of this machine
+	char* getLocalIP();
+
 
 	//Destructor to clean up and shutdown the engine.
 	virtual ~chimeBrowser();

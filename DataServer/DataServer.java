@@ -1014,7 +1014,9 @@ public class DataServer {
 	else
 	    protocol = protocol.toLowerCase();
 
-	url = url.toLowerCase();
+	//This is a bad idea
+	//url = url.toLowerCase();
+
 	ResultSet r = null;
 
 	try {
@@ -1050,9 +1052,14 @@ public class DataServer {
 
 	shape2d = shape2d.trim();
 	url = url.trim();
-	url = url.toLowerCase();
+
+	//this is a bad idea
+	//url = url.toLowerCase();
+
 	roomUrl = roomUrl.trim();
-	roomUrl = roomUrl.toLowerCase();
+
+	//this is a bad idea
+	//roomUrl = roomUrl.toLowerCase();
 
 	System.err.println("In setLinkShape the args are: " + classtype + " " + subtype + " " + shape + " " + shape2d + " " + protocol + " " + roomUrl + " " + url);
 

@@ -71,7 +71,8 @@ chimeBrowser::chimeBrowser()
 
 	//DEBUG stuff. FIXIT
 
-	strcpy(userID, "124.2.12.12");
+	//strcpy(userID, "124.1.12.12");
+	strcpy(userID, getLocalIP());
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
@@ -286,9 +287,9 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
-	strcpy(username, "denis");
+	strcpy(username, "suhit");
 
-	comm_client = new ClientComm(9999, "localhost", 1234, username, "denis", this);
+	comm_client = new ClientComm(9999, "eagle", 1234, username, "suhit", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
@@ -1688,4 +1689,39 @@ bool chimeBrowser::ReadRoom(char *desc)
 	}
 
 	return true;
+}
+
+//get the IP address of this machine
+char* chimeBrowser::getLocalIP()
+{
+
+	WSAData wsaData;
+    if (WSAStartup(MAKEWORD(1, 1), &wsaData) != 0) {
+		//just return some bogus IP
+        return "129.1.1.1";
+    }
+
+    char hostname[80];
+    if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
+        cerr << "Error " << WSAGetLastError() <<
+                " when getting local host name." << endl;
+		//just return some bogus IP
+        return "129.1.1.1";
+    }
+    cout << "Host name is " << hostname << "." << endl;
+
+    struct hostent *ip_list = gethostbyname(hostname);
+    if (ip_list == 0) {
+        cerr << "Bad host lookup." << endl;
+		//just return some bogus IP
+        return "129.1.1.1";
+    }
+
+	struct in_addr addr;
+    memcpy(&addr, ip_list->h_addr_list[0], sizeof(struct in_addr));
+    cout << "Address " << inet_ntoa(addr) << endl;
+
+	WSACleanup();
+
+    return inet_ntoa(addr);
 }

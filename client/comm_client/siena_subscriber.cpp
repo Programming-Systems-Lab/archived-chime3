@@ -17,7 +17,7 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 	host = _host;
 	port = _port;
 
-	
+
 	WORD wVersionRequested = MAKEWORD (2,2); // Version of Winsock that is used <2.2>
 	WSADATA wsaData;
 	int nRet;
@@ -27,7 +27,7 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 	// Checks for the correct version of winsock
 	if (wsaData.wVersion != wVersionRequested)
 		printf ("\n\nError: Winsock did not Initialize Properly\n\n");
-	
+
 	else
 	{
 		LPHOSTENT lpht = gethostbyname (host);
@@ -36,14 +36,14 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 			fprintf (stderr, "\n\nWinsock Error: Host Not Found\n\n");
 
 		r = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		
+
 		if (r == INVALID_SOCKET)
 			fprintf (stderr, "\n\nWinsock Error: Invalid Socket\n\n");
 
 		SOCKADDR_IN saR;
 
 		saR.sin_family      = AF_INET;
-		saR.sin_addr.s_addr = INADDR_ANY;	
+		saR.sin_addr.s_addr = INADDR_ANY;
 		saR.sin_port        = htons (5000);
 
 		if (bind (r, (LPSOCKADDR) &saR, sizeof (struct sockaddr)) == SOCKET_ERROR)
@@ -58,7 +58,7 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 
 void SienaSubscriber::subscribeRoom(char *room) {
 
-		SOCKET s = createSendSocket();	
+		SOCKET s = createSendSocket();
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
@@ -70,8 +70,8 @@ void SienaSubscriber::subscribeRoom(char *room) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username); 
-		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
+		sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -85,7 +85,7 @@ void SienaSubscriber::subscribeRoom(char *room) {
 
 void SienaSubscriber::subscribeClient() {
 		SOCKET s = createSendSocket();
-		
+
 
 
 		// Create Header
@@ -99,7 +99,7 @@ void SienaSubscriber::subscribeClient() {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username); 
+		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -115,8 +115,8 @@ void SienaSubscriber::subscribeClient() {
 void SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
 		SOCKET s = createSendSocket();
 
-		char subscribeString [1000]; 
-		
+		char subscribeString [1000];
+
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
@@ -143,13 +143,13 @@ void SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
 
-		closesocket (s);	
+		closesocket (s);
 }
 
 void SienaSubscriber::unsubscribeRoom(char *room) {
 		SOCKET s = createSendSocket();
 
-		char subscribeString [1000]; 
+		char subscribeString [1000];
 
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
@@ -162,7 +162,7 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
+		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -170,14 +170,14 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		}
-	
+
 		closesocket (s);
 }
 
 void SienaSubscriber::unsubscribeClient() {
 		SOCKET s = createSendSocket();
 
-		char subscribeString [1000]; 
+		char subscribeString [1000];
 
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"UNS\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
@@ -190,7 +190,7 @@ void SienaSubscriber::unsubscribeClient() {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username); 
+		sprintf (subscribeString, "%s username=\"%s\"}", subscribeString, username);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -215,7 +215,7 @@ SOCKET SienaSubscriber::createSendSocket() {
 		printf ("\n\nError: Winsock did not Initialize Properly\n\n");
 		return NULL;
 	}
-	
+
 	else
 	{
 		LPHOSTENT lpht = gethostbyname (host);
@@ -224,7 +224,7 @@ SOCKET SienaSubscriber::createSendSocket() {
 			fprintf (stderr, "\n\nWinsock Error: Host Not Found\n\n");
 
 		SOCKET s = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
-		
+
 		if (s == INVALID_SOCKET)
 			fprintf (stderr, "\n\nWinsock Error: Invalid Socket\n\n");
 
@@ -251,7 +251,7 @@ void SienaSubscriber::formatResponse(char *string) {
 
 	int method = getMethod(string);
 
-	if (data != NULL && method != -1) { 
+	if (data != NULL && method != -1) {
 		nav->GetFunction(method, data);
 	} else {
 		printf("Response couldn't be formatted properly\n Ignoring....\n");
@@ -268,12 +268,12 @@ char *SienaSubscriber::getField(char *field, char *string) {
 
 	strcpy(data, string);
 	data = strstr(data, field);
-	
+
 	if (data != NULL)
 	{
 		data = strstr(data, "\"");
 		data = &data[1];
-		
+
 		char *end = strstr(data, "\" ");
 		if (end == NULL)
 			return NULL;
@@ -290,7 +290,7 @@ char *SienaSubscriber::getField(char *field, char *string) {
 		return final;
 		//return data;
 	}
-	else 
+	else
 	{
 		printf("Siena Subscriber Error: Incorrectly formatted string - can't get field\n");
 		delete [] data;
@@ -313,7 +313,7 @@ int SienaSubscriber::getMethod(char *string) {
 		return c_getRoom;
 	else if (strstr(method, "c_moveObject") != NULL)
 		return c_moveObject;
-	else if (strstr(method, "c_moveUser") != NULL) 
+	else if (strstr(method, "c_moveUser") != NULL)
 		return c_moveUser;
 	else if (strstr(method, "c_enteredRoom") != NULL)
 		return c_enteredRoom;
@@ -321,13 +321,13 @@ int SienaSubscriber::getMethod(char *string) {
 		return c_addObject;
 	else if (strstr(method, "c_deleteObject") != NULL)
 		return c_deleteObject;
-	else if (strstr(method, "c_disconnect") != NULL) 
+	else if (strstr(method, "c_disconnect") != NULL)
 		return c_disconnect;
-	else if (strstr(method, "c_leftRoom") != NULL) 
+	else if (strstr(method, "c_leftRoom") != NULL)
 		return c_leftRoom;
-	else if (strstr(method, "c_unsubscribeRoom") != NULL) 
+	else if (strstr(method, "c_unsubscribeRoom") != NULL)
 		return c_unsubscribeRoom;
-	else if (strstr(method, "c_subscribeRoom") != NULL) 
+	else if (strstr(method, "c_subscribeRoom") != NULL)
 		return c_subscribeRoom;
 
 	//server side methods
@@ -337,7 +337,7 @@ int SienaSubscriber::getMethod(char *string) {
 		return s_moveUser;
 	else if (strstr(method, "s_addObject") != NULL)
 		return s_addObject;
-	else if (strstr(method, "s_deleteObject") != NULL) 
+	else if (strstr(method, "s_deleteObject") != NULL)
 		return s_deleteObject;
 	else if (strstr(method, "s_changeClass") != NULL)
 		return s_changeClass;
@@ -370,22 +370,22 @@ void SienaSubscriber::startServer() {
 	subscribeMethod("s_roomInfo", true);
 	*/
 
-	// Infinite loop to keep receiving events for the client 
-	
+	// Infinite loop to keep receiving events for the client
+
 	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
 	{
 		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
 		closesocket (r);
 	}
 
-		
-	char finalString [100000];
-	char recvString [5000]; 
+
+	char finalString [999999];
+	char recvString [5000];
 
 	while(1)
 	{
 
-	// Infinite loop to keep receiving events for the client 
+	// Infinite loop to keep receiving events for the client
 	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
 	{
 		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
@@ -403,30 +403,30 @@ void SienaSubscriber::startServer() {
 				closesocket (r);
 			}
 
-		
+
 			int length = 1;
 			memset(finalString, 0, sizeof(finalString));
-	
-		while(length != 0) 
+
+		while(length != 0)
 		{
 				memset(recvString, 0, sizeof(recvString));
 
-			
+
 				if ((length = recv (remoteSocket, recvString, sizeof(recvString), 0)) == SOCKET_ERROR)
 				{
 					fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
 					closesocket (r);
 					closesocket (remoteSocket);
 				}
-			
+
 
 				//concatenate all accepts
 				//because Siena never fills out the buffer completely
 				//would have done blocking until buffer is full but can't find a siena message
 				//terminator to signify message end
-				
-				
-				if (recvString != NULL) 
+
+
+				if (recvString != NULL)
 				{
 					recvString[length] = NULL;
 					//printf("The receive String is: %s\n", recvString);
@@ -443,28 +443,28 @@ void SienaSubscriber::startServer() {
 						printf("The length of this packet is %d", length);
 					}
 				}
-				
+
 		}
 
 		closesocket(remoteSocket);
 
 
-		if (finalString != NULL) 
+		if (finalString != NULL)
 		{
 			//recvString[length] = NULL;
 			//printf("The string is: %s\n", recvString);
 			formatResponse(finalString);
 			printf ("%s\n\n", finalString);
 		}
-		
+
 	}
-		
+
 	WSACleanup ();
 
 	return;
 }
 
-
+//get the Local IP of this machine
 char* SienaSubscriber::getLocalIP()
 {
     char hostname[80];
@@ -484,6 +484,6 @@ char* SienaSubscriber::getLocalIP()
 	struct in_addr addr;
     memcpy(&addr, ip_list->h_addr_list[0], sizeof(struct in_addr));
     cout << "Address " << inet_ntoa(addr) << endl;
-    
+
     return inet_ntoa(addr);
 }
