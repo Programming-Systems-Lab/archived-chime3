@@ -90,8 +90,8 @@ int UDPServer::getMethod(char *method) {
 		return s_moveObject;
 	else if (strstr(method, "s_moveUser") != NULL)
 		return s_moveUser;
-	else if (strstr(method, "s_AddObject") != NULL)
-		return s_AddObject;
+	else if (strstr(method, "s_addObject") != NULL)
+		return s_addObject;
 	else if (strstr(method, "s_deleteObject") != NULL) 
 		return s_deleteObject;
 	else if (strstr(method, "s_changeClass") != NULL)

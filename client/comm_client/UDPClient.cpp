@@ -45,8 +45,8 @@ char* UDPClient::getFunction(int func) {
 		return "s_moveObject";
 	else if (func == s_moveUser)
 		return "s_moveUser";
-	else if (func == s_AddObject)
-		return "s_AddObject";
+	else if (func == s_addObject)
+		return "s_addObject";
 	else if (func == s_deleteObject) 
 		return "s_deleteObject";
 	else if (func == s_changeClass)

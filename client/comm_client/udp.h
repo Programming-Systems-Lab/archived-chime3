@@ -19,14 +19,18 @@
 #define c_addObject 5			//	"roomUrl objectUrl x y z"
 #define c_deleteObject 6		//	"roomUrl objectUrl"
 #define c_disconnect 7			//	"userID"
-
+#define c_leftRoom	8			//  "userID oldRoomUrl"
+#define c_subscribeRoom	9		//  "roomUrl userID"
+#define c_unsubscribeRoom 10		//  "roomUrl userID"
 
 ////////////////SERVER SIDE METHODS/////////////////////////
 #define s_moveObject 8			//	"roomUrl objectUrl x y z"
 #define s_moveUser 9			//	"roomUrl userID	x y z"
-#define s_AddObject 10			//	"roomUrl objectUrl x y z"
+#define s_addObject 10			//	"roomUrl objectUrl x y z"
 #define s_deleteObject 11		//	"roomUrl objectUrl"
 #define s_changeClass 12		//	"roomUrl objectUrl newClassType newSubClassType new3Dfile new2Dfile"
+#define s_enteredRoom 14		//	"userID newRoomUrl x y z"
+#define s_leftRoom	15			//	"userID oldRoomUrl"
 #define s_roomInfo	13			//	"roomUrl Width Height Length #ofObjects\n
 								//	ObjectUrl_1 shape class subClass default x y x \n
 								//	ObjectUrl_2 shape class subClass default x y x \n
@@ -36,7 +40,6 @@
 								//	.
 								//	ObjectUrl_n shape class subClass default x y x \n"
 
-class chimeBrowser;
 
 //this is an equivalent of an interface you need to override
 /*class chimeBrowser {
