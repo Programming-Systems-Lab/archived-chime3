@@ -10,8 +10,8 @@ SET EVENT_TRACER=%CHIME%\EventTracer
 SET SHEN=%ROOT%\jars\hsql.jar;%ROOT%\jars\jdom.jar;%ROOT%\jars\xerces.jar;%ROOT%\jars\collections.jar
 SET CLASSPATH=%ROOT%;%JARS%;%FRAX%;%AUTH%;%SIENAUTILS%;%SHEN%;%DATASERVER%;%EVENT_TRACER%;%VEM%;.
 
-rem del ET.*
-rem del DB.*
+del ET.*
+del DB.*
 start "Siena Server" /min java siena.StartServer -port 1234
 sleep 2
 java psl.chime.sienautils.Subscriber senp://localhost:1234

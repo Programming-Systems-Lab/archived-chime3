@@ -199,6 +199,7 @@ public class EventTracer {
 
 	String protocol = e.getProtocol();
 	String data = e.getData();
+	System.err.println("$$$$$$$$$$$$$$$$$$$The Data sent is: " + data);
 	StringTokenizer st = new StringTokenizer(data," ");
 
 	// client Call
@@ -245,8 +246,10 @@ public class EventTracer {
 
 		try {
 		    Vector v = findRoomTuple(roomUrl);
-		    if (v == null)
-			return;
+		    if (v == null) {
+				System.err.println("Room tuple not found");
+				return;
+			}
 		    for (int idx=0; idx < v.size(); idx++) {
 			e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
 			e.publish();
@@ -443,6 +446,8 @@ public class EventTracer {
     // all string arguments must be enclosed by '' except url.
     public boolean addRoomTuple(String url, String user) {
 
+		System.err.println("Adding room " + url + " and user " + user);
+
 	user = user.toLowerCase();
 	url = url.toLowerCase();
 
@@ -566,7 +571,8 @@ public class EventTracer {
 	ResultSet r = null;
 
 	try {
-	    //System.err.println("Try to find " + url);
+	    System.err.println("Executing query: select * from ROOM where URL='"
+				       + url + "'");
 	    r = statement.executeQuery("select * from ROOM where URL='"
 				       + url + "'");
 	} catch(SQLException e) {
@@ -575,7 +581,7 @@ public class EventTracer {
 	}
 
 	if ( r == null) {
-	    //System.err.println("null SourceTuple Not FOUND.");
+	    System.err.println("null SourceTuple Not FOUND.");
 	    return null;
 	}
 

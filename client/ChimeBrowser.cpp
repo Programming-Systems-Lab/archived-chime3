@@ -282,7 +282,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE); 
-	comm_client = new ClientComm(9999, "water.psl.cs.columbia.edu", 1234, "denis", "denis", this);
+	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
