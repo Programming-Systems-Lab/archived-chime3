@@ -92,6 +92,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\AlwaysVisibleWindow.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ChatWindow.cpp
 # End Source File
 # Begin Source File
@@ -145,6 +149,10 @@ SOURCE=.\comm_client\SienaSubscriber.cpp
 # Begin Source File
 
 SOURCE=.\SienaWindow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StartStopWindow.cpp
 # End Source File
 # Begin Source File
 
