@@ -2,7 +2,7 @@ package psl.chime.sienautils;
 import siena.*;
 
 public class SienaObject {
-    
+
     public String Sdata;
     public String Susername;
     public String Spassword;
@@ -10,7 +10,8 @@ public class SienaObject {
     public String Sfrom_component;
     public String Saccess;
     public String Saddress;
-    public String Sprotocol; 
+    public String Sprotocol;
+    public String Smethod;
     HierarchicalDispatcher Ssiena;
 
     /**
@@ -26,7 +27,7 @@ public class SienaObject {
 
 
     /**
-     * create the full siena object 
+     * create the full siena object
      */
 
     public SienaObject(String protocol, String address, String this_component, String data, String username, String password, boolean need_auth) {
@@ -53,7 +54,7 @@ public class SienaObject {
 	setProtocol(not.getAttribute("prot").stringValue());
 	setAddress(not.getAttribute("address").stringValue());
     }
-		
+
 
     /**
      * get the Notification object associated with this siena object
@@ -96,8 +97,21 @@ public class SienaObject {
     public void publish() throws Exception {
 	new PublishObject(getDispatcher(), getNotification());
     }
-	
 
+	/**
+	 * get the method associated with this object
+	 */
+	public String getMethod() {
+		return Smethod;
+	}
+
+	/**
+	 * set the method associated with this siena object
+	 */
+
+	public void setMethod(String method) {
+		Smethod = method;
+	}
     /**
      * get the protocol associated with the thing we are trying to retrieve
      */
@@ -108,7 +122,7 @@ public class SienaObject {
     /**
      * set the protocol of this siena object
      */
-    
+
     public void setProtocol(String protocol) {
 	Sprotocol = protocol;
     }
@@ -122,7 +136,7 @@ public class SienaObject {
     }
 
     /**
-     * get the address encoded in this object 
+     * get the address encoded in this object
      */
 
     public String getAddress() {
@@ -140,7 +154,7 @@ public class SienaObject {
 
 
     /**
-     * get the username associated with this object 
+     * get the username associated with this object
      */
 
     public String getUsername() {
@@ -148,7 +162,7 @@ public class SienaObject {
     }
 
     /**
-     * get the password associated with this object 
+     * get the password associated with this object
      */
 
     public String getPassword() {
@@ -168,12 +182,12 @@ public class SienaObject {
      */
 
     public boolean needAuth() {
-	if (Sneed_auth.equals("true")) 
+	if (Sneed_auth.equals("true"))
 	    return true;
 	else return false;
     }
 
-    
+
     /**
      * return the authorization info
      */
@@ -193,7 +207,7 @@ public class SienaObject {
 
 
     /**
-     * set the username of this SienaObject() 
+     * set the username of this SienaObject()
      */
 
     public void setUsername(String username) {
@@ -223,9 +237,9 @@ public class SienaObject {
      */
 
     public void setNeedAuth(boolean need_auth) {
-	if (need_auth) 
+	if (need_auth)
 	    this.Sneed_auth = "true";
-	else 
+	else
 	    this.Sneed_auth = "false";
     }
 
