@@ -13,12 +13,11 @@ ChatWindow::~ChatWindow() {}
 
 
 ChatWindow::ChatWindow(csComponent *iParent)
-  : csWindow(iParent, "-- Chat --", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : AlwaysVisibleWindow(iParent, "-- Chat --", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 
   SetRect (0, app->bound.Height() / 3, app->bound.Width() / 4, app->bound.Height());
-  //SetState(CSS_DISABLED, true);
 
   int px = 15, py = 20;
   int labelw = 150;
@@ -67,7 +66,7 @@ ChatWindow::ChatWindow(csComponent *iParent)
 bool ChatWindow::HandleEvent (iEvent &Event)
 {
 
-  if (csWindow::HandleEvent (Event))
+  if (AlwaysVisibleWindow::HandleEvent (Event))
     return true;
 
   switch (Event.Type)

@@ -15,15 +15,13 @@ HistoryWindow::~HistoryWindow() {}
 
 
 HistoryWindow::HistoryWindow(csComponent *iParent)
-  : csWindow(iParent, "-- History --", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : AlwaysVisibleWindow(iParent, "-- History --", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 
   InitCount();
-  //SetState(CSS_SELECTABLE, true);
 
   SetRect (0, 15, app->bound.Width() / 4, app->bound.Height() / 3);
-  //SetState(CSS_DISABLED, true);
 
   int px = 15, py = 20;
   int labelw = 150;
@@ -63,7 +61,7 @@ bool HistoryWindow::AddItem(char *item) {
 bool HistoryWindow::HandleEvent (iEvent &Event)
 {
 
-  if (csWindow::HandleEvent (Event))
+  if (AlwaysVisibleWindow::HandleEvent (Event))
     return true;
 
 

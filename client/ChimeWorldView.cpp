@@ -119,11 +119,13 @@ bool ChimeWorldView::HandleEvent (iEvent &Event)
 }
 
 
+
 //****************************************************************
 //*
 //* Draw the View
 //*
 //*****************************************************************
+
 void ChimeWorldView::Draw ()
 {
   // Now its our time... Tell the engine to display 3D graphics
@@ -133,6 +135,7 @@ void ChimeWorldView::Draw ()
   view->Draw ();
    */
   // Ok, now invalidate all the windows that are above us
+
   inv_struct is;
   is.stop_at = parent;
   is.rect.Set (bound);

@@ -382,7 +382,7 @@ void VeM::Publish (char *host, short port)
 
 
 VEMWindow::VEMWindow(csComponent *iParent)
-  : csWindow(iParent, "VEM Console", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : AlwaysVisibleWindow(iParent, "VEM Console", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 

@@ -17,10 +17,19 @@ static int palette [] =
 };
 
 
+//this is going to be the window that all chime windows which need to be on
+//when animation occurs will have to extend
+//it will be like a normal csWindow but will deal with events a little differently
+class AlwaysVisibleWindow : public csWindow
+{
+	public:
+		AlwaysVisibleWindow(csComponent *iParent, const char *iTitle, int iWindowStyle=CSWS_DEFAULTVALUE, csWindowFrameStyle iFrameStyle=cswfs3D);
+		virtual bool HandleEvent(iEvent &Event);
+};
 
 
 //VEM stuff
-class VEMWindow : public csWindow
+class VEMWindow : public AlwaysVisibleWindow
 {
   public:
 	VEMWindow(csComponent *iParent);
@@ -160,7 +169,7 @@ class InfoStorer
 
 
 //Chat Dialog
-class ChatWindow : public csWindow
+class ChatWindow : public AlwaysVisibleWindow
 
 {
 
@@ -183,7 +192,7 @@ public:
 #define GO_THERE_PRESSED 7000
 
 //History Window
-class HistoryWindow : public csWindow
+class HistoryWindow : public AlwaysVisibleWindow
 {
 
 private:
@@ -232,6 +241,21 @@ class ChatAreaItem //: public csListBoxItem
 
 public:
 	ChatAreaItem( ChatArea *chat_area, const char *iText, int iID=0, csListBoxItemStyle iStyle=cslisNormal);
+};
+
+
+#define GO_PRESSED 10000
+#define STOP_PRESSED 10001
+
+class StartStopWindow : public AlwaysVisibleWindow
+{
+
+public:
+
+  StartStopWindow(csComponent *iParent);
+  virtual ~StartStopWindow ();
+  virtual bool HandleEvent (iEvent &Event);
+  
 };
 
 #endif //CHIME_WINDOW_H
