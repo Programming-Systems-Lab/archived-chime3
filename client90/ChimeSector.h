@@ -281,7 +281,8 @@ public:
 
 	// ADDED BY Suhit - to build ai2tv screen
 	iPolygon3D* BuildScreenOnWall(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize);
-
+	// ADDED by DOV - to put AIVideo Frames on Screen
+	iMeshWrapper* ChimeSector::PutImageOnScreen(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize);
 };
 
 

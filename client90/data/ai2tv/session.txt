@@ -1,6 +1,6 @@
 1
 250 localhost
-http://www.cs.columbia.edu/~dk315/ai2tv/1
+http://www.cs.columbia.edu/~suhit/ai2tv/1
 frame_index.txt
 -------------------------------------------------------
 

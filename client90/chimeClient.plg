@@ -6,14 +6,19 @@
 --------------------Configuration: chimeClient - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSPDB2.tmp" with contents
+Creating temporary file "C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP69.tmp" with contents
 [
 /nologo /MT /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR"Debug/" /Fp"Debug/chimeClient.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\pslroot\psl\chime\client90\AICacheController.cpp"
 "C:\pslroot\psl\chime\client90\AICommController.cpp"
+"C:\pslroot\psl\chime\client90\AIDownloader.cpp"
 "C:\pslroot\psl\chime\client90\AISyncController.cpp"
+"C:\pslroot\psl\chime\client90\AITimeController.cpp"
+"C:\pslroot\psl\chime\client90\AIVideoFrame.cpp"
+"C:\pslroot\psl\chime\client90\AIVideoFrameBuffer.cpp"
 "C:\pslroot\psl\chime\client90\AIVideoPlayer.cpp"
 "C:\pslroot\psl\chime\client90\AIVideoPlayerWindow.cpp"
+"C:\pslroot\psl\chime\client90\AlwaysVisibleWindow.cpp"
 "C:\pslroot\psl\chime\client90\ChatWindow.cpp"
 "C:\pslroot\psl\chime\client90\ChimeApp.cpp"
 "C:\pslroot\psl\chime\client90\ChimeComm.cpp"
@@ -23,15 +28,18 @@ Creating temporary file "C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSPDB2.tmp" with conten
 "C:\pslroot\psl\chime\client90\ChimeWorldView.cpp"
 "C:\pslroot\psl\chime\client90\comm_client\ClientComm.cpp"
 "C:\pslroot\psl\chime\client90\ConnectWindow.cpp"
+"C:\pslroot\psl\chime\client90\GetObjectWindow.cpp"
 "C:\pslroot\psl\chime\client90\HistoryWindow.cpp"
 "C:\pslroot\psl\chime\client90\InfoStorer.cpp"
 "C:\pslroot\psl\chime\client90\comm_client\SienaPublisher.cpp"
 "C:\pslroot\psl\chime\client90\comm_client\SienaSubscriber.cpp"
+"C:\pslroot\psl\chime\client90\SienaWindow.cpp"
 "C:\pslroot\psl\chime\client90\comm_client\UDPClient.cpp"
 "C:\pslroot\psl\chime\client90\comm_client\UDPServer.cpp"
+"C:\pslroot\psl\chime\client90\VEMWindow.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSPDB2.tmp" 
-Creating temporary file "C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSPDB3.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP69.tmp" 
+Creating temporary file "C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP6A.tmp" with contents
 [
 Cache.lib urlmon.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsgeom.lib libcsgfx.lib csparser.lib libcssys.lib libcsutil.lib libcstool.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /verbose /incremental:yes /pdb:"Debug/chimeClient.pdb" /machine:I386 /nodefaultlib:"libcmt.lib" /out:"Debug/chimeClient.exe" /pdbtype:sept 
 .\Debug\AICacheController.obj
@@ -63,34 +71,40 @@ Cache.lib urlmon.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.li
 .\Debug\UDPServer.obj
 .\Debug\VEMWindow.obj
 ]
-Creating command line "link.exe @C:\DOCUME~1\Suhit\LOCALS~1\Temp\RSPDB3.tmp"
+Creating command line "link.exe @C:\DOCUME~1\suhit\LOCALS~1\Temp\RSP6A.tmp"
 <h3>Output Window</h3>
 Compiling...
 AICacheController.cpp
 AICommController.cpp
+AIDownloader.cpp
 AISyncController.cpp
-ChimeSector.cpp
-ChimeSystemDriver.cpp
+AITimeController.cpp
+AIVideoFrame.cpp
+AIVideoFrameBuffer.cpp
 AIVideoPlayer.cpp
-c:\pslroot\psl\chime\client90\chimesystemdriver.cpp(702) : warning C4715: 'ChimeSystemDriver::GetInvisibleAlpha' : not all control paths return a value
-c:\pslroot\psl\chime\client90\chimesystemdriver.cpp(717) : warning C4715: 'ChimeSystemDriver::GetVisibleAlpha' : not all control paths return a value
 AIVideoPlayerWindow.cpp
+AlwaysVisibleWindow.cpp
 ChatWindow.cpp
 ChimeApp.cpp
 ChimeComm.cpp
+ChimeSector.cpp
+ChimeSystemDriver.cpp
 ChimeWindow.cpp
+c:\pslroot\psl\chime\client90\chimesystemdriver.cpp(702) : warning C4715: 'ChimeSystemDriver::GetInvisibleAlpha' : not all control paths return a value
+c:\pslroot\psl\chime\client90\chimesystemdriver.cpp(717) : warning C4715: 'ChimeSystemDriver::GetVisibleAlpha' : not all control paths return a value
 ChimeWorldView.cpp
 ClientComm.cpp
 ConnectWindow.cpp
+GetObjectWindow.cpp
 HistoryWindow.cpp
 InfoStorer.cpp
 SienaPublisher.cpp
 SienaSubscriber.cpp
+SienaWindow.cpp
 UDPClient.cpp
 UDPServer.cpp
+VEMWindow.cpp
 Linking...
-Processed /NODEFAULTLIB:libcmt.lib
-Processed /NODEFAULTLIB:libcmt.lib
 Processed /NODEFAULTLIB:libcmt.lib
 Processed /NODEFAULTLIB:libcmt.lib
 

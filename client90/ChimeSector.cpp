@@ -1938,6 +1938,55 @@ iMeshWrapper* ChimeSector::BuildSideDoor(iSector *room, csVector3 const &objPos,
 	return doormesh;
 }
 
+
+/*************************************************
+****  AI2TV Screen - Put Image on wall - ADDED BY DOV 3/6/02
+****
+**************************************************/
+// Build a image onto the aivideo screen
+iMeshWrapper* ChimeSector::PutImageOnScreen(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize)
+{
+
+	iMeshWrapper *doormesh = engine -> CreateSectorWallsMesh(room, "side_door");
+	iThingState *sidedoor = SCF_QUERY_INTERFACE(doormesh->GetMeshObject(), iThingState);
+
+	csVector3 pos(4.9999, 0, 7); //FIXIT: Should NOT be hardcoded
+	pos.z = objPos.z;
+//	pos.x = 4.9999 //FIXIT: This is not smart way
+
+	if(objPos.x > 0){
+		pos += offset;
+
+		iPolygon3D* sideDoorTemp;
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, RIGHT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, RIGHT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}else{
+		pos.x = -pos.x;
+		pos += offset;
+
+		iPolygon3D* sideDoorTemp;
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, LEFT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, LEFT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}
+
+	++nextSideDoorNum;
+
+	return doormesh;
+}
+
+/*************************************************
+****  END {ADDED BY DOV 3/6/02}
+****
+**************************************************/
+
 //get the side door url associated with this doornum
 char* ChimeSector::GetSideDoorUrl(int doorNum)
 {

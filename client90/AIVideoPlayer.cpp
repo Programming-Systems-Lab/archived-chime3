@@ -405,7 +405,7 @@ int AIVideoPlayer::DisplayFrame(iMaterialWrapper *frame_material){
 	room = sec2->GetRoom(0);
 
 	// This chimeSector method is used to actually put the frame on the wall...
-	iMeshWrapper *doormesh = sec2->BuildSideDoor(sec2->GetRoom(0), screen_position, csVector3(-0.5,1.6,0.5), frameSize, frame_material, frameTxtSize);
+	iMeshWrapper *doormesh = sec2->PutImageOnScreen(sec2->GetRoom(0), screen_position, csVector3(-0.5,1.6,0.5), frameSize, frame_material, frameTxtSize);
 	room->ShineLights ();
 	}
 LOCKED=false;
@@ -605,7 +605,7 @@ void AIVideoPlayer::Initialize(){
 	}	else {
 	debug(1,"FRAME LIST SETUP FAILED");
 	}
-	LoadAudio();
+//	LoadAudio();
 
 	runFrameManager();
 		return;
