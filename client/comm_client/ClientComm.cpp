@@ -127,7 +127,7 @@ bool ClientComm::unsubscribeClient() {
 	return true;
 }
 
-bool ClientComm::SendUDPFunction(char *ip_addr, int function, char *params) {
+bool ClientComm::SendUDPFunction(const char *ip_addr, int function, char *params) {
 	cl->sendMess(ip_addr, function, params);
 	return true;
 }

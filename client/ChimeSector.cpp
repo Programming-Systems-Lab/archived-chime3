@@ -665,7 +665,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 		else if (!strcmp(Class, "User"))
 		{
-			AddUser(objUrl);  //add the user to the list of users
+			AddUser(objUrl, subClass);  //add the user to the list of users - subClass is the IP for users
 		}
 
 		else if(!strcmp(Class, "Connector"))
@@ -1273,7 +1273,7 @@ csPolygon3D*  ChimeSector::GetHallwayDoor(int doorNum)
 }
 
 //Get BackDoor of this chime sector.
-csPolygon3D*  ChimeSector::GetBackDoor()
+csPolygon3D* ChimeSector::GetBackDoor()
 {
 	return conn1BackDoor[0];
 }
@@ -1329,35 +1329,40 @@ int ChimeSector::findType(const char *thing)
 
 
 //Add user name to the list of users in the sector
-bool ChimeSector::AddUser(char *userID)
+bool ChimeSector::AddUser(char *username, char *ip_address)
 {
-	if(!userID) return false;
+	if(!username) return false;
 
 	if (System && ((ChimeSystemDriver*)System)->GetApp() && 
 			 ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
-		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->AddLocalUser(userID);
+		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->AddLocalUser(username, ip_address);
 	}
 
-	char *tmp = new char[strlen(userID)+1];
-	strcpy(tmp, userID);
+	char *tmp = new char[strlen(username)+ 1 + strlen(ip_address) + 4];
+	strcpy(tmp, username);
+	strcat(tmp, " ");
+	strcat(tmp, ip_address);
 	userList.Push(tmp);
 	return true;
 }
 
 //Delete user name from the list of users in the sector
-bool ChimeSector::deleteUser(char *userID)
+bool ChimeSector::deleteUser(char *username)
 {
-	if(!userID) return false;
+	if(!username) return false;
 
 	if (System && ((ChimeSystemDriver*)System)->GetApp() 
 			&&  ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
-		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->DeleteLocalUser(userID);
+		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->DeleteLocalUser(username);
 	}
 
-	char *user = NULL;
+	//char *user = NULL;
 	for(int i = 0; i < userList.Length(); i++)
 	{
-		if(!strcmp(userList.Get(i), userID))
+		char cur_username[100];
+		char *temp = userList.Get(i);
+		sscanf(temp, "%s ", cur_username);
+		if(!strcmp(cur_username, username))
 		{
 			userList.Delete(i);
 			return true;

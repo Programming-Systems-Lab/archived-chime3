@@ -47,7 +47,7 @@ ChatWindow::ChatWindow(csComponent *iParent)
   nb->AddPrimaryTab (page, "~Local Users", "Users in Current Room");
 
    //add a listbox
-  local_users_lb = new csListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  local_users_lb = new UserListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
   local_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
    
   //create the second page
@@ -56,12 +56,11 @@ ChatWindow::ChatWindow(csComponent *iParent)
   page->SetColor (CSPAL_DIALOG_BACKGROUND, cs_Color_Blue_D);
 
    //add a listbox
-  global_users_lb = new csListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
+  global_users_lb = new UserListBox (page, CSLBS_VSCROLL | CSLBS_MULTIPLESEL, cslfsThinRect);
   global_users_lb->SetSize (nb->bound.Width(), nb->bound.Height());
 
   last_ID = 0;
   (void*) new ChatAreaItem(chat_area, "", last_ID);
-  //(void*) new ChatAreaItem(chat_area, "Hello are you there this is a test. Maybe separating by chars wasn not the best idea", last_ID);
 
 }
 
@@ -73,8 +72,18 @@ bool ChatWindow::HandleEvent (iEvent &Event)
   {
 	case csevKeyDown: 
 		if(Event.Key.Code == CSKEY_ENTER) {
-			SendMessage("192.168.1.100", user_msg_line->GetText());
+			//send message to everyone selected in the list of local users
+			local_users_lb -> ForEachItem(SendMsg, (void*) this, true);
+
+			//send message to everyone selected in the list of global users
+			global_users_lb -> ForEachItem(SendMsg, (void*) this, true);
+
+			//Show a copy of the message on the sender's screen - AOL IM style
+			ShowMessage(user_msg_line->GetText());
+
+			//clear the line
 			user_msg_line->SetText("");
+
 			return true;
 		}
 
@@ -87,8 +96,15 @@ bool ChatWindow::HandleEvent (iEvent &Event)
   return false;
 }
 
+//to send a message or not
+bool ChatWindow::SendMsg(csComponent *item, void *chat_window_class) {
+	if (item->GetState(CSS_LISTBOXITEM_SELECTED))
+		((ChatWindow*) chat_window_class)->SendMessage(((UserListBoxItem*) item)->GetIPAddress(), ((ChatWindow*) chat_window_class)->user_msg_line->GetText());
+	return false;
+}
+
 //send a message to someone
-void ChatWindow::SendMessage(char *ip_address, const char *msg) {
+void ChatWindow::SendMessage(const char *ip_address, const char *msg) {
 	char temp[1000];
 	sprintf(temp, "%s %s %s",((ChimeApp*) app)->GetInfo()->GetLocalIP(), ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
 	((ChimeApp*) app)->GetInfo()->GetCommObject()->SendUDPFunction(ip_address, c_talk, temp);
@@ -112,27 +128,33 @@ void ChatWindow::ShowMessage(const char *username, const char* msg) {
 //add local users to the chat window
 void ChatWindow::AddLocalUsers(csStrVector *user_list) {
 	for (int i = 0; i < user_list->Length(); i++) {
-		AddLocalUser(user_list->Get(i));
+		char username[100];
+		char ip_address[100];
+		sscanf(user_list->Get(i), "%s %s", username, ip_address);
+		AddLocalUser(username, ip_address);
 	}
 }
 
 
 //add a user to the local list
-void ChatWindow::AddLocalUser(char *userID) {
-	(void) new csListBoxItem (local_users_lb, userID, 0, cslisEmphasized);
-	AddGlobalUser(userID);
+void ChatWindow::AddLocalUser(char *username, char *ip_address) {
+	(void) new UserListBoxItem (local_users_lb, username, ip_address, cslisEmphasized);
+	AddGlobalUser(username, ip_address);		
 }
 
 //add global users to the chat window
 void ChatWindow::AddGlobalUsers(csStrVector *user_list) {
 	for (int i = 0; i < user_list->Length(); i++) {
-		AddGlobalUser(user_list->Get(i));
+		char username[100];
+		char ip_address[100];
+		sscanf(user_list->Get(i), "%s %s", username, ip_address);
+		AddGlobalUser(username, ip_address);
 	}
 }
 
 //add a user to the global list
-void ChatWindow::AddGlobalUser(char *userID) {
-	(void) new csListBoxItem (global_users_lb, userID, 0, cslisEmphasized);
+void ChatWindow::AddGlobalUser(char *username, char *ip_address) {
+	(void) new UserListBoxItem (global_users_lb, username, ip_address, cslisEmphasized);
 }
 
 //delete a local user
@@ -161,6 +183,29 @@ ChatArea::ChatArea(int chars_per_line, csComponent *iParent, int iStyle, csListB
 	SetCharsPerLine(chars_per_line);
 	SetState(CSS_SELECTABLE, false);
 	csListBox::csListBox(iParent, iStyle, iFrameStyle);
+}
+
+bool ChatArea::HandleEvent(csEvent &Event) {
+	switch (Event.Type)
+	{
+	case csevCommand:
+      switch (Event.Command.Code)
+      {
+		//no selection will be supported
+        case cscmdListBoxItemSelected:
+          return true;
+          
+        case cscmdListBoxItemDeselected:
+        case cscmdListBoxItemClicked:
+        case cscmdListBoxItemDoubleClicked:
+          // resend command to parent
+			if (csListBox::parent)
+				csListBox::parent->HandleEvent (Event);
+          return true;
+	  }
+	}
+
+	return csListBox::HandleEvent(Event);
 }
 
 //add an item to the chat area
@@ -207,7 +252,6 @@ ChatAreaItem::ChatAreaItem(ChatArea *chat_area, const char *iText, int &iID, csL
 		
 		}
 	}
-
 }
 
 ChatAreaItem::FindSpace(const char* str, int max_chars, int *earliest_break, int *latest_break) {
@@ -227,8 +271,20 @@ ChatAreaItem::FindSpace(const char* str, int max_chars, int *earliest_break, int
 	else return false;
 }
 
+//no real reason for having this yet but knowing Suhit there will be one :-)
+UserListBox::UserListBox(csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_DEFAULTVALUE, iFrameStyle=cslfsThinRect ) {
+	last_ID = 0;
+	csListBox::csListBox(iParent, iStyle, iFrameStyle);
+}
 
+UserListBox::GetID() {
+	return last_ID++;
+}
 
-
-
+//this is an item that is present in the user list box
+UserListBoxItem::UserListBoxItem(UserListBox *user_list, const char *username, const char* ip_address, csListBoxItemStyle iStyle) : csListBoxItem (user_list, username, iStyle=cslisNormal) {
+	strcpy(UserListBoxItem::username, username);
+	strcpy(UserListBoxItem::ip_address, ip_address);
+	csListBoxItem::csListBoxItem(user_list, username, user_list->GetID(), iStyle);
+}
 

@@ -108,7 +108,7 @@ class UDPClient {
 
    public:
 	   UDPClient(int _port, ChimeSystemDriver *_System);
-	   void sendMess(char *IP_addr, int function, char *params);
+	   void sendMess(const char *IP_addr, int function, char *params);
 
 		//destructor
 	   ~UDPClient();
@@ -210,7 +210,7 @@ class ClientComm {
    public:
 	   ~ClientComm();
 	   ClientComm(int port, const char *SAddress, int Sport, const char *_username, const char *_password, ChimeSystemDriver *_nav);
-	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
+	   bool SendUDPFunction(const char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 	   //subscribe to all events in a room
 	   bool subscribeRoom(char *room, int option);

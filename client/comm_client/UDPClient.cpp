@@ -71,7 +71,7 @@ char* UDPClient::getFunction(int func) {
 }
 
 //this will send a message using this UDPClient
-void UDPClient::sendMess(char *host, int func, char *params) {
+void UDPClient::sendMess(const char *host, int func, char *params) {
 
 	char *function = getFunction(func);
 
@@ -86,6 +86,9 @@ void UDPClient::sendMess(char *host, int func, char *params) {
 
 
    lpht = gethostbyname (host);
+   if (!lpht) {
+	   return;
+   }
 
    // Creating Udp Socket
    if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
@@ -105,6 +108,7 @@ void UDPClient::sendMess(char *host, int func, char *params) {
 	{
 		fprintf (stderr, "\n\nWinsock Error: Unable to Connect\n\n");
 		closesocket (sock);
+		return;
 	}
 	
 	char msg [5000];
@@ -125,6 +129,7 @@ void UDPClient::sendMess(char *host, int func, char *params) {
 	{
 		fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
 		closesocket (sock);
+		return;
 	}
 
 	//free(msg);

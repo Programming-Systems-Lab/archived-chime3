@@ -151,7 +151,7 @@ public:
 	//diconnect this sector from the linked sector
 	bool DisconnectSector();
 	//Add user name to the list of users in the sector
-	bool AddUser(char *userID);
+	bool AddUser(char *username, char *IP_address);
 	//Delete user name from the list of users in the sector
 	bool deleteUser(char *userID);
 

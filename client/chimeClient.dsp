@@ -202,6 +202,10 @@ SOURCE=.\comm_client\ClientComm.h
 
 SOURCE=.\InfoStorer.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\WindowToolkit.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 

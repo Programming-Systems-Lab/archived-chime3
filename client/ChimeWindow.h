@@ -6,7 +6,7 @@
 #include "csgeom/math2d.h"
 #include "csgeom/math3d.h"
 #include "csws/csws.h"
-
+#include "WindowToolkit.h"
 
 // Scroll bar class default palette
 static int palette [] =
@@ -18,15 +18,6 @@ static int palette [] =
 };
 
 
-//this is going to be the window that all chime windows which need to be on
-//when animation occurs will have to extend
-//it will be like a normal csWindow but will deal with events a little differently
-class AlwaysVisibleWindow : public csWindow
-{
-	public:
-		AlwaysVisibleWindow(csComponent *iParent, const char *iTitle, int iWindowStyle=CSWS_DEFAULTVALUE, csWindowFrameStyle iFrameStyle=cswfs3D);
-		virtual bool HandleEvent(iEvent &Event);
-};
 
 
 //VEM stuff
@@ -145,23 +136,6 @@ public:
 };
 
 
-class ChatArea : public csListBox
-{
-	int chars_per_line;
-public:
-	ChatArea (int chars_per_line, csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
-	int GetCharsPerLine() { return chars_per_line; };
-	void SetCharsPerLine(int chars_per_line) { ChatArea::chars_per_line = chars_per_line; };
-};
-
-class ChatAreaItem : public csComponent
-{
-
-public:
-	ChatAreaItem( ChatArea *chat_area, const char *iText, int &iID, csListBoxItemStyle iStyle=cslisNormal);
-	FindSpace(const char* str, int max_chars, int *earliest_break, int *latest_break);
-
-};
 
 
 //Chat Dialog
@@ -175,8 +149,8 @@ class ChatWindow : public AlwaysVisibleWindow
   csInputLine *user_msg_line;
   ChatArea *chat_area;
   int last_ID;
-  csListBox *local_users_lb;
-  csListBox *global_users_lb;
+  UserListBox *local_users_lb;
+  UserListBox *global_users_lb;
 
   //void gui ();
 
@@ -185,13 +159,14 @@ public:
   ChatWindow(csComponent *iParent);
   virtual ~ChatWindow ();
   virtual bool HandleEvent (iEvent &Event);
-  void SendMessage(char *ip_address, const char *msg);
+  static bool SendMsg(csComponent *item, void *msg);
+  void SendMessage(const char *ip_address, const char *msg);
   void ShowMessage(const char* msg);
   void ShowMessage(const char *username, const char* msg);
   void AddLocalUsers(csStrVector *users);
   void AddGlobalUsers(csStrVector *users);
-  void AddLocalUser(char *userID);
-  void AddGlobalUser(char *userID);
+  void AddLocalUser(char *username, char *ip_address);
+  void AddGlobalUser(char *username, char *ip_address);
   void DeleteLocalUser(char *userID);
   void DeleteGlobalUser(char *userID);
   static bool DeleteMe(csComponent *item, void *userID);

@@ -146,7 +146,7 @@ private:
 	// Delete a specified object
 	bool ChimeSystemDriver::DeleteObject(char *roomUrl, char *objectUrl);
 	// Add a specified user in a given room
-	bool ChimeSystemDriver::AddUser(char *roomUrl, char *userID, char *shape, float x, float y, float z);
+	bool ChimeSystemDriver::AddUser(char *roomUrl, char *username, char *ip_address, char *shape, float x, float y, float z);
 	// Add a specified user in a given room
 	bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *userID);
 	// Change shape of a givn 3d object

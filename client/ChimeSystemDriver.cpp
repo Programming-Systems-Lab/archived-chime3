@@ -87,13 +87,13 @@ ChimeSystemDriver::ChimeSystemDriver()
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "192.168.1.101 mdl1 User User 1\n");
+	strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
-	strcat(testRoom, "124.1.12.23 ninja User User 1\n");
+	strcat(testRoom, "suhit ninja User 192.168.1.101 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.suhit.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "124.1.12.22 mdl1 User User 1\n");
+	strcat(testRoom, "navdeep mdl1 User 192.168.1.102 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 /*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
@@ -1666,11 +1666,12 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 	case s_enteredRoom:
 		{
 			char newRoomUrl[MAX_URL];
-			char userID[MAX_URL];
+			char username[MAX_URL];
+			char ip_address[MAX_URL];
 			float x, y, z;
 
-			sscanf(params, "%s %s %f %f %f", userID, newRoomUrl, &x, &y, &z);
-			result = AddUser(newRoomUrl, userID, "mdl1", x, y, z);
+			sscanf(params, "%s %s %s %f %f %f", username, ip_address, newRoomUrl, &x, &y, &z);
+			result = AddUser(newRoomUrl, username, ip_address, "mdl1", x, y, z);
 
 			break;
 		}
@@ -1887,7 +1888,7 @@ bool ChimeSystemDriver::DeleteObject(char *roomUrl, char *objectUrl)
 //* Add a specified user in a given room
 //*
 //*********************************************************************************
-bool ChimeSystemDriver::AddUser(char *roomUrl, char *userID, char *shape, float x, float y, float z)
+bool ChimeSystemDriver::AddUser(char *roomUrl, char *username, char *ip_address, char *shape, float x, float y, float z)
 {
 
 	ChimeSector *sec = FindSector( roomUrl );
@@ -1902,14 +1903,14 @@ bool ChimeSystemDriver::AddUser(char *roomUrl, char *userID, char *shape, float 
 	userPos.y += y;
 	userPos.z += z;
 
-	iMeshWrapper *m = AddMeshObj(shape, userID, room, userPos, 1);
+	iMeshWrapper *m = AddMeshObj(shape, username, room, userPos, 1);
 	if( !m ) return false;
 
 	//Add user to the userList for UDP communication
-	sec->AddUser(userID);
+	sec->AddUser(username, ip_address);
 
 	//Add collision detection
-	csMeshWrapper *sp = FindObject(room, userID);
+	csMeshWrapper *sp = FindObject(room, username);
 	iPolygonMesh* mesh;
 	iMeshObject *s = sp->GetMeshObject();
 	mesh = QUERY_INTERFACE (s, iPolygonMesh);
@@ -1918,7 +1919,6 @@ bool ChimeSystemDriver::AddUser(char *roomUrl, char *userID, char *shape, float 
 		(void)new csCollider (*sp, collide_system, mesh);
 		mesh->DecRef ();
 	}
-
 
 
 	return true;
