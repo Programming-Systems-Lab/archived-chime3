@@ -32,6 +32,13 @@ public class FRAXPlugLoader {
 
 	//create the siena object to be published
 	SienaObject s = (SienaObject) constructor_args[3];
+	
+	// hack to bypass the Siena bus
+	if (s.getFromComponent().equals("Chime4DataServer")) {
+		FRAXProtLoader.addResult(s, xml_ret);
+		return;
+	}
+	
 	s = createSienaObject(s, xml_ret);
 	try {
 	    s.publish();

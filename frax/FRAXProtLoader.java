@@ -7,26 +7,48 @@
 package psl.chime.frax;
 import java.lang.Class;
 import java.lang.reflect.*;
+import java.util.*;
 import psl.chime.frax.fraxExceptions.*;
+import psl.chime.sienautils.*;
 
 public class FRAXProtLoader {
-
+	private static Map sResultMap;
+	
+	static {
+		sResultMap = new HashMap();
+	}
+	
+	public static synchronized void addResult(SienaObject iS, String iXML) {
+		sResultMap.put(iS, iXML);
+	}
+	
     /**
      * Load and run the protocol class.
      **/
-    public synchronized boolean runProt(String prot, String arg) throws ClassNotFoundException, EntryNotFoundException, MethodNotFoundException {
+    public synchronized boolean runProt(SienaObject s) throws ClassNotFoundException, EntryNotFoundException, MethodNotFoundException {
 
+	String prot = s.getProtocol();
+	String arg = s.getAddress();
 	String prot_class = ConfigReader.findInProtConf(prot);
 	FRAXClassLoader fcl = new FRAXClassLoader();
 	Class prot_CLASS = fcl.loadClass(prot_class);
-	boolean success = execProt(fcl, prot_CLASS, arg);
+	boolean success = execProt(fcl, prot_CLASS, arg, s);
 
 	if (success == false)
 	    throw new MethodNotFoundException();
 
-	System.out.println("Protocol Ended Successfully? " + success);
+	System.out.println("Protocol Ended Successfully: " + success);
 	return true;
     }
+		
+		/**
+		 * A hack that enables us to bypass the Siena bus.  Since this version of
+		 * FRAX will soon be replaced, this code isn't particularly elegant.
+		 */
+		public synchronized String runProtExpectingReturn(SienaObject s) throws ClassNotFoundException, EntryNotFoundException, MethodNotFoundException {
+			runProt(s);
+			return (String) sResultMap.remove(s);
+		}
 
 
     /**
@@ -37,10 +59,10 @@ public class FRAXProtLoader {
      * the plug class has loaded and executed successfully and no
      * exceptions were thrown
      **/
-    public synchronized boolean execProt(FRAXClassLoader fcl, Class protocol, Object object) {
+    public synchronized boolean execProt(FRAXClassLoader fcl, Class protocol, Object object, SienaObject s) {
 	try {
 
-	    Object[] params = {object};
+	    Object[] params = {object, s};
 	    System.out.println("The class of this object is: " + object.getClass());
 
 	    Object myinstance = fcl.instantiateClass(protocol, params);
