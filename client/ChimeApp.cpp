@@ -36,6 +36,8 @@ ChimeApp::~ChimeApp ()
 
 bool ChimeApp::Initialize (const char *iConfigName)
 {
+
+
   if (!csApp::Initialize (iConfigName))
     return false;
 

@@ -174,7 +174,7 @@ void VeM::Gui (int user)
 
   VeMnb *page1 = new VeMnb (nb);
   nb->AddPrimaryTab (page1, "~Files", "Choose the file");
-  nb->SetRect (3, 78, 489, 256);
+  nb->SetRect (3, 78, 489, 175);
 
   lbFile = new csListBox (page1, CSLBS_VSCROLL, cslfsThickRect);
   lbFile -> SetRect (155, 5, 375, 152);
@@ -386,7 +386,7 @@ VEMWindow::VEMWindow(csComponent *iParent)
     CSWS_BUTMAXIMIZE)
   {
 
-  SetRect (app->bound.Width() / 4, app->bound.Height() / 4 * 3, app->bound.Width() / 4 + app->bound.Width() / 2, app->bound.Height());
+  SetRect (app->bound.Width() / 4, app->bound.Height() / 4 * 3, app->bound.Width() / 2.25 + app->bound.Width() / 4, app->bound.Height());
   SetState(CSS_DISABLED, true);
   
   //this -> SetSize (500, 285);

@@ -342,6 +342,8 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	if (!superclass::Initialize (argc, argv, iConfigName))
 		return false;
 
+//	SetState (CSWS_BUTCLOSE, true);
+//	SetState (CSWS_BUTMAXIMIZE, true);
 
 	// Open the main system. This will open all the previously loaded plug-ins.
 	if (!Open ("Chime Client 3.1"))
@@ -383,7 +385,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	WaitForSingleObject(hMutex,INFINITE);
 	strcpy(username, "denis");
 
-	comm_client = new ClientComm(9999, "eagle", 1234, username, "denis", this);
+	comm_client = new ClientComm(9999, "128.59.19.233", 1234, username, "denis", this);
 	comm.SetChimeCom(comm_client, this);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
