@@ -38,6 +38,8 @@ public class SienaObject {
 	setPassword(password);
 	setUsername(username);
 	setNeedAuth(need_auth);
+	setMethod("");
+	setAccess("");
     }
 
     /**
@@ -53,7 +55,9 @@ public class SienaObject {
 	setAccess(not.getAttribute("access").stringValue());
 	setProtocol(not.getAttribute("prot").stringValue());
 	setAddress(not.getAttribute("address").stringValue());
-	setMethod(not.getAttribute("method").stringValue());
+
+	if (not.getAttribute("method") != null)
+		setMethod(not.getAttribute("method").stringValue());
     }
 
 

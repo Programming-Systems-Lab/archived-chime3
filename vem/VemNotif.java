@@ -1,4 +1,4 @@
-
+package psl.chime.vem;
 
 import java.lang.*;
 import java.util.*;
@@ -7,14 +7,14 @@ import siena.*;
 
 // Part of VEM client on the Data Server Side
 // Used to parse the recieved events from the
-// siena server and then take the appropriate action 
-class VemNotif implements Notifiable 
+// siena server and then take the appropriate action
+class VemNotif implements Notifiable
 {
     public static VemNode Default [];
     VemUtil util;
     Siena siena;
 
-    public VemNotif (Siena s) 
+    public VemNotif (Siena s)
     {
 		util = new VemUtil ();
 		Default = util.GetDefault ();
@@ -22,21 +22,21 @@ class VemNotif implements Notifiable
     }
 
     // Recieves the incoming events from the client
-    public void notify (Notification e) 
+    public void notify (Notification e)
     {
 		StringTokenizer t;
 		String n, file = "", type = "", sub = "", object = "";
-	
+
 		n = e.toString ();
-	
+
 		n = n.replace ('=', ' ');
 		n = n.replace ('"', ' ');
 		n = n.replace ('{', ' ');
 		n = n.replace ('}', ' ');
 		n = n.replace (':', ' ');
-	
+
 		t = new StringTokenizer (n, " \n\t\r");
-	
+
 		if (t.countTokens () != 11)
 		    System.out.println ("Incorrect Number of Event Type");
 		else
@@ -53,18 +53,18 @@ class VemNotif implements Notifiable
 		    sub = t.nextToken ();
 		    t.nextToken ();
 		    type = t.nextToken ();
-		    
+
 		    if (UpdateNode (file, type, sub, object))
 				System.out.println ("Update Made"); // Call data server method and pass along new parameters
 		    else
 				System.out.println ("Update Not Made"); // Do nothing
 		}
     }
-	
+
 	// Used when more than one Notification is recieved
-    public void notify (Notification [] s) 
+    public void notify (Notification [] s)
     {
-		for (int i = 0; i < s.length; i++) 
+		for (int i = 0; i < s.length; i++)
 	    	notify (s [i]);
     }
 
@@ -75,7 +75,7 @@ class VemNotif implements Notifiable
     {
 		boolean flag = false;
 		int i;
-	
+
 		for (i = 0; i < Default.length; i++)
 		{
 		    // First the file is found
@@ -87,13 +87,13 @@ class VemNotif implements Notifiable
 				    Default [i].type = type;
 				    flag = true;
 				}
-		
+
 				if (Default [i].sub.compareTo (sub) != 0) // If sub-type does not match then update
 				{
 				    Default [i].sub = sub;
 				    flag = true;
 				}
-		
+
 				if (Default [i].object.compareTo (object) != 0) // If object does not match then update
 				{
 				    Default [i].object = object;
@@ -101,7 +101,7 @@ class VemNotif implements Notifiable
 				}
 		    }
 		}
-	
+
 		return flag;
     }
 

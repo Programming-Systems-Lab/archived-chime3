@@ -1,23 +1,19 @@
 package psl.chime.sienautils;
 import siena.*;
-import psl.chime.frax.*;
-import psl.chime.auth.*;
-import psl.chime.DataServer.*;
 import psl.chime.EventTracer.*;
-import psl.chime.vem.*;
 
-public class Subscriber {
+public class EventTracerSubscriber {
 
     public HierarchicalDispatcher siena;
-    private static Subscriber myself;
+    private static EventTracerSubscriber myself;
 
 
     /*
     * This is the method which should be called in order to start a subscriber
     */
-    public static synchronized Subscriber getInstance(String siena_location) {
+    public static synchronized EventTracerSubscriber getInstance(String siena_location) {
         if (myself == null) {
-            myself = new Subscriber(siena_location);
+            myself = new EventTracerSubscriber(siena_location);
         }
         return myself;
     }
@@ -25,7 +21,7 @@ public class Subscriber {
     /*
      * This is the method which should be called to get an instance of a Subscriber
      */
-    public static synchronized Subscriber getInstance() {
+    public static synchronized EventTracerSubscriber getInstance() {
 	if (myself == null) {
 	    System.err.println("Need Location in order to Start Subscriber - please use other getInstance method");
 	    System.exit(1);
@@ -38,15 +34,7 @@ public class Subscriber {
      * Check if the siena server is really running where the
      * user has told it is running
      */
-    private Subscriber(String siena_location) {
-
-	//start the Data Server and Theme Manager as per Shen's request
-	DataServer ds = DataServer.getInstance();
-
-	//start the VEM
-	Vem V = new Vem ();
-	V.VemSetHost (siena_location);
-	V.start ();
+    private EventTracerSubscriber(String siena_location) {
 
 
 	Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -84,11 +72,7 @@ public class Subscriber {
     public void subscribe() {
 
 	try {
-	    authSubscriber();
-	    fraxSubscriber();
-	    dataServerSubscriber();
-	    vemSubscriber();
-	    eventPackagerSubscriber();
+	    eventTracerSubscriber();
 	    //loop forever until we shutdown
 	    while(true);
 
@@ -100,103 +84,13 @@ public class Subscriber {
 
     }
 
+
+
     /**
-     * Setup the subscriptions for the authentication server
+     * Event Tracer Subscriber
      */
 
-    public void authSubscriber() throws Exception {
-	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "true");
-
-	System.out.println("subscribing for " + f.toString());
-
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertAuth(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-    }
-
-    /**
-     * method which gets called when something appealing to the authenticator
-     * is received
-     **/
-    public void alertAuth(SienaObject s) {
-	s.setDispatcher(siena);
-
-	//call the authenticator here
-	Authorization auth = new Authorization(siena, s);
-    }
-
-
-    /**
-     * frax subscriber
-     */
-
-    public void fraxSubscriber() throws Exception {
-	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	//f.addConstraint("from_component", Op.EQ, "data_server");
-
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertFrax(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-    }
-
-
-    /**
-     * alert frax when a significant notification has been received
-     */
-
-    public void alertFrax(SienaObject s) {
-	s.setDispatcher(siena);
-
-	//call something in frax when an event has occurred
-	try {
-	    FRAXProtLoader fpl = new FRAXProtLoader();
-	    fpl.runProt(s);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	}
-    }
-
-    /**
-     * VEM Subscriber
-     */
-
-    public void vemSubscriber() throws Exception {
-	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "data_server");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertVEM(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-    }
-
-
-    /**
-     * VEM alert - function which alerts the VEM to an interesting event
-     */
-
-    public void alertVEM(SienaObject s) {
-	s.setDispatcher(siena);
-
-	//call the method which deals with a VEM event
-    }
-
-
-    /**
-     * Theme Subscriber
-     */
-
-    public void eventPackagerSubscriber() throws Exception {
+    public void eventTracerSubscriber() throws Exception {
 	//subscribe for all message from VEM
 	Filter f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
@@ -307,73 +201,6 @@ public class Subscriber {
 	ev.eventReceived(s);
     }
 
-    /**
-     * Data Server subscriber
-     */
-
-    public void dataServerSubscriber() throws Exception {
-
-	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "frax");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-
-	//the c_getroom method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_getroom");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-
-	//the c_getroom method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-	//the c_deleteObject method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-    }
-
-    /**
-     * Alert the data server
-     */
-
-    public void alertDataServer(SienaObject s) {
-	s.setDispatcher(siena);
-
-	// alert the data server that an interesting event has occurred
-	DataServer ds = DataServer.getInstance();
-	ds.eventReceived(s);
-    }
-
 
     /**
      * Basic testing routing for this class and an example
@@ -381,11 +208,11 @@ public class Subscriber {
      */
     public static void main(String[] args) {
         if(args.length != 1) {
-	    System.err.println("Usage: Subscriber <server-uri>");
+	    System.err.println("Usage: EventTracerSubscriber <server-uri>");
 	    System.exit(1);
 	}
 
-	Subscriber s = Subscriber.getInstance(args[0]);
+	EventTracerSubscriber s = EventTracerSubscriber.getInstance(args[0]);
     }
 }
 
