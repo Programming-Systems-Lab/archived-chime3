@@ -31,6 +31,7 @@ struct iCrossBuilder;
 struct iVFS;
 struct iLoader;
 struct iMotionManager;
+struct iCameraPosition;
 class csColliderWrapper;
 class csView;
 
@@ -127,6 +128,9 @@ private:
 	ChimeSector *reqAtSec;
 	int		   reqAtDoor;
 
+
+	//the camera position
+	iCameraPosition *cam_pos;
 
 	//Collision detection plugin.
 	iCollideSystem* collide_system;

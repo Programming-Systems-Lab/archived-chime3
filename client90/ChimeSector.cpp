@@ -1461,9 +1461,19 @@ bool ChimeSector::ConnectSectors(ChimeSector *otherSect, int atDoor)
 	iPolygon3D *door = hallFrontDoor[atDoor];
 	iPolygon3D *otherSectorBackDoor = otherSect->GetBackDoor();
 
-	door->CreatePortal (otherSect->GetConn1());
+	if (!door->GetPortal())
+		door->CreatePortal (otherSect->GetConn1());
+	else
+		door->GetPortal()->SetSector(otherSect->GetConn1());
+
 	door->SetAlpha(0);
-	otherSectorBackDoor->CreatePortal (hallway);
+
+	if (!otherSectorBackDoor->GetPortal())
+		otherSectorBackDoor->CreatePortal (hallway);
+	
+	else
+		otherSectorBackDoor->GetPortal()->SetSector(hallway);
+
 	otherSectorBackDoor->SetAlpha(0);
 	doorSec[atDoor] = otherSect;
 
@@ -1479,9 +1489,11 @@ bool ChimeSector::DisconnectSector()
 
 	iPolygon3D *linkedSectorDoor = linkedSector->GetHallwayDoor(linkedDoor);
 
-	linkedSectorDoor->CreatePortal (NULL);
+	linkedSectorDoor->GetPortal()->SetSector(NULL);
+//	linkedSectorDoor->CreateNullPortal();
 	linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
-	conn1BackDoor[0]->CreatePortal (NULL);
+//	conn1BackDoor[0]->CreateNullPortal();
+	conn1BackDoor[0]->GetPortal()->SetSector(NULL);
 	conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
 
 	linkedSector->SetDoorSector(linkedDoor, NULL);
@@ -1635,7 +1647,8 @@ iMeshWrapper* ChimeSector::FindObject(char *objectUrl, iSector *&room)
 
 
 out:
-	mesh_list->DecRef();
+//	while (mesh_list && mesh_list->GetRefCount())
+//			mesh_list->DecRef();
 	return obj;
 }
 

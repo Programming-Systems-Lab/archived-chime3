@@ -4,6 +4,8 @@
 
 #define MAX_FIELD_SIZE 500
 #define MAX_MSG_SIZE 1024
+#define SENP_PORT 8000
+
 
 #include "..\ChimeSystemDriver.h"
 #include <windows.h>

@@ -152,7 +152,7 @@ bool SienaPublisher::subscribeRoom(char *room, int option) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 
 		// Create Filter
@@ -197,7 +197,7 @@ bool SienaPublisher::subscribeClient() {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 
 		// Create Filter
@@ -235,7 +235,7 @@ bool SienaPublisher::subscribeMethod(char *method, char *room, int option) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 
 		// Create Filter
@@ -282,7 +282,7 @@ bool SienaPublisher::unsubscribeRoom(char *room, int option) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 
 		// Create Filter
@@ -326,7 +326,7 @@ bool SienaPublisher::unsubscribeClient() {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
@@ -380,7 +380,7 @@ bool SienaPublisher::unsubscribeALL() {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+		sprintf (subscribeString, "%shandler=\"senp://%s:%d\"}", subscribeString, getLocalIP(), SENP_PORT);
 
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)

@@ -98,6 +98,7 @@ ChimeSystemDriver::ChimeSystemDriver()
 	myG2D = NULL;
 	curSector = NULL;
 	currentSector = NULL;
+	object_reg = NULL;
 	
 	//the menu wasn't drawn
 	menu_drawn = false;
@@ -148,7 +149,7 @@ bool ChimeSystemDriver::TransportToRoom(char *name) {
 	
 	if(sec) {
 		camLocation = sec->GetCamLocation();
-		Transport(sec->GetRoom(0), *camLocation, csVector3(0,0, 1), csVector3(0,-1, 0));
+		Transport(sec->GetRoom(0), *camLocation, csVector3(0,0, 1), csVector3(0,1, 0));
 		return true;
 	}
 
@@ -401,18 +402,23 @@ void ChimeSystemDriver::Report (int severity, const char* msg, ...)
 {
   va_list arg;
   va_start (arg, msg);
-  iReporter* rep = CS_QUERY_REGISTRY (object_reg, iReporter);
-  if (rep)
-  {
-    rep->ReportV (severity, "crystalspace.system", msg, arg);
-    rep->DecRef ();
+
+  if (object_reg) {
+	iReporter* rep = CS_QUERY_REGISTRY (object_reg, iReporter);
+	if (rep)
+	{
+		rep->ReportV (severity, "crystalspace.system", msg, arg);
+		rep->DecRef ();
+	}
+  
+	else
+	{
+		csPrintfV (msg, arg);
+		csPrintf ("\n");
+	}
   }
-  else
-  {
-    csPrintfV (msg, arg);
-    csPrintf ("\n");
-  }
-  va_end (arg);
+
+   va_end (arg);
 }
 
 
@@ -565,6 +571,9 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	//create a view and a camera
 	view = new csView (engine, myG3D);
 
+	iCameraPositionList *list = engine->GetCameraPositions();
+	cam_pos = list->NewCameraPosition("camera_position");
+	
 	//Load chime objects and textures
 	if (!LoadChimeLib("chimelib.txt")) 
 	{
@@ -771,9 +780,9 @@ void ChimeSystemDriver::Refresh3D ()
 //**********************************************************************
 void ChimeSystemDriver::Stop3D ()
 {
-	WaitForSingleObject(hMutex,INFINITE);
+	//WaitForSingleObject(hMutex,INFINITE);
 	active = false;
-	ReleaseMutex(hMutex);
+	//ReleaseMutex(hMutex);
 }
 
 //**********************************************************************
@@ -783,9 +792,9 @@ void ChimeSystemDriver::Stop3D ()
 //**********************************************************************
 void ChimeSystemDriver::Start3D ()
 {
-	WaitForSingleObject(hMutex,INFINITE);
+	//WaitForSingleObject(hMutex,INFINITE);
 	active = true;
-	ReleaseMutex(hMutex);
+	//ReleaseMutex(hMutex);
 }
 
 //**********************************************************************
@@ -935,20 +944,11 @@ void ChimeSystemDriver::writeMessage()
 //**********************************************************************
 bool ChimeSystemDriver::Transport(iSector *room, csVector3 pos, csVector3 lookPos, csVector3 lookUp)
 {
-	char temp[1024];
 	if(!room)
 		return false;
 	
-	view->GetCamera ()->SetSector (room);
-	long camera_number = view->GetCamera()->GetCameraNumber();
-	iCameraPosition *cam_pos = engine->GetCameraPositions()->Get(camera_number);
-	strcpy(temp, room->QueryObject()->GetName());
-
-	if (cam_pos) {
-		cam_pos->Set(temp, pos, lookPos, lookUp);
-		return true;
-	}
-
+	cam_pos -> Set(room->QueryObject()->GetName(), pos, lookPos, lookUp);
+	cam_pos -> Load(view->GetCamera(), engine);
 
 	//next line should be commented WARNINGI!!!!!
 	 //view->GetCamera ()->SetPerspectiveCenter (FrameWidth / 2, FrameHeight / 2);
@@ -2767,7 +2767,7 @@ void ChimeSystemDriver::ShowError(const char *component, const char* error_msg, 
 //*
 //*********************************************************************************
 void ChimeSystemDriver::ShowError(const char *component, const char* error_msg) {
-	char tmp[50];
+	char tmp[1024];
 	sprintf(tmp, "%s\n%s\n", component, error_msg);
 
 	if (component == NULL || error_msg == NULL)
