@@ -72,8 +72,8 @@ public class SienaObject {
 	if (not.getAttribute("address") != null)
 		setAddress(not.getAttribute("address").stringValue());
 
-	if (not.getAttribute("method") != null)
-		setMethod(not.getAttribute("method").stringValue());
+	if (not.getAttribute("chime_method") != null)
+		setMethod(not.getAttribute("chime_method").stringValue());
     }
 
 
@@ -91,7 +91,7 @@ public class SienaObject {
 	e.putAttribute("prot", getProtocol());
 	e.putAttribute("address", getAddress());
 	e.putAttribute("access", getAccess());
-	e.putAttribute("method", getMethod());
+	e.putAttribute("chime_method", getMethod());
 	return e;
     }
 

@@ -303,8 +303,8 @@ public class Subscriber {
 	s.setDispatcher(siena);
 
 	//call the method which deals with an event that is interesting to a theme manager
-	EventTracer ev = EventTracer.getInstance();
-	ev.eventReceived(s);
+	//EventTracer ev = EventTracer.getInstance();
+	//ev.eventReceived(s);
     }
 
     /**
