@@ -246,7 +246,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 		return false;
 	
 	// Open the main system. This will open all the previously loaded plug-ins.
-	if (!Open ("Chime Client 0.1"))
+	if (!Open ("Chime Client 3.1"))
 	{
 		Printf (MSG_FATAL_ERROR, "Error opening system!\n");
 		Cleanup ();
