@@ -115,6 +115,7 @@ class SienaSubscriber {
 	//SOCKADDR_IN saR, saS;
 
 private:
+	char* getLocalIP();
 	void formatResponse(char *string);
 	char *getField(char *method, char *string);
 	int getMethod(char *method);
@@ -146,6 +147,7 @@ class SienaPublisher {
 
 private:
 	void setupSocket();
+	char* getLocalIP();
 
 public:
 	SienaPublisher(char *host, short port, char *username, char *password);

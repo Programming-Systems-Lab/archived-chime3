@@ -65,7 +65,7 @@ void SienaSubscriber::subscribeRoom(char *room) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
 
 
 		// Create Filter
@@ -85,13 +85,15 @@ void SienaSubscriber::subscribeRoom(char *room) {
 void SienaSubscriber::subscribeClient() {
 		SOCKET s = createSendSocket();
 		
+
+
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
 
 
 		// Create Filter
@@ -118,13 +120,13 @@ void SienaSubscriber::subscribeMethod(char *method) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
 
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
 		sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
-		sprintf (subscribeString, "%s method=\"%s\"}", subscribeString, method);
+		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -145,7 +147,7 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
 
 
 		// Create Filter
@@ -171,7 +173,7 @@ void SienaSubscriber::unsubscribeClient() {
 		sprintf (subscribeString, "%s%s", subscribeString, host);
 		sprintf (subscribeString, "%s:", subscribeString);
 		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
-		sprintf (subscribeString, "%shandler=\"senp://localhost:5000\"}", subscribeString);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
 
 
 		// Create Filter
@@ -332,7 +334,7 @@ void SienaSubscriber::startServer() {
 
 	//make sure to subscribe the client
 	//don't think this is really necessary
-	subscribeClient();
+	//subscribeClient();
 
 	//let's just subscribe the client to all the methods that he wants
 	subscribeMethod("s_moveObject");
@@ -436,4 +438,28 @@ void SienaSubscriber::startServer() {
 	WSACleanup ();
 
 	return;
+}
+
+
+char* SienaSubscriber::getLocalIP()
+{
+    char hostname[80];
+    if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
+        cerr << "Error " << WSAGetLastError() <<
+                " when getting local host name." << endl;
+        return NULL;
+    }
+    cout << "Host name is " << hostname << "." << endl;
+
+    struct hostent *ip_list = gethostbyname(hostname);
+    if (ip_list == 0) {
+        cerr << "Bad host lookup." << endl;
+        return NULL;
+    }
+
+	struct in_addr addr;
+    memcpy(&addr, ip_list->h_addr_list[0], sizeof(struct in_addr));
+    cout << "Address " << inet_ntoa(addr) << endl;
+    
+    return inet_ntoa(addr);
 }

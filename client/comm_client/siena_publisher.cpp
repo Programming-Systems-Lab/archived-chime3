@@ -152,3 +152,27 @@ void SienaPublisher::publish(int function, char *params, char *address, char *pr
 
 	closesocket (s);
 }
+
+
+char* SienaPublisher::getLocalIP()
+{
+    char hostname[80];
+    if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
+        cerr << "Error " << WSAGetLastError() <<
+                " when getting local host name." << endl;
+        return NULL;
+    }
+    cout << "Host name is " << hostname << "." << endl;
+
+    struct hostent *ip_list = gethostbyname(hostname);
+    if (ip_list == 0) {
+        cerr << "Bad host lookup." << endl;
+        return NULL;
+    }
+
+	struct in_addr addr;
+    memcpy(&addr, ip_list->h_addr_list[0], sizeof(struct in_addr));
+    cout << "Address " << inet_ntoa(addr) << endl;
+    
+    return inet_ntoa(addr);
+}
