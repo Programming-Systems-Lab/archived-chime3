@@ -94,6 +94,7 @@ public class Subscriber {
 	    dataServerSubscriber();
 	    vemSubscriber();
 	    eventTracerSubscriber();
+
 	    //loop forever until we shutdown
 	    while(true)
 			Thread.sleep(99999999);
