@@ -29,6 +29,7 @@
 #include "csutil/csrect.h"
 
 #include "chimeBrowser.h"
+#include "ChimeWorldView.h"
 
 //-- CsfEdit ---------------------------------------------------------------
 
@@ -116,13 +117,25 @@ bool ChimeMenu::Initialize (const char *iConfigName)
   int fh; menu->GetTextSize("", &fh);
   menu->SetRect (0, 0, bound.xmax, fh + 8);
 
-   //popup the connection dialog box
-  (void)new ConnectDialog(this);
+  
+  csWindow *w = new csWindow (this, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
+  engine_views.Push (new ChimeWorldView (w, (chimeBrowser*)System));
+  w->SetRect (bound.Width () / 4, 0, bound.Width (), bound.Height () / 4 * 3);
+  w->Hide();
 
-  // Initialize the engine window ...
-  //csWindow *w = new csWindow (this, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
-  //w->SetRect (0, 0, ((chimeBrowser*)System)->FrameWidth*2/3, ((chimeBrowser*)System)->FrameHeight*2);
+  //put in a chat window
+  (void) new ChatWindow(this);
 
+  //put in a history window
+  (void) new HistoryWindow(this);
+
+  //put in a VEM window
+  (void) new ChimeVEM(this);
+
+  //popup the connection dialog box
+  (void) new ConnectDialog(this);
+
+  
   return true;
 }
 
@@ -130,6 +143,7 @@ bool ChimeMenu::Initialize (const char *iConfigName)
 
 bool ChimeMenu::HandleEvent (iEvent &Event)
 {
+  //handle an event from the application
   if (csApp::HandleEvent (Event))
     return true;
 
@@ -144,7 +158,7 @@ bool ChimeMenu::HandleEvent (iEvent &Event)
 			  return true;
 		  }
 
-		  if(Event.Key.Code == 's')
+		  if(Event.Key.Code == 'w')
 		  {
 			  ((chimeBrowser*)System)->Start3D();
 			  return true;
@@ -245,9 +259,6 @@ int main (int argc, char* argv[])
 
 	  //pass a reference of the app to the chimeBrowser System
 	  System.setCSApp(&app);
-
-	  //try to create a window
-	  //System.setInWindow();
 
 	  System.Loop ();
 

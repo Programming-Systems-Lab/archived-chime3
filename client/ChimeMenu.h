@@ -47,6 +47,10 @@ class ChimeMenu : public csApp
   csMenuItem *saveitem, *closeitem;
 
 public:
+
+  //encapsulate all the engine views
+  csVector engine_views;
+
   /// Initialize maze editor
   ChimeMenu (iSystem *SysDriver, csSkin &Skin);
 
@@ -203,6 +207,49 @@ class InfoStorer
   //chat port
   char *port;
 };
+
+
+//Chat Dialog
+class ChatWindow : public csWindow
+
+{
+
+  csInputLine *username;
+  csInputLine *password;
+  csInputLine *chime_server;
+
+  //void gui ();
+
+public:
+
+  ChatWindow(csComponent *iParent);
+  virtual ~ChatWindow ();
+  virtual bool HandleEvent (iEvent &Event);
+  //virtual bool Initialize (const char *iConfigName);
+
+};
+
+
+//History Dialog
+class HistoryWindow : public csWindow
+
+{
+
+  csInputLine *username;
+  csInputLine *password;
+  csInputLine *chime_server;
+
+  //void gui ();
+
+public:
+
+  HistoryWindow(csComponent *iParent);
+  virtual ~HistoryWindow ();
+  virtual bool HandleEvent (iEvent &Event);
+  //virtual bool Initialize (const char *iConfigName);
+
+};
+
 
 
 #endif // CSFEDIT_H

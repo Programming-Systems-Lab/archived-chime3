@@ -57,6 +57,7 @@ class chimeBrowser: public SysSystemDriver
 
 private:
 
+	csComponent *CoordinateConvertor;		//use this to convert coordinates to Chime World Coordinates
 	csMenu *menu;					//the popup menu object
 	bool menu_drawn;				//whether the popup menu is currently on the screen
 
@@ -158,13 +159,19 @@ private:
 	//this is the class that we will use for all communication
 	ClientComm *comm_client;
 
+	//Convert the Coordinates from Local To Global Coordinates
+	bool chimeBrowser::ConvertCoordinates(csVector2 *screenCoord);
 
 public:
+
+	// Get the view.
+	csView* GetView () { return view; }
+	
 	//tell ChimeBrowser where to find the app
 	void chimeBrowser::setCSApp(ChimeMenu *app);
 
-	//set the chimeBrowser in a window
-	void chimeBrowser::setInWindow();
+	//set the coordinate convertor
+	void chimeBrowser::setCoordinateConvertor(csComponent *Parent);
 
 	//Load a mesh object from a file.
 	bool LoadMeshObj (char *filename, char *templatename, char* txtname);

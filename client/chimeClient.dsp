@@ -92,6 +92,10 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
+SOURCE=.\Chat.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ChimeBrowser.cpp
 # End Source File
 # Begin Source File
@@ -108,6 +112,10 @@ SOURCE=.\ChimeSector.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ChimeWorldView.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\comm_client\clientcomm.cpp
 # End Source File
 # Begin Source File
@@ -117,6 +125,10 @@ SOURCE=.\connect.cpp
 # Begin Source File
 
 SOURCE=.\getobject.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\History.cpp
 # End Source File
 # Begin Source File
 
@@ -165,6 +177,10 @@ SOURCE=.\ChimeMenu.h
 # Begin Source File
 
 SOURCE=.\ChimeSector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChimeWorldView.h
 # End Source File
 # Begin Source File
 

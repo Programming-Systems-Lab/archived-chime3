@@ -17,6 +17,7 @@
 #include "csutil/csrect.h"
 
 #include "chimeBrowser.h"
+#include "ChimeWorldView.h"
 
 #include "csengine/engine.h"
 #include "csengine/csview.h"
@@ -112,13 +113,28 @@ chimeBrowser::chimeBrowser()
 
 //**********************************************************************
 //*
-//* This function will set the 3D world in a window some day.
-//* Doesn't work yet.
+//* This function converts the Coordinates from Local To Global
+//* We need this because the Chime System is responsible for everything
 //*
 //**********************************************************************
-void chimeBrowser::setInWindow() {
-	csWindow *w = new csWindow (app, "3D View", CSWS_DEFAULTVALUE & ~(CSWS_BUTCLOSE | CSWS_MENUBAR));
-	w->SetRect (0, 0, FrameWidth*2/3, FrameHeight*2);
+bool chimeBrowser::ConvertCoordinates(csVector2 *screenCoord) {
+	int x = (int) screenCoord->x;
+	int y = (int) screenCoord->y;
+	CoordinateConvertor->LocalToGlobal(x, y);
+	screenCoord->x = (float) x;
+	screenCoord->y = (float) y;
+	return true;
+}
+
+
+//**********************************************************************
+//*
+//* This function sets the Coordinate Convertor which we need in a multi-Window
+//* Environment
+//*
+//**********************************************************************
+void chimeBrowser::setCoordinateConvertor(csComponent *Parent) {
+	CoordinateConvertor = Parent;
 }
 
 
@@ -305,6 +321,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	if (!superclass::Initialize (argc, argv, iConfigName))
 		return false;
 
+
 	// Open the main system. This will open all the previously loaded plug-ins.
 	if (!Open ("Chime Client 3.1"))
 	{
@@ -355,8 +372,13 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	// You don't have to use csView as you can do the same by
 	// manually creating a camera and a clipper but it makes things a little
 	// easier.
-	view = new csView (engine, G3D);
 
+	//FrameWidth = FrameWidth*2/3;
+	//FrameHeight = FrameHeight*2/3;
+	//G3D->SetDimensions(FrameWidth, FrameHeight);
+
+	view = new csView (engine, G3D);
+	//view->GetCamera ()->SetPerspectiveCenter ((0 + FrameWidth) / 2, (0 + FrameHeight) / 2);
 
 	//FIXIT Temporary . Must be removed
 	Printf (MSG_INITIALIZATION, "Building  Sector 1!...\n");
@@ -516,6 +538,10 @@ void chimeBrowser::writeMessage()
 	chimeSector *curSect = GetCurChimeSector();
 	if (curSect != NULL && username != NULL) {
 		char displayString[1000];
+		if (selectedMesh) {
+			sprintf(displayString, "Selected Mesh: %s", selectedMesh->GetName());
+			G2D->Write(courierFont, 2, G2D->GetHeight() - 40, write_colour, -1, displayString);
+		}
 		sprintf(displayString, "Username: %s", username);
 		G2D->Write(courierFont, 2, G2D->GetHeight() - 30, write_colour, -1, displayString);
 		sprintf(displayString, "Room Location: %s", curSect->GetUrl());
@@ -1468,6 +1494,7 @@ csMeshWrapper* chimeBrowser::FindNextClosestMesh (csMeshWrapper *baseMesh,
 //*********************************************************************************
 csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoord, float &dist)
 {
+
 	selectedMeshSect = NULL;
 	csMeshWrapper *closestMesh = NULL;
 	csVector3 v;
