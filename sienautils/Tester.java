@@ -9,9 +9,9 @@ public class Tester {
 	    }
 	    ThinClient siena;
 	    siena = new ThinClient(args[0]);
-	    
+
 	    Notification e = new Notification();
-	    
+
 	    e.putAttribute("from_component", "client");
 	    e.putAttribute("data", "somedata");
 	    e.putAttribute("auth", "true");
@@ -20,6 +20,7 @@ public class Tester {
 	    e.putAttribute("prot", "HTTP");
 	    e.putAttribute("address", "http://www.yahoo.com");
 	    e.putAttribute("access", "");
+	    e.putAttribute("chime_method", "c_connect");
 
 	    System.out.println("publishing " + e.toString());
 	    try {
