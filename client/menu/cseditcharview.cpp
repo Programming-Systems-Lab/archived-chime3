@@ -20,13 +20,13 @@ static bool printable(char c)
 
 void csEditCharView::Reevaluate() //// number of chars in font and so on.
   {
-    stats.Set(BorderWidth+inset, BorderHeight+inset+TitlebarHeight, 
+    stats.Set(BorderWidth+inset, BorderHeight+inset+TitlebarHeight,
       BorderWidth+inset + 100, bound.Height()-BorderHeight-inset);
-    content.Set(stats.xmax+inset*2, BorderHeight+inset*2+TitlebarHeight, 
-      bound.Width() - BorderWidth - scrsize, bound.Height() - 
+    content.Set(stats.xmax+inset*2, BorderHeight+inset*2+TitlebarHeight,
+      bound.Width() - BorderWidth - scrsize, bound.Height() -
       BorderHeight - scrsize);
 
-    scrhor->SetRect(content.xmin-inset, content.ymax, 
+    scrhor->SetRect(content.xmin-inset, content.ymax,
       content.xmax, content.ymax+scrsize);
     struct csScrollBarStatus status;
     status.value = (int)scrhor->SendCommand(cscmdScrollBarQueryValue, 0);
@@ -37,7 +37,7 @@ void csEditCharView::Reevaluate() //// number of chars in font and so on.
     status.step = 1;
     status.pagestep = content.Width()/2;
     scrhor->SendCommand(cscmdScrollBarSet, (void*)&status);
-    scrvert->SetRect(content.xmax, content.ymin-inset, 
+    scrvert->SetRect(content.xmax, content.ymin-inset,
       content.xmax+scrsize, content.ymax);
     status.value = (int)scrvert->SendCommand(cscmdScrollBarQueryValue, 0);
     status.maxvalue = celsize*editchar->GetHeight() - content.Height();
@@ -50,19 +50,19 @@ void csEditCharView::Reevaluate() //// number of chars in font and so on.
 
   }
 
-csEditCharView::csEditCharView(csComponent *iParent, csEditFont *fnt, 
+csEditCharView::csEditCharView(csComponent *iParent, csEditFont *fnt,
     csEditChar *chr)
-  : csWindow(iParent, "Edit Character", CSWS_TITLEBAR | CSWS_BUTCLOSE | 
+  : csWindow(iParent, "Edit Character", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
-  { 
+  {
     isdrawing = false;
     drawcolour = 1;
-    font = fnt; 
+    font = fnt;
     editchar = chr;
-    editchar->SetView(this); 
+    editchar->SetView(this);
 
     offx = 0; offy = 0;
-    inset = 5; // inset border 
+    inset = 5; // inset border
     celsize = 10;
     scrsize = CSSB_DEFAULTSIZE;
 
@@ -83,7 +83,7 @@ csEditCharView::csEditCharView(csComponent *iParent, csEditFont *fnt,
     SetSize(500,500);
     Reevaluate();
     Center();
-    
+
     int stath; /// for drawing font
     GetTextSize("", &stath);
     csButton *but = new csButton(this, 66700);
@@ -106,19 +106,19 @@ bool csEditCharView::SetRect(int xmin, int ymin, int xmax, int ymax)
     return true;
   }
 
-csEditCharView::~csEditCharView() 
+csEditCharView::~csEditCharView()
   {
     editchar->SetView(0);
     delete scrhor;
     delete scrvert;
   }
-    
+
 void csEditCharView::Draw()
   {
     SetFont(((CsfEdit*)app)->GetMainFont());
     csWindow::Draw();
 
-    Rect3D(stats.xmin - inset, stats.ymin, stats.xmax, stats.ymax, 
+    Rect3D(stats.xmin - inset, stats.ymin, stats.xmax, stats.ymax,
       palstart+3, palstart+0);
     int fontheight = 10; /// for drawing font
     char buf[256];
@@ -140,15 +140,15 @@ void csEditCharView::Draw()
     prev.SetPos(stats.xmin, y);
     prev.SetSize(editchar->GetWidth(), editchar->GetHeight());
     Box(prev.xmin, prev.ymin, prev.xmax, prev.ymax, palstart+0);
-    Rect3D(prev.xmin-1, prev.ymin-1, prev.xmax+1, prev.ymax+1, 
+    Rect3D(prev.xmin-1, prev.ymin-1, prev.xmax+1, prev.ymax+1,
       palstart+2, palstart+3);
     editchar->Draw(this, prev.xmin, prev.ymin, palstart+1);
-    
-    Box( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax, 
+
+    Box( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax,
       palstart+0);
-    Rect3D( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax, 
+    Rect3D( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax,
       palstart+2, palstart+3);
-    SetClipRect( content.xmin-inset, content.ymin-inset, content.xmax, 
+    SetClipRect( content.xmin-inset, content.ymin-inset, content.xmax,
       content.ymax);
     csRect cel;
     int pixcolor;
@@ -161,13 +161,13 @@ void csEditCharView::Draw()
 	  pixcolor = 1 + palstart;
 	else pixcolor = 0 + palstart;
         cel.Set(content.xmin+celx*celsize, content.ymin+cely*celsize,
-          content.xmin+celx*celsize + celsize - makeborder, 
+          content.xmin+celx*celsize + celsize - makeborder,
 	  content.ymin+cely*celsize + celsize - makeborder);
 	cel.Move(-offx, -offy);
 	Box( cel.xmin, cel.ymin, cel.xmax, cel.ymax, pixcolor);
       }
-    Rect3D( content.xmin, content.ymin, 
-      content.xmin+celsize*editchar->GetWidth(), 
+    Rect3D( content.xmin, content.ymin,
+      content.xmin+celsize*editchar->GetWidth(),
       content.ymin+celsize*editchar->GetHeight(), palstart+3, palstart+2);
     SetClipRect(); // disable clipping
     SetFont(((CsfEdit*)app)->GetMainFont());
@@ -182,19 +182,19 @@ void csEditCharView::EditSettings()
 
     w->SetSize(500,500);
     w->Center();
-    
+
     int px = 15, py = 20;
     int labelw = 150;
 
-    csButton *but = new csButton(d, cscmdOK, CSBS_DEFAULTVALUE | 
+    csButton *but = new csButton(d, cscmdOK, CSBS_DEFAULTVALUE |
       CSBS_DISMISS | CSBS_DEFAULT);
-    but->SetText("OK"); 
+    but->SetText("OK");
     but->SetSuggestedSize(16,8);
-    but->SetPos(30, 450); 
+    but->SetPos(30, 450);
     but = new csButton(d, cscmdCancel, CSBS_DEFAULTVALUE | CSBS_DISMISS);
     but->SetText("Cancel"); but->SetSuggestedSize(16,8);
-    but->SetPos(130, 450); 
-    
+    but->SetPos(130, 450);
+
     /// display character number
     char buf[100];
     sprintf(buf, "Character %d %c", font->GetCharNumber(editchar),
@@ -236,7 +236,7 @@ void csEditCharView::EditSettings()
 	Reevaluate();
 	Invalidate();
       }
-      if(neww != editchar->GetWidth()) 
+      if(neww != editchar->GetWidth())
       {
 	editchar->SetWidth(neww);
 	font->MakeDirty();
@@ -252,23 +252,23 @@ void csEditCharView::EditSettings()
 bool csEditCharView::HandleEvent(iEvent &Event)
   {
     int selx, sely;
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == 66700))
     {
       /// edit character settings dialog
       EditSettings();
       return true;
     }
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == cscmdClose))
     {
       delete this; /// delete me - sets view to NULL in editchar
       return true;
     }
-    if((Event.Type == csevMouseMove) && 
+    if((Event.Type == csevMouseMove) &&
       (!content.Contains(Event.Mouse.x, Event.Mouse.y)))
       isdrawing = false;
-    if((Event.Type == csevMouseMove) && 
+    if((Event.Type == csevMouseMove) &&
       (content.Contains(Event.Mouse.x, Event.Mouse.y)))
     {
       SetMouse(csmcArrow);
@@ -279,7 +279,7 @@ bool csEditCharView::HandleEvent(iEvent &Event)
       csRect inv(content);
       inv.xmin -= inset;
       inv.ymin -= inset;
-      if( (selx<0) || (selx>=editchar->GetWidth()) || 
+      if( (selx<0) || (selx>=editchar->GetWidth()) ||
           (sely<0) || (sely>=editchar->GetHeight()))
       {
         return true;
@@ -291,14 +291,14 @@ bool csEditCharView::HandleEvent(iEvent &Event)
       editchar->SetPixel(selx, sely, drawcolour);
       return true;
     }
-    if((Event.Type == csevMouseMove) && 
+    if((Event.Type == csevMouseMove) &&
       (stats.Contains(Event.Mouse.x, Event.Mouse.y)))
     {
         SetMouse(csmcArrow);
       return true;
     }
 
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == cscmdScrollBarValueChanged))
     {
       int newoff = (int) ((csScrollBar*)Event.Command.Info)->SendCommand(
@@ -315,7 +315,7 @@ bool csEditCharView::HandleEvent(iEvent &Event)
       isdrawing = true;
       selx = (Event.Mouse.x - content.xmin + offx ) / celsize;
       sely = (Event.Mouse.y - content.ymin + offy) / celsize;
-      if( (selx<0) || (selx>=editchar->GetWidth()) || 
+      if( (selx<0) || (selx>=editchar->GetWidth()) ||
           (sely<0) || (sely>=editchar->GetHeight()))
       {
         drawcolour = 1;
@@ -343,7 +343,7 @@ bool csEditCharView::HandleEvent(iEvent &Event)
       return true;
     }
 
-    if(IS_MOUSE_EVENT(Event) && 
+    if(IS_MOUSE_EVENT(Event) &&
       content.Contains(Event.Mouse.x, Event.Mouse.y))
     {
       SetMouse(csmcArrow);

@@ -167,13 +167,13 @@ error:
   }
 
   chars = new csEditChar* [numchars];
-  for(i=0; i<numchars; i++) 
+  for(i=0; i<numchars; i++)
   {
     chars[i] = new csEditChar(IndividualWidth[i], fontheight,
       GlyphBitmap[i]);
   }
   delete[] GlyphBitmap;
-  delete[] IndividualWidth; 
+  delete[] IndividualWidth;
   delete[] FontBitmap;
 }
 
@@ -182,7 +182,7 @@ csEditFont::~csEditFont()
   if(dirty)
   {
     if(csMessageBox(app, "Save changes?", "There are unsaved changes. "
-      "Do you wish to save before continuing?", 
+      "Do you wish to save before continuing?",
       CSMBS_QUESTION | CSMBS_IGNORE | CSMBS_OK) == cscmdOK)
         Save();
   }
@@ -221,7 +221,7 @@ void csEditFont::Save()
   printf("saving font\n");
   dirty = false;
 
-  
+
   int i, c, w, h;
   int maxwidth = fontwidth;
   int maxheight = fontheight;
@@ -292,14 +292,14 @@ void csEditFont::Save()
     int bpc = ((width [c] + 7) / 8) * h;
     int bitmap;
 
-    if (GetChar(c)) 
+    if (GetChar(c))
       if (sourcecode)
       {
         fprintf (out, "  ");
         for (i = 0; i < bpc; i++)
 	{
 	  bitmap = GetChar(c)->GetBitmap(i);
-          fprintf (out, "0x%02x%s", bitmap, (i >= bpc - 1) && 
+          fprintf (out, "0x%02x%s", bitmap, (i >= bpc - 1) &&
 	    (c >= lastglyph - 1) ? "" : ",");
 	}
         fprintf (out, "\t// %02x\n", c);

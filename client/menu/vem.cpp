@@ -30,9 +30,9 @@ void VEM::FillObject ()
 {}
 
 VEM::VEM(csComponent *iParent)
-  : csWindow(iParent, "VEM Console", CSWS_TITLEBAR | CSWS_BUTCLOSE | 
+  : csWindow(iParent, "VEM Console", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
-  { 
+  {
 
   this->SetSize (500, 289);
   this->Center ();

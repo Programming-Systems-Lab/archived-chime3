@@ -21,7 +21,7 @@ static bool printable(char c)
 
 void csEditFontView::Reevaluate() //// number of chars in font and so on.
   {
-    int tinyw = 5, tinyh = 5; 
+    int tinyw = 5, tinyh = 5;
     ((CsfEdit*)app)->GetTinyFont()->GetMaxSize(tinyw, tinyh);
     celw = font->GetWidth() + inset;
     if(celw < 4*tinyw) celw = 4*tinyw;
@@ -29,13 +29,13 @@ void csEditFontView::Reevaluate() //// number of chars in font and so on.
     celperrow = (int)sqrt(font->GetNumChars());
     celpercol = (font->GetNumChars() + celperrow -1) / celperrow;
 
-    stats.Set(BorderWidth+inset, BorderHeight+inset+TitlebarHeight, 
+    stats.Set(BorderWidth+inset, BorderHeight+inset+TitlebarHeight,
       BorderWidth+inset + 100, bound.Height()-BorderHeight-inset);
-    content.Set(stats.xmax+inset*2, BorderHeight+inset*2+TitlebarHeight, 
-      bound.Width() - BorderWidth - scrsize, bound.Height() - 
+    content.Set(stats.xmax+inset*2, BorderHeight+inset*2+TitlebarHeight,
+      bound.Width() - BorderWidth - scrsize, bound.Height() -
       BorderHeight - scrsize);
 
-    scrhor->SetRect(content.xmin-inset, content.ymax, 
+    scrhor->SetRect(content.xmin-inset, content.ymax,
       content.xmax, content.ymax+scrsize);
     struct csScrollBarStatus status;
     status.value = (int)scrhor->SendCommand(cscmdScrollBarQueryValue, 0);
@@ -46,7 +46,7 @@ void csEditFontView::Reevaluate() //// number of chars in font and so on.
     status.step = 1;
     status.pagestep = content.Width()/2;
     scrhor->SendCommand(cscmdScrollBarSet, (void*)&status);
-    scrvert->SetRect(content.xmax, content.ymin-inset, 
+    scrvert->SetRect(content.xmax, content.ymin-inset,
       content.xmax+scrsize, content.ymax);
     status.value = (int)scrvert->SendCommand(cscmdScrollBarQueryValue, 0);
     status.maxvalue = celh*celpercol + inset - content.Height();
@@ -60,16 +60,16 @@ void csEditFontView::Reevaluate() //// number of chars in font and so on.
   }
 
 csEditFontView::csEditFontView(csComponent *iParent, csEditFont *fnt)
-  : csWindow(iParent, fnt->GetFontName(), CSWS_TITLEBAR | CSWS_BUTCLOSE | 
+  : csWindow(iParent, fnt->GetFontName(), CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
-  { 
-    font = fnt; 
-    font->SetView(this); 
+  {
+    font = fnt;
+    font->SetView(this);
 
     selected = false;
     selx = 0; sely = 0;
     offx = 0; offy = 0;
-    inset = 5; // inset border 
+    inset = 5; // inset border
     scrsize = CSSB_DEFAULTSIZE;
 
     palstart = palettesize;
@@ -89,7 +89,7 @@ csEditFontView::csEditFontView(csComponent *iParent, csEditFont *fnt)
     SetSize(500,500);
     Reevaluate();
     Center();
-    
+
     int stath; /// for drawing font
     GetTextSize("", &stath);
     csButton *but = new csButton(this, 66700);
@@ -109,19 +109,19 @@ bool csEditFontView::SetRect(int xmin, int ymin, int xmax, int ymax)
     return true;
   }
 
-csEditFontView::~csEditFontView() 
+csEditFontView::~csEditFontView()
   {
     font->SetView(0);
     delete scrhor;
     delete scrvert;
   }
-    
+
 void csEditFontView::Draw()
   {
     SetFont(((CsfEdit*)app)->GetMainFont());
     csWindow::Draw();
 
-    Rect3D(stats.xmin - inset, stats.ymin, stats.xmax, stats.ymax, 
+    Rect3D(stats.xmin - inset, stats.ymin, stats.xmax, stats.ymax,
       palstart+3, palstart+0);
     int fontheight = 10; /// for drawing font
     char buf[256];
@@ -142,16 +142,16 @@ void csEditFontView::Draw()
     sprintf(buf, "Size %dx%d", font->GetWidth(), font->GetHeight());
     Text(stats.xmin, y, palstart+1, -1, buf);
     y += fontheight+2;
-    
+
     SetFont(((CsfEdit*)app)->GetTinyFont());
-    int tinyw = 5, tinyh = 5; 
+    int tinyw = 5, tinyh = 5;
     ((CsfEdit*)app)->GetTinyFont()->GetMaxSize(tinyw, tinyh);
     GetTextSize("", &fontheight);
-    Box( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax, 
+    Box( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax,
       palstart+0);
-    Rect3D( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax, 
+    Rect3D( content.xmin-inset, content.ymin-inset, content.xmax, content.ymax,
       palstart+2, palstart+3);
-    SetClipRect( content.xmin-inset, content.ymin-inset, content.xmax, 
+    SetClipRect( content.xmin-inset, content.ymin-inset, content.xmax,
       content.ymax);
     csRect cel;
     int charnum;
@@ -161,11 +161,11 @@ void csEditFontView::Draw()
 	charnum = cely*celperrow+ celx + font->GetStartChar();
 	if(charnum >= font->GetStartChar()+font->GetNumChars() ) continue;
         cel.Set(content.xmin+celx*celw, content.ymin+cely*celh,
-          content.xmin+celx*celw + font->GetChar(charnum)->GetWidth(), 
+          content.xmin+celx*celw + font->GetChar(charnum)->GetWidth(),
 	  content.ymin+cely*celh + font->GetChar(charnum)->GetHeight());
 	cel.Move(-offx, -offy);
 	font->GetChar(charnum)->Draw(this, cel.xmin, cel.ymin, palstart+1);
-        Rect3D(cel.xmin-2, cel.ymin-2, cel.xmax+2, cel.ymax+2, 
+        Rect3D(cel.xmin-2, cel.ymin-2, cel.xmax+2, cel.ymax+2,
 	  palstart+3, palstart+2);
         sprintf(buf, "%2.2x %c", charnum, printable(charnum)?charnum:' ');
 	Text(cel.xmin-2, cel.ymax+3, palstart+1, -1, buf);
@@ -177,12 +177,12 @@ void csEditFontView::Draw()
       if(charnum < font->GetStartChar()+font->GetNumChars() )
       {
        cel.Set(content.xmin+selx*celw, content.ymin+sely*celh,
-         content.xmin+selx*celw + font->GetChar(charnum)->GetWidth(), 
+         content.xmin+selx*celw + font->GetChar(charnum)->GetWidth(),
          content.ymin+sely*celh + font->GetChar(charnum)->GetHeight());
        cel.Move(-offx, -offy);
-       Rect3D(cel.xmin-2, cel.ymin-2, cel.xmax+2, cel.ymax+2, 
+       Rect3D(cel.xmin-2, cel.ymin-2, cel.xmax+2, cel.ymax+2,
          palstart+4, palstart+5);
-       Rect3D(cel.xmin-3, cel.ymin-3, cel.xmax+3, cel.ymax+3, 
+       Rect3D(cel.xmin-3, cel.ymin-3, cel.xmax+3, cel.ymax+3,
          palstart+4, palstart+5);
       }
     }
@@ -200,18 +200,18 @@ void csEditFontView::EditSettings()
 
     w->SetSize(500,500);
     w->Center();
-    
+
     int px = 15, py = 20;
     int labelw = 150;
 
-    csButton *but = new csButton(d, cscmdOK, CSBS_DEFAULTVALUE | 
+    csButton *but = new csButton(d, cscmdOK, CSBS_DEFAULTVALUE |
       CSBS_DISMISS | CSBS_DEFAULT);
-    but->SetText("OK"); 
+    but->SetText("OK");
     but->SetSuggestedSize(16,8);
-    but->SetPos(30, 450); 
+    but->SetPos(30, 450);
     but = new csButton(d, cscmdCancel, CSBS_DEFAULTVALUE | CSBS_DISMISS);
     but->SetText("Cancel"); but->SetSuggestedSize(16,8);
-    but->SetPos(130, 450); 
+    but->SetPos(130, 450);
 
     /// fontname, first, number, size
     csInputLine *enter_name = new csInputLine(d);
@@ -280,13 +280,13 @@ void csEditFontView::EditSettings()
 	  font->MakeDirty();
 	  Reevaluate();
 	}
-      if(neww != font->GetWidth()) 
+      if(neww != font->GetWidth())
 	{
 	  font->SetWidth(neww);
 	  font->MakeDirty();
 	  Reevaluate();
 	}
-      if(newh != font->GetHeight()) 
+      if(newh != font->GetHeight())
 	{
 	  font->SetHeight(newh);
 	  font->MakeDirty();
@@ -300,33 +300,33 @@ void csEditFontView::EditSettings()
 
 bool csEditFontView::HandleEvent(iEvent &Event)
   {
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == 66700))
     {
       /// edit font settings dialog
       EditSettings();
       return true;
     }
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == cscmdClose))
     {
       delete font; /// also deletes me
       return true;
     }
-    if((Event.Type == csevMouseMove) && 
+    if((Event.Type == csevMouseMove) &&
       (content.Contains(Event.Mouse.x, Event.Mouse.y)))
     {
       SetMouse(csmcArrow);
       return true;
     }
-    if((Event.Type == csevMouseMove) && 
+    if((Event.Type == csevMouseMove) &&
       (stats.Contains(Event.Mouse.x, Event.Mouse.y)))
     {
         SetMouse(csmcArrow);
       return true;
     }
 
-    if((Event.Type == csevCommand ) && 
+    if((Event.Type == csevCommand ) &&
       (Event.Command.Code == cscmdScrollBarValueChanged))
     {
       int newoff = (int) ((csScrollBar*)Event.Command.Info)->SendCommand(
@@ -342,7 +342,7 @@ bool csEditFontView::HandleEvent(iEvent &Event)
       selected = true;
       selx = (Event.Mouse.x - content.xmin + offx + inset) / celw;
       sely = (Event.Mouse.y - content.ymin + offy + inset/2) / celh;
-      //// modified as follows: the text beneath each cell belongs to 
+      //// modified as follows: the text beneath each cell belongs to
       //// that cell. But the area left&right is divided evenly.
       csRect inv(content);
       inv.xmin -= inset;
@@ -361,7 +361,7 @@ bool csEditFontView::HandleEvent(iEvent &Event)
       selected = true;
       selx = (Event.Mouse.x - content.xmin + offx + inset) / celw;
       sely = (Event.Mouse.y - content.ymin + offy + inset/2) / celh;
-      //// modified as follows: the text beneath each cell belongs to 
+      //// modified as follows: the text beneath each cell belongs to
       //// that cell. But the area left&right is divided evenly.
       csRect inv(content);
       inv.xmin -= inset;
@@ -380,7 +380,7 @@ bool csEditFontView::HandleEvent(iEvent &Event)
       {
         v = font->GetChar(zecharnum)->GetView();
       }
-      else 
+      else
       {
         v = new csEditCharView(app, font, font->GetChar(zecharnum));
       }
@@ -389,7 +389,7 @@ bool csEditFontView::HandleEvent(iEvent &Event)
       v->Invalidate();
     }
 
-    if(IS_MOUSE_EVENT(Event) && 
+    if(IS_MOUSE_EVENT(Event) &&
       content.Contains(Event.Mouse.x, Event.Mouse.y))
     {
       SetMouse(csmcArrow);

@@ -34,7 +34,7 @@ csEditChar::csEditChar(int w, int h, uint8 *bitmap)
   {
     uint8 *line = bitmap + l * ((w + 7) / 8);
     for (i = 0; i < w; i++)
-      if(line [i / 8] & (0x80 >> (i & 7))) 
+      if(line [i / 8] & (0x80 >> (i & 7)))
         SetPixel(i,l,1);
       else SetPixel(i,l,0);
   }

@@ -13,7 +13,7 @@
 
 chimeComm::chimeComm()
 {
-	
+
 }
 
 chimeComm::chimeComm(ClientComm *client_comm)
@@ -50,7 +50,7 @@ char * chimeComm::ftoa(float num)
 
 	for (i = dec; i <=size; i=i+1)
 		str[i+1] = tempstr[i];
-	
+
 	return strdup(str);
 }
 
@@ -66,10 +66,10 @@ bool chimeComm::AppendToken(char *command, char *token)
 //Connect to a given CHIME Server
 bool chimeComm::Connect(char *server, char *userID, char *password)
 {
-	strcpy(command, server);	
+	strcpy(command, server);
 	AppendToken(command, userID);
 	AppendToken(command, password);
-	
+
 	//client_comm->
 	//SendFunction(c_connect, command);
 	return true;
@@ -101,13 +101,13 @@ bool chimeComm::MoveObject(char *roomUrl, char *objectUrl, float x, float y, flo
 //Send updated position of the user
 bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z, const csStrVector *userList)
 {
-	
+
 	strcpy(command, roomUrl);
 	AppendToken(command, userID);
 	AppendToken(command, ftoa(x));
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
-	 
+
 	//Send signal to all the user in this room
 	for(int i = 0 ; i < userList->Length(); i++)
 	{
@@ -119,7 +119,7 @@ bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z,
 //Broadcast entrance of a user in a given room
 bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y, float z)
 {
-	
+
 	strcpy(command, userID);
 	AppendToken(command, newRoomUrl);
 	AppendToken(command, ftoa(x));
@@ -133,9 +133,9 @@ bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y
 //Broadcast that a user has lift a given room
 bool chimeComm::UserLeftRoom(char *userID, char *oldRoomUrl)
 {
-	
+
 	strcpy(command, userID);
-	AppendToken(command, oldRoomUrl);	
+	AppendToken(command, oldRoomUrl);
 
 	client_comm->SendSienaFunction(c_leftRoom, command, oldRoomUrl,"HTTP");
 	return true;

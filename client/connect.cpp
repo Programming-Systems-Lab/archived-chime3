@@ -23,9 +23,9 @@ ConnectDialog::~ConnectDialog() {}
 
 
 ConnectDialog::ConnectDialog(csComponent *iParent)
-  : csWindow(iParent, "Connection Box", CSWS_TITLEBAR | CSWS_BUTCLOSE | 
+  : csWindow(iParent, "Connection Box", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
-  { 
+  {
 
   this->SetSize (500, 250);
   this->Center ();
@@ -44,12 +44,12 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
   username->SetSize(300,30);
   username->SetPos(px+labelw,py);
 
-  
+
   //set the text to the previous value
   //not implemented yet
   //username->SetText(font->GetFontName());
 
-  
+
   csStatic *usr_lbl = new csStatic(d, username, "~Username:");
   usr_lbl->SetRect(px, py, px+labelw,py+username->bound.Height());
   py += username->bound.Height();
@@ -61,7 +61,7 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
   password->SetSize(300,30);
   password->SetPos(px+labelw,py);
 
-  
+
 
   //set the text to the previous value
   //not implemented yet
@@ -89,16 +89,16 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
 
   //setup the accept and cancel buttons
   csButton *butOK = new csButton(d, 66800);
-  butOK->SetText("Login"); 
+  butOK->SetText("Login");
   butOK->SetSuggestedSize(16,8);
-  butOK->SetPos(70, 175); 
+  butOK->SetPos(70, 175);
 
 
   //cancel button
   csButton *butCAN = new csButton(d, 66801);
-  butCAN->SetText("Cancel"); 
+  butCAN->SetText("Cancel");
   butCAN->SetSuggestedSize(16,8);
-  butCAN->SetPos(300, 175); 
+  butCAN->SetPos(300, 175);
 
 }
 
@@ -119,7 +119,7 @@ bool ConnectDialog::HandleEvent (iEvent &Event)
         case 66800:
 		  Close();
 		  return true;
-      
+
 
 		 //Cancel Button has been pressed
 		case 66801:
@@ -127,7 +127,7 @@ bool ConnectDialog::HandleEvent (iEvent &Event)
 		  return true;
 	  }
 
-      break;	
+      break;
   }
 
   return false;

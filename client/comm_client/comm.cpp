@@ -12,7 +12,7 @@ void main(void)
 
 /* Step 1: Let the user input some data. */
 
-  //hFreshFile = CreateFile("datafile",...) 
+  //hFreshFile = CreateFile("datafile",...)
   for (iCount = 0; iCount<100; iCount++)
 { printf("Please enter next data item: ");
   scanf("%d",&iDataValue);
@@ -25,12 +25,12 @@ void main(void)
 hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)Validate,NULL,0,&iID);
 
 /* Step 3: Let the user enter more data. */
-}   
+}
 
 long WINAPI Validate(long lParam)
 { HANDLE hOldFile;
   int iTemp;
-//hFreshFile = CreateFile("datafile",...) 
+//hFreshFile = CreateFile("datafile",...)
 //hOldFile = CreateFile("revenues.dat",...);
 	return(1);
 }

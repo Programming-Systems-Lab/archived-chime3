@@ -96,7 +96,7 @@ protected:
 //Connect stuff
 class ConnectDialog : public csWindow
 {
- 
+
   csInputLine *username;
   csInputLine *password;
   csInputLine *retrieve;
@@ -123,7 +123,7 @@ class SienaDialog : public csWindow
   csListBox *lbSub;
   csListBox *lbObject;
 
-  
+
   //void gui ();
 
 public:

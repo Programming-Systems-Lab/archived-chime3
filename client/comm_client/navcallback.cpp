@@ -8,10 +8,10 @@ NavCallback::NavCallback()
 	hMutex=CreateMutex(NULL,FALSE,NULL); // create a mutex object with no name
 }
 
-void NavCallback::GetFunction(int method, char *received) 
+void NavCallback::GetFunction(int method, char *received)
 {
 	//keep everyone waiting
-	WaitForSingleObject(hMutex,INFINITE); 
+	WaitForSingleObject(hMutex,INFINITE);
 
 	//this is the lucky thread
 	printf("\n\nIn Navdeep's Receiver\n");

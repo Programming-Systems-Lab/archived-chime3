@@ -31,9 +31,9 @@ class csSector;
 class csEngine;
 struct iCollideSystem;
 
-#define MAX_DOOR	20		//Maximum number of doors in the sector	
+#define MAX_DOOR	20		//Maximum number of doors in the sector
 #define MAX_URL		200		//Maximum length of a url
-class chimeSector  
+class chimeSector
 {
 	char roomUrl[MAX_URL];				//Url represented by this sector
 	csSector* roomList[2];				//List of all the rooms in the sector
@@ -48,7 +48,7 @@ class chimeSector
 
 	csVector3 camLocation;				//Default camera location
 	csVector3 firstDoorLocation;
-	csVector3 roomOrigin;				//one of the corners of the room from which 
+	csVector3 roomOrigin;				//one of the corners of the room from which
 										//object positions are offset.
 	csVector3 roomSize;
 	csVector3 connSize;
@@ -58,7 +58,7 @@ class chimeSector
 	csStrVector userList;				//List of users in the room
 
 	csPolygon3D *doorList[MAX_DOOR];
-	
+
 	//Polygons representing doors of the hallway
 	csPolygon3D **hallRightDoor;
 	csPolygon3D **hallLeftDoor;
@@ -119,7 +119,7 @@ public:
 	//Build a new room as specified by the data server.
 	bool BuildRoom();
 	//Build dynamic room as a function of number of objects in the room
-	bool BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollideSystem* collide_system);	
+	bool BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollideSystem* collide_system);
 	bool BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iCollideSystem* collide_system);
 
 	//Return Default camera location of this sector
@@ -159,7 +159,7 @@ public:
 	bool HitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect);
 	//Check If a given beam intersects any of the hallway doors of this sector
 	bool HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
-	// Find  an object in this sector 
+	// Find  an object in this sector
 	csMeshWrapper* FindObject(char *objectUrl, csSector *&room);
 	//check if a given beam hits any of the meshes in this sector.
 	csMeshWrapper* SelectMesh(const csVector3 &start, const csVector3 &end, csVector3 &isect, float &dist);
@@ -178,7 +178,7 @@ public:
 	chimeSector();
 	chimeSector(csSystemDriver  *Sys, csEngine *e);
 	virtual ~chimeSector();
-	
+
 };
 
 #endif // !defined(AFX_CHIMESECTOR_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)
