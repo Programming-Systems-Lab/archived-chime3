@@ -332,12 +332,13 @@ bool ChimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 	}
 
 
+	engine->SetAmbientLight(csColor(50, 50, 50));
 	//room->SetAmbientColor(50,50,50);
 
 	//Prepare the whole room.
 	//room->Prepare (room);
 	//room->InitLightMaps (false);
-	//room->ShineLights ();
+	room->ShineLights ();
 	//room->CreateLightMaps (System->G3D);
 
 	fclose(fp);
@@ -492,23 +493,24 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		if (proceed) {
 
 			buf += count;
-			location.y = 1;
+			//location.y = 1;
 			AddMeshObj (shape, objUrl, room,location, 1);
 		}
 	}
 
 
-	/*	
-	room->SetAmbientColor(50,50,50);
-	connector1->SetAmbientColor(50,50,50);
+		
+	engine->SetAmbientLight(csColor(.5,.5,.5));
+	/*connector1->SetAmbientColor(50,50,50);
 	connector2->SetAmbientColor(50,50,50);
 	hallway->SetAmbientColor(50,50,50);
 	*/
 	
+	room->ShineLights();
 	//Prepare the whole room.
 	//room->Prepare (room);
 	//room->InitLightMaps (false);
-	room->ShineLights ();
+	//room->ShineLights ();
 	//room->CreateLightMaps (System->G3D);
 
 	//connector1->Prepare (connector1);
@@ -529,7 +531,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 	//Connect room and connector1 room
 	roomBackDoor[0]->CreatePortal(connector1);
-	roomBackDoor[0]->SetAlpha(0);
+	roomBackDoor[0]->SetAlpha(200);
 	conn1FrontDoor[0]->CreatePortal(room);
 	conn1FrontDoor[0]->SetAlpha(0);
 
@@ -682,7 +684,10 @@ iMeshWrapper* ChimeSector::AddMeshObj (char* tname, char* sname, iSector* where,
   }
   iMeshWrapper* spr = Sys->engine->CreateMeshWrapper (tmpl, sname,
 						      where, pos);
-  csMatrix3 m; m.Identity (); m = m * (size/10);
+  csMatrix3 m; m.Identity (); m = m * (size/15);
+  csXRotMatrix3 rot_m(-3.141/2);
+  m = rot_m * m;
+
   spr->GetMovable ()->SetTransform (m);
   spr->GetMovable ()->UpdateMove ();
 

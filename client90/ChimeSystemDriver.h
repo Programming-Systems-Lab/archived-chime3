@@ -31,6 +31,7 @@ struct iCrossBuilder;
 struct iVFS;
 struct iLoader;
 struct iMotionManager;
+class csColliderWrapper;
 class csView;
 
 class ClientComm;
@@ -130,6 +131,29 @@ private:
 	//Collision detection plugin.
 	iCollideSystem* collide_system;
 
+	//player's body represented as a 3D object
+	iMeshWrapper *plbody, *pllegs;
+
+	//body height
+	float cfg_body_height;
+	/// Body width.
+	float cfg_body_width;
+	/// Body depth.
+	float cfg_body_depth;
+	/// Eye offset.
+	float cfg_eye_offset;
+	/// Legs width.
+	float cfg_legs_width;
+	/// Legs depth.
+	float cfg_legs_depth;
+	/// Legs offset.
+	float cfg_legs_offset;
+
+	/// Colliders for "legs" and "body". Intersections are handled differently.
+	csColliderWrapper *legs;
+	csColliderWrapper *body;
+	csVector3 body_radius, body_center, legs_radius, legs_center;
+
 	//If 3D view is active or not
 	bool active;
 
@@ -168,6 +192,8 @@ private:
 	//objects in the room.
 	bool CollisionDetect(iMeshWrapper *sp, csVector3 pos, iSector *room);
 	iSector* FindSectContainingPoint(csVector3 &pos, ChimeSector *&sect);
+	void CreateColliders ();
+
 
 	//			**** Recieved info handling functions ***
 	bool HandleNetworkEvent(int method, char *params);

@@ -357,7 +357,7 @@ void ChimeSystemDriver::UserMoved()
 		*/
 
 		newPos = view->GetCamera()->GetTransform().GetOrigin();
-		roomOrigin = csVector3(0, 0, 0);
+		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
 		comm.UserEnteredRoom(username, my_ip_address, sec->GetUrl(), newPos.x, newPos.y, newPos.z);
@@ -374,7 +374,7 @@ void ChimeSystemDriver::UserMoved()
 		*/
 
 		newPos = view->GetCamera()->GetTransform().GetOrigin();
-		roomOrigin = csVector3(0, 0, 0);
+		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
 		comm.MoveUser(roomUrl, username, my_ip_address, newPos.x, 0, newPos.z, sec->GetUserList());
@@ -574,10 +574,18 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 
 
 	// Get the collide system plugin.
-	iConfigManager* Config = CS_QUERY_REGISTRY (object_reg, iConfigManager);
-	const char* p = Config->GetStr ("Walktest.Settings.CollDetPlugIn",
+	iConfigManager* cfg = CS_QUERY_REGISTRY (object_reg, iConfigManager);
+	const char* p = cfg->GetStr ("Walktest.Settings.CollDetPlugIn",
 		"crystalspace.collisiondetection.rapid");
-	
+	cfg_body_height = cfg->GetFloat ("Walktest.CollDet.BodyHeight", 1.4);
+	cfg_body_width = cfg->GetFloat ("Walktest.CollDet.BodyWidth", 0.5);
+	cfg_body_depth = cfg->GetFloat ("Walktest.CollDet.BodyDepth", 0.5);
+	cfg_eye_offset = cfg->GetFloat ("Walktest.CollDet.EyeOffset", -0.7);
+	cfg_legs_width = cfg->GetFloat ("Walktest.CollDet.LegsWidth", 0.4);
+	cfg_legs_depth = cfg->GetFloat ("Walktest.CollDet.LegsDepth", 0.4);
+	cfg_legs_offset = cfg->GetFloat ("Walktest.CollDet.LegsOffset", -1.1);
+	cfg->DecRef();
+
 	collide_system = CS_LOAD_PLUGIN (plugin_mgr, p, iCollideSystem);
 	if (!collide_system)
 	{
@@ -808,8 +816,8 @@ void ChimeSystemDriver::SetupFrame()
   //AnimateProcTextures (current_time, elapsed_time);
 
  // Update the Motion Manager
-  if (myMotionMan)
-    myMotionMan->UpdateAll ();
+ // if (myMotionMan)
+ //   myMotionMan->UpdateAll ();
 
 
   if( active )
@@ -1414,7 +1422,7 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 
 //*************************************************************************
 //*
-//* Handle double click on the left mouse button
+//*  double click on the left mouse button
 //*
 //*************************************************************************
 bool ChimeSystemDriver::HandleLeftMouseDoubleClick(iEvent &Event)
@@ -1986,9 +1994,6 @@ bool ChimeSystemDriver::LoadMeshObj (char *filename, char *templatename, char* t
     return false;
   }
 
-
-  buf->GetUint8();
-  buf->GetSize();
   iModelData *Model = Sys->ModelConverter->Load (buf->GetUint8 (), buf->GetSize ());
   buf->DecRef ();
   if (!Model)
@@ -2027,8 +2032,12 @@ iMeshWrapper* ChimeSystemDriver::AddMeshObj (char* tname, char* sname, iSector* 
   }
   iMeshWrapper* spr = Sys->engine->CreateMeshWrapper (tmpl, sname,
 						      where, pos);
-  csMatrix3 m; m.Identity (); m = m * (size/10);
-  spr->GetMovable ()->SetTransform (m);
+  csMatrix3 m; m.Identity (); m = m * (size/15);
+  csZRotMatrix3 rot_m(-3.141);
+  m = rot_m;
+  //m = m * (size/15);
+
+  spr->GetMovable ()->SetTransform (rot_m);
   spr->GetMovable ()->UpdateMove ();
 
   spr->DeferUpdateLighting (CS_NLIGHT_STATIC|CS_NLIGHT_DYNAMIC, 10);
