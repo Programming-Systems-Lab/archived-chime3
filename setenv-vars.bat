@@ -7,5 +7,5 @@ SET SIENAUTILS=%CHIME%\sienautils
 SET DATASERVER=%CHIME%\DataServer
 SET VEM=%CHIME%\vem
 SET EVENT_TRACER=%CHIME%\EventTracer
-SET SHEN=%ROOT%\jars\hsql.jar;%ROOT%\jars\jdom.jar;%ROOT%\jars\xerces.jar;%ROOT%\jars\collections.jar
+SET SHEN=%ROOT%\jars\hsql.jar;%ROOT%\jars\jdom-b7.jar;%ROOT%\jars\xerces.jar;%ROOT%\jars\collections.jar
 SET CLASSPATH=.;%ROOT%;%JARS%;%FRAX%;%AUTH%;%SIENAUTILS%;%SHEN%;%DATASERVER%;%EVENT_TRACER%;%VEM%;
