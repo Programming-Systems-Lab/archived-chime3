@@ -90,7 +90,9 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//strcpy(username, "denis");
 	//strcpy(userIP, getLocalIP());
 
-	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
+	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\n");
+	strcat(testRoom, "http://www.cnn.com/ cube Component Component 1\n");
+	strcat(testRoom, "http://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
 	//strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
@@ -873,7 +875,7 @@ bool ChimeSystemDriver::OpenDoor() {
 	if (strcmp(username, "") == 0)
 		return false;
 
-	if (reqAtDoor != 0 && reqAtSec != NULL) {
+	if (reqAtDoor != -1 && reqAtSec != NULL) {
 		doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
 		strcpy(reqRoomUrl, doorUrl);
 		comm.SubscribeRoom(doorUrl, username);
