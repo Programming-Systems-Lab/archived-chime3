@@ -24,8 +24,8 @@
  * public boolean removeLinkTuple(String roomUrl, String url) {
  * public Vector findSourceTupleRecur(String protocol, String url)
  * public Vector findSourceTuple(String protocol, String url)
- * public boolean setShape(String classtype, String subtype, String shape, String protocol, String url)
- * public boolean setLinkShape(String classtype, String subtype, String shape, String url, String roomUrl)
+ * public boolean setShape(String classtype, String subtype, String shape, String shape2d, String protocol, String url
+ * public boolean setLinkShape(String classtype, String subtype, String shape, String shape2d, String protocol, String roomUrl, String url)
  * public String getParentDomain(String input)
  * public String getDomain(String input)
  * public void printTable(String tableName)
@@ -209,7 +209,7 @@ public class DataServer {
 			String tableName = "table" + tupleID;
 			statement.executeQuery("create table " +
 					       tableName +
-					       " (link varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
+					       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
 			data = t.getOpt()[2];
 			st = new StringTokenizer(data, " \n");
 			while ( st.hasMoreTokens() ) {
@@ -255,7 +255,7 @@ public class DataServer {
 			String tableName = "table" + tupleID;
 			statement.executeQuery("create table " +
 					       tableName +
-					       " (link varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
+					       " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
 			int idx1 = 0;
 			int idx2 = 0;
 			data = t.getOpt()[2];
@@ -641,7 +641,10 @@ public class DataServer {
     }
 
     public int addSourceTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String[] opt) {
-	return addSourceTuple(protocol, url, size, type, created, last_mod, src, opt[0], opt[1], opt[2], opt[3], opt[4]);
+	if (opt == null)
+	    return addSourceTuple(protocol, url, size, type, created, last_mod, src, null, null, null, null, null);
+	else 
+	    return addSourceTuple(protocol, url, size, type, created, last_mod, src, opt[0], opt[1], opt[2], opt[3], opt[4]);
     }
 
     // add an link tuple to the link table
@@ -664,7 +667,7 @@ public class DataServer {
 	try {
 	    statement.executeQuery("create table " +
 				   tableName +
-				   " (link varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
+				   " (url varchar(255), type varchar(255), classtype varchar(255), subtype varchar(255), shape varchar(255), shape2d varchar(255) )");
 
 	    statement.executeQuery("insert into " +
 				   tableName +
@@ -957,7 +960,7 @@ public class DataServer {
 	  return false;
 	}
 
-
+	
 	// create an siena object and publish it.
 	// method: s_changeClass
 	Subscriber subscriber = Subscriber.getInstance();
@@ -975,6 +978,7 @@ public class DataServer {
     } catch (Exception e) {
 		e.printStackTrace();
 	}
+	
 	return true;
     }
 
@@ -1081,14 +1085,17 @@ public class DataServer {
 
     // testing function
     public static void main(String argv[]) {
-
-	/* if (argv.length != 2) {
-	   System.err.println("2 Command-Line Arguments Expected for the DataServer.");
-	   System.exit(-1);
-	   }
-	*/
-
+	
 	DataServer ds = DataServer.getInstance();
+	
+	/* TEST1 and TEST2
+	ds.addSourceTuple("http", "http://www.columbia.edu", 20, "DIR", 1234, 3456, null, null);
+	ds.setShape("classA", "subTypeA", "robot", "circle", "http", "http://www.columbia.edu");
+	ds.addLinkTuple("http", "http://www.columbia.edu", "http://www.columbia.edu/a.txt", "LINK");
+	ds.setLinkShape("classB", "subTypeB", "painting", "square", "http", "http://www.columbia.edu", "http://www.columbia.edu/a.txt");
+	ds.printTable("SOURCE");
+	ds.printTable("table1");
+	*/
 
 	//ds.shutDown();
 

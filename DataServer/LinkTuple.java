@@ -20,10 +20,10 @@ public class LinkTuple implements Tuple {
     
     // the names of universal attributes
     public static final String[] ATTRIB_NAME = {
-	"link", "type", "classtype", "subtype", "shape", "shape2d"};
+	"url", "type", "classtype", "subtype", "shape", "shape2d"};
     
     // variable definitions
-    private String link;
+    private String url;
     private String type;
     private String classtype;
     private String subtype;
@@ -32,7 +32,7 @@ public class LinkTuple implements Tuple {
         
     // constructors
     public LinkTuple (String l, String t, String c, String sub, String s, String s2) {
-	link = l;
+	url = l;
 	type = t;
 	classtype = c;
 	subtype = sub;
@@ -51,7 +51,7 @@ public class LinkTuple implements Tuple {
     // parse a result set into a vector of tuples
     public static Vector parseResultSet(ResultSet r) {
 	
-	String link = null;
+	String url = null;
 	String type = null;
 	String classtype = null;
 	String subtype = null;	
@@ -66,8 +66,8 @@ public class LinkTuple implements Tuple {
 	    while ( r.next() ) {
 		//System.err.println("first occurence.");
 		for(int i=1;i<=col;i++) {
-		    if ( m.getColumnLabel(i).equals("LINK") ) {
-			link = r.getString(i);
+		    if ( m.getColumnLabel(i).equals("URL") ) {
+			url = r.getString(i);
 		    } else if ( m.getColumnLabel(i).equals("TYPE") ) {
 			type = r.getString(i);
 		    } else if ( m.getColumnLabel(i).equals("CLASSTYPE") ) {
@@ -82,7 +82,7 @@ public class LinkTuple implements Tuple {
 		}
 		
 		//System.err.println("before adding tuple");
-		v.add(new LinkTuple(link, type, classtype, subtype, shape, shape2d));
+		v.add(new LinkTuple(url, type, classtype, subtype, shape, shape2d));
 	    }
 
 	} catch(SQLException e) {
@@ -95,7 +95,7 @@ public class LinkTuple implements Tuple {
     
     public String toString() {
 	String tmp = "";
-	tmp += "LINK: " + link + "\n";
+	tmp += "URL: " + url + "\n";
 	tmp += "TYPE: " + type + "\n";
 	tmp += "CLASSTYPE: " + classtype + "\n";
 	tmp += "SUBTYPE: " + subtype + "\n";
@@ -119,7 +119,7 @@ public class LinkTuple implements Tuple {
     }
 
     // accessors
-    public String getLink() { return link;}
+    public String getLink() { return url;}
     public String getType() { return type;}
     public String getClasstype() { return classtype;}
     public String getSubtype() { return subtype;}

@@ -670,15 +670,20 @@ public class EventTracer {
 
 
     public static void main(String argv[]) {
-	/*
-	   if (argv.length != 4) {
-	   System.err.println("4 Command-Line Arguments Expected for the DataServer.");
-	   System.exit(-1);
-	   }
+	
+	// DataServer ds = DataServer.getInstance();
+	EventTracer et = EventTracer.getInstance();
+	
+	/* TEST 3
+	et.addRoomTuple("http://www.columbia.edu", "128.59.220.1");
+	et.addRoomTuple("http://www.columbia.edu", "128.59.220.2");
+	
+	et.addMovementTuple("http://www.columbia.edu", "http://www.columbia.edu/a.txt", 1, 2, 3, 1.1, 2.2, 3.3);
+	et.addMovementTuple("http://www.columbia.edu", "http://www.columbia.edu/a.txt", 1.1, 2.2, 3.3, 1.2, 2.4, 3.6);
+	System.err.println("Is Room Found? " + et.findRoomTuple("http://www.columbia.edu"));
+	System.err.println("Is User Found? " + et.findUserRoom("128.59.220.1"));
+	System.err.println("Is Movement Found? " + et.findMovementTuple("http://www.columbia.edu", "http://www.columbia.edu/a.txt"));
 	*/
-
-	EventTracer tm = EventTracer.getInstance();
-
 
 	/*
 	  setRecent("select * from Customer");
@@ -693,19 +698,10 @@ public class EventTracer {
 	  setRecent("select count(*),min(code),max(code),sum(code) from place");
 	*/
 
-	/*
-	  public void addTestData() {
-
-	  addRoomTuple("http://www.columbia.edu/", "128.59.220.1");
-	  addRoomTuple("http://www.columbia.edu/", "128.59.220.2");
-	  addRoomTuple("http://www.columbia.edu/a/", "128.59.220.1");
-
-	  addMovementTuple("http://www.cnn.com/", "http://www.columbia.edu/a/", 1, 2, 3, 1.1, 2.2, 3.3);
-	  addMovementTuple("http://www.abc.com/", "http://www.columbia.edu/a/", 1, 1, 1, -1, -1, -1);
-	  addMovementTuple("http://www.abc.com/", "http://www.columbia.edu/", 1, 1, 1, -1, -1, -1);
-	  }
-	*/
-
     }
 }
+
+
+
+
 
