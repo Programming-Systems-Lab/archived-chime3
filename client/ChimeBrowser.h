@@ -30,19 +30,25 @@ class chimeBrowser;
 
 #include "ChimeComm.h"
 #include "comm_client/udp.h"
-#include "ChimeSector.h"	
+#include "ChimeSector.h"
 
 
 
 
 
 #define NUM_SECT 5
+#define CONTAINER 0
+#define CONNECTOR 1
+#define COMPONENT 2
+#define USER 3
 
 class chimeBrowser: public SysSystemDriver
 {
   typedef SysSystemDriver superclass;
 
-private:	
+private:
+	char username[80];				//the username of the user using CHIME
+
     csView      *view;			//View of the curSector.
 	csEngine* engine;			//Pointer to the Crystal-Space engine;
 	chimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
@@ -61,7 +67,7 @@ private:
 	float selectedMeshDist;
 	chimeSector *selectedMeshSect;
 	chimeSector *selectedMeshNewSect;
-	
+
 	//Currently requested Url
 	char reqRoomUrl[MAX_URL];
 	chimeSector *reqAtSec;
@@ -75,7 +81,7 @@ private:
 
 	//Path to the internet browser
 	char browserPath[400];
-	
+
 	//Remove selected chime sector.
 	bool RemoveChimeSector(chimeSector* &sec2);
 	//Remove the first sector of the chimeworld
@@ -83,11 +89,11 @@ private:
 	bool ReshuffleSectors();
 	// Find room corresponding to a given room url
 	csSector* FindRoom(char *roomUrl);
-	// Find  an object in a given room 
+	// Find  an object in a given room
 	csMeshWrapper* FindObject(csSector *room, char *objectUrl);
 	// Find sector corresponding to a given room url
 	chimeSector* FindSector(char *roomUrl);
-	// Find sector corresponding to a given room 
+	// Find sector corresponding to a given room
 	chimeSector* FindSector(csSector *room);
 	//User has moved send notification to all clients.
 	void UserMoved();
@@ -101,7 +107,7 @@ private:
 	//objects in the room.
 	bool CollisionDetect(csMeshWrapper *sp, csVector3 pos, csSector *room);
 	csSector* FindSectContainingPoint(csVector3 &pos, chimeSector *&sect);
-	
+
 	//			**** Recieved info handling functions ***
 	bool HandleNetworkEvent(int method, char *params);
 	// Move a specified object
@@ -121,9 +127,9 @@ private:
 	bool chimeBrowser::ChangeClass(char *desc);
 	// Read a given room description
 	bool chimeBrowser::ReadRoom(char *desc);
-	
+
 	char testRoom[500], google[500], google2[500], google3[500];
-	
+
 	///***** Comm section
 	volatile HANDLE hMutex; // Create a Mutex object
 	//communication helper class
@@ -172,10 +178,14 @@ public:
 	void Start3D ();
 	//Method to initialize crystal-space engine.
 	virtual bool Initialize (int argc, const char* const argv[],const char *iConfigName);
-	//Default constructor  
-	chimeBrowser(); 
+	//Default constructor
+	chimeBrowser();
+	//write a small message in the bottom left corner
+	void writeMessage();
+
+
 	//Destructor to clean up and shutdown the engine.
-	virtual ~chimeBrowser();  
+	virtual ~chimeBrowser();
 
 
 	///Comm section

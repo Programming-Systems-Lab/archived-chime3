@@ -642,13 +642,16 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 			location = objPos;
 		}
 
+		if (!strcmp(Class, "Container")) {
+			AddContainer(objUrl);	//add the container to the list of containers
+		}
 
-		if (!strcmp(Class, "User"))
+		else if (!strcmp(Class, "User"))
 		{
 			AddUser(objUrl);  //add the user to the list of users
 		}
 
-		if(!strcmp(Class, "Connector"))
+		else if(!strcmp(Class, "Connector"))
 		{
 			char *tmp = new char[strlen(objUrl)+1];
 			strcpy(tmp, objUrl);
@@ -1256,6 +1259,39 @@ bool chimeSector::Connect(csPolygon3D *door, csSector *hallway)
 	return true;
 }
 
+//find the type of the link
+int chimeSector::findType(const char *thing) 
+{
+	for(int i = 0; i < containerList.Length(); i++)
+	{
+		if(!strcmp(containerList.Get(i), thing))
+		{
+			return CONTAINER;
+		}
+	}
+
+	for (i = 0; i < connList.Length(); i++)
+	{
+		if(!strcmp(connList.Get(i), thing))
+			{
+				return CONNECTOR;
+			}
+	}
+
+	for (i = 0; i < userList.Length(); i++)
+	{
+		if(!strcmp(userList.Get(i), thing))
+			{
+				return USER;
+			}
+	}
+
+	return -1;
+}
+
+
+
+
 //Add user name to the list of users in the sector
 bool chimeSector::AddUser(char *userID)
 {
@@ -1278,6 +1314,36 @@ bool chimeSector::deleteUser(char *userID)
 		if(!strcmp(userList.Get(i), userID))
 		{
 			userList.Delete(i);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+//Add a container to a list of containers
+bool chimeSector::AddContainer(char *location)
+{
+	if(!location) return false;
+
+	char *tmp = new char[strlen(location)+1];
+	strcpy(tmp, location);
+	containerList.Push(tmp);
+	return true;
+}
+
+
+//Remove a container from the list of containers
+bool chimeSector::DeleteContainer(char *location) 
+{
+	if(!location) return false;
+
+	char *loc = NULL;
+	for(int i = 0; i < containerList.Length(); i++)
+	{
+		if(!strcmp(containerList.Get(i), location))
+		{
+			containerList.Delete(i);
 			return true;
 		}
 	}

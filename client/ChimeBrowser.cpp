@@ -71,7 +71,7 @@ chimeBrowser::chimeBrowser()
 
 	//DEBUG stuff. FIXIT
 
-	strcpy(userID, "124.2.12.1");
+	strcpy(userID, "124.2.12.12");
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
@@ -286,7 +286,9 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
-	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
+	strcpy(username, "denis");
+
+	comm_client = new ClientComm(9999, "localhost", 1234, username, "denis", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
@@ -331,19 +333,23 @@ void chimeBrowser::Refresh3D ()
 
 	view->Draw ();
 
-	// Start drawing 2D graphics.
-	if (!G3D->BeginDraw (CSDRAW_2DGRAPHICS))
-	{
-		return;
-	}
 
+	/*
 	iTextureManager *tm = G3D->GetTextureManager ();
 	int write_colour = tm->FindRGB (255, 150, 100);
 	iFont *courierFont = NULL;
 	iFontServer *fs = G2D->GetFontServer ();
 	courierFont = fs->LoadFont (CSFONT_COURIER);
 	G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, "Hello World this is a very small string");
+	*/
 
+	// Start drawing 2D graphics.
+	if (!G3D->BeginDraw (CSDRAW_2DGRAPHICS))
+	{
+		return;
+	}
+
+	
 	// Drawing code ends here.
 	G3D->FinishDraw ();
 	// Print the final output.
@@ -425,7 +431,9 @@ void chimeBrowser::NextFrame ()
 
   }
 
-  // Start drawing 2D graphics.
+	writeMessage();
+
+	// Start drawing 2D graphics.
 	if (!G3D->BeginDraw (CSDRAW_2DGRAPHICS))
 	{
 		return;
@@ -450,6 +458,27 @@ void chimeBrowser::NextFrame ()
   //Block communication thread after letting it process atleast one event
 
 
+}
+
+
+//write a small message in the bottom left corner indicating your position
+void chimeBrowser::writeMessage() 
+{
+	iTextureManager *tm = G3D->GetTextureManager ();
+	int write_colour = tm->FindRGB (255, 255, 255);
+	iFont *courierFont = NULL;
+	iFontServer *fs = G2D->GetFontServer ();
+	courierFont = fs->LoadFont (CSFONT_COURIER);
+	chimeSector *curSect = GetCurChimeSector();
+	if (curSect != NULL && username != NULL) {
+		char displayString[1000];
+		sprintf(displayString, "Username: %s", username);
+		G2D->Write(courierFont, 2, G2D->GetHeight() - 30, write_colour, -1, displayString);
+		sprintf(displayString, "Room Location: %s", curSect->GetUrl());
+		G2D->Write(courierFont, 2, G2D->GetHeight() - 20, write_colour, -1, displayString);
+		sprintf(displayString, "Number of Users other than You: %d", curSect->GetUserList()->Length());
+		G2D->Write(courierFont, 2, G2D->GetHeight() - 10, write_colour, -1, displayString);
+	}
 }
 
 //**********************************************************************
@@ -611,7 +640,6 @@ bool chimeBrowser::HandleLeftMouseClick(iEvent &Event)
 //Handle double click on the left mouse button
 bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
 {
-
 	csMeshWrapper *m;
 	csVector2   screenPoint;
 
@@ -619,9 +647,27 @@ bool chimeBrowser::HandleLeftMouseDoubleClick(iEvent &Event)
 	screenPoint.y = FrameHeight - Event.Mouse.y - 1;
 	m = SelectMesh(view->GetCamera(), &screenPoint, selectedMeshDist);
 
-	if (m)
-	{
-		_spawnl(_P_NOWAIT, browserPath, "browser", selectedMesh->GetName(), NULL);
+	chimeSector *curSect = GetCurChimeSector();
+	
+	if (curSect == NULL) {
+		return false; //this should never be the case because we are always somewhere
+	}
+
+
+	//is this a container?
+	if (m)  {
+		
+		if (curSect->findType(selectedMesh->GetName()) == CONTAINER) {
+			comm.SubscribeRoom((char*) selectedMesh->GetName(), userID);
+			comm.GetRoom((char*) selectedMesh->GetName());
+		}
+	
+	//if it isn't then just launch the browser
+	else 	
+		{
+			_spawnl(_P_NOWAIT, browserPath, "browser", selectedMesh->GetName(), NULL);
+		}
+
 	}
 
 	return true;

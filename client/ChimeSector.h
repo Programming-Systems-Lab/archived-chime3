@@ -26,6 +26,11 @@
 #define ROOM	3
 #define HALLWAY	4
 
+#define CONTAINER 0
+#define CONNECTOR 1
+#define COMPONENT 2
+#define USER 3
+
 
 class csSector;
 class csEngine;
@@ -56,6 +61,7 @@ class chimeSector
 
 	csStrVector	connList;				//List of connectors
 	csStrVector userList;				//List of users in the room
+	csStrVector containerList;				//List of containers
 
 	csPolygon3D *doorList[MAX_DOOR];
 
@@ -174,6 +180,15 @@ public:
 	char * GetUrl() { return roomUrl; };
 	//Get List of users in this sector.
 	csStrVector* GetUserList() { return &userList; };
+
+	//find the type of the link
+	int findType(const char *thing); 
+
+	//Add a container to a list of containers
+	bool AddContainer(char *location);
+
+	//Remove a container from the list of containers
+	bool DeleteContainer(char *location);
 
 	chimeSector();
 	chimeSector(csSystemDriver  *Sys, csEngine *e);
