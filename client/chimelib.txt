@@ -1,0 +1,32 @@
+;Load all the necessary textures
+TEXT brownfabric /lib/chime/brownfabric1.jpg
+TEXT greywall /lib/chime/greywall.jpg
+TEXT tilefloor /lib/chime/tilefloor1.jpg
+TEXT woodfloor /lib/chime/woodfloor.jpg
+TEXT marble1 /lib/chime/marble1.gif
+TEXT whitemarble /lib/test/whitemarble.jpg
+TEXT cube /lib/test/cubo_ref.jpg
+TEXT hallfloor /lib/test/hallfloor.jpg
+TEXT connfloor /lib/test/connfloor.jpg
+TEXT halldoor /lib/test/halldoor.jpg
+TEXT glasswall /lib/test/glasswall.jpg
+TEXT funkywall /lib/test/funkywall.jpg
+TEXT checkerfloor /lib/test/checkerfloor.jpg
+TEXT water /lib/test/water.jpg
+TEXT metalfloor /lib/test/metalfloor.jpg
+TEXT mdl1 /lib/test/mdl1.jpg
+TEXT ninja /lib/test/mdl1.jpg
+
+;Load all the necessary 3D objects
+;OBJ  balloons lib/chime/BALLOONS.3DS brownfabric
+OBJ  balloons lib/test/BALLOONS.3DS brownfabric
+OBJ  chair lib/test/chradiro.3ds greywall
+OBJ  table lib/test/table_of.3ds woodfloor
+OBJ  stool lib/test/stool.3ds woodfloor
+OBJ  books lib/test/books.3ds brownfabric
+OBJ  violin lib/test/violin_case.3ds brownfabric
+OBJ  cube lib/test/cube.3ds cube
+;OBJ  mdl1 lib/test/mdl1.md2 mdl1
+OBJ  mdl1 lib/test/mdl1.3ds mdl1
+OBJ  ninja lib/test/ninja.mdl ninja
+END
