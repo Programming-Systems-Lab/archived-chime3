@@ -1402,7 +1402,7 @@ bool ChimeSector::AddUser(char *username, char *ip_address)
 {
 	char my_username[50];
 
-	((ChimeSystemDriver *)System)->GetApp()->GetInfo()->GetUsername(username);
+	((ChimeSystemDriver *)System)->GetApp()->GetInfo()->GetUsername(my_username);
 
 	//don't do anything if the user is already there
 	for (int i = 0; i < userList.Length(); i++) {
