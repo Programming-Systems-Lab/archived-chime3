@@ -34,7 +34,6 @@ void SienaPublisher::setupSocket() {
 	else
 	{
 		
-
 		lpht = gethostbyname (host);
 
 		if (lpht == NULL)
@@ -73,6 +72,8 @@ void SienaPublisher::setupSocket() {
 //method to publish an event onto siena bus
 void SienaPublisher::publish(char *method, char *params, char *address, char *prot) {
 
+	setupSocket();
+
 	char publishString [1000]; 
 
 	time_t ltime;
@@ -81,7 +82,6 @@ void SienaPublisher::publish(char *method, char *params, char *address, char *pr
      time( &ltime );
      printf( "Time in seconds since UTC 1/1/70:\t%ld\n", ltime );
    
-
 	sprintf(publishString, "%sid=\"%ld492", headerString, ltime);
 	sprintf(publishString, "%s.0.%s\"}", publishString, hostname);
 	
