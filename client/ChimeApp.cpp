@@ -120,7 +120,7 @@ bool ChimeApp::Initialize (const char *iConfigName, InfoStorer *info)
   (void) new VEMWindow(this);
 
   //put in the Start/Stop window
-  (void) new StartStopWindow(this);
+  //(void) new StartStopWindow(this);
 
   //popup the connection dialog box
   (void) new ConnectWindow(this);

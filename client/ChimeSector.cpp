@@ -1834,26 +1834,33 @@ bool ChimeSector::HitBeam(const csVector3 &start, const csVector3 &end, csVector
 //* Check If a given beam intersects any of the active hallway doors of this sector
 //*
 //*********************************************************************************
-bool ChimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum)
+int ChimeSector::HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum)
 {
 
 	doorNum = -1;
 	csPolygon3D* p = NULL;
 	p = hallway->HitBeam (start, end, isect);
-	int numActiveDoor = connList.Length();
+	int numDoors = 10;
 
-	//Check if intersecting polygon is a door
+
+	//Check if intersecting polygon is an active door
 	if( p )
 	{
-		for(int i = 0; i < numActiveDoor; i++)
+		for(int i = 0; i < numDoors; i++)
 		{
 			if(p == hallFrontDoor[i])
 			{
 				doorNum = i;
-				return true;
+				if (p -> GetAlpha() == 25)
+					return ACTIVE_DOOR;
+				else 
+					return INACTIVE_DOOR;
 			}
+
 		}
 	}
-	return false;
+
+	return DOOR_NOT_FOUND;
 }
+
 

@@ -42,6 +42,9 @@ struct iCollideSystem;
 #define MAX_DOOR	20		//Maximum number of doors in the sector
 #define MAX_URL		200		//Maximum length of a url
 
+#define DOOR_NOT_FOUND -1
+#define INACTIVE_DOOR  1
+#define ACTIVE_DOOR 2
 
 class ChimeSector
 {
@@ -175,7 +178,7 @@ public:
 	// Check If a given beam intersects any of the walls of the ChimeSector
 	bool HitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect);
 	//Check If a given beam intersects any of the hallway doors of this sector
-	bool HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
+	int HallwayHitBeam (const csVector3 &start, const csVector3 &end, csVector3 &isect, int &doorNum);
 	// Find  an object in this sector
 	csMeshWrapper* FindObject(char *objectUrl, csSector *&room);
 	//check if a given beam hits any of the meshes in this sector.
@@ -215,5 +218,6 @@ public:
 	bool ReplaceDoorUrl(int doorNum, char *string);
 
 };
+
 
 #endif // !defined(AFX_ChimeSector_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)

@@ -810,6 +810,11 @@ bool ChimeSystemDriver::SetupMenu() {
 /****************************************************************************/
 bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 
+  csVector3 doorPos;
+  csPolygon3D *doorPoly;
+  csSector* hallway;
+  currentSector->GetDoorInfo(doorNum, doorPos, doorPoly, hallway);
+  
   char name[500];
 
   //do all the preliminary steps needed for menu creation
@@ -819,13 +824,18 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
   reqAtSec = currentSector;	
   reqAtDoor  = doorNum;
   doorUrl = reqAtSec->GetDoorUrl(doorNum);
-  strcpy(reqRoomUrl, doorUrl);
+
+  if (!doorUrl)
+	  strcpy(reqRoomUrl, "<NOWHERE>");
+
+  else
+	  strcpy(reqRoomUrl, doorUrl);
 
   // Create a menu for all test dialogs we implement
   menu = new csMenu (app, csmfs3D, 0);
   csMenu *submenu = new csMenu (NULL);
 
-  if (doorUrl != NULL) {	 
+  if (reqRoomUrl != NULL) {	 
 	  strcpy(name, "Link to: ");
 	  strcat(name, reqRoomUrl);
 	  (void)new csMenuItem (menu, name, -1);
@@ -834,7 +844,10 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
   }
 
   (void)new csMenuItem (menu, "", -1);
-  (void)new csMenuItem (menu, "~Open this link", DOOR_OPEN_LINK);
+
+  if (doorPoly -> GetAlpha() == 25)
+     (void)new csMenuItem (menu, "~Open this link", DOOR_OPEN_LINK);
+
   (void)new csMenuItem (menu, "~Link this somewhere else", DOOR_LINK_SOMEWHERE_ELSE);
 
   menu->SetPos (screenPoint.x - 3, FrameHeight - (screenPoint.y - 3));
@@ -854,26 +867,38 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 bool ChimeSystemDriver::UpdateDoorLink(ChimeSector *sec, int doorNum, char *new_door_url) {
 	csSector *room;
 
+	csVector3 doorPos;
+	csPolygon3D *doorPoly;
+	csSector* hallway;
+	sec->GetDoorInfo(doorNum, doorPos, doorPoly, hallway);
+
 	char orig_door_url[100];
 	
 	if (!sec->GetDoorUrl(doorNum))
-		return false;
+		strcpy(orig_door_url, "<NOWHERE>");
 
-	strcpy(orig_door_url, sec->GetDoorUrl(doorNum));
+	else
+		strcpy(orig_door_url, sec->GetDoorUrl(doorNum));
 
 	if (!new_door_url)
 		return false;
 
 	if (strcmp(new_door_url, orig_door_url) == 0)
 		return false;	
+		
 
 	csMeshWrapper *object = sec -> FindObject(orig_door_url, room);
 
-	if (!object)
-		return false;
+	if (!object) {
+		csVector3 position(1,0, 4);
+		sec->AddMeshObj ("stool", new_door_url, sec->GetRoom(0) , position, 1);
+	}
 
-	object->SetName(new_door_url);
+	else 
+		object->SetName(new_door_url);
+
 	sec ->ReplaceDoorUrl(doorNum, new_door_url);
+	doorPoly->SetAlpha(25);
 
 	return true;
 }
@@ -935,8 +960,9 @@ bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
 
   ChimeSector *currentSector = GetCurChimeSector();
   int doorNum;
+  int result;
 
-  if(currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum))
+  if ((result = currentSector->HallwayHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum)) != DOOR_NOT_FOUND)
   {
 	  csVector2   screenPoint;
 	  screenPoint.x = Event.Mouse.x;
