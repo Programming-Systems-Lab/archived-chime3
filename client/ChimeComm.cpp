@@ -35,24 +35,38 @@ void chimeComm::SetChimeCom(ClientComm *client_comm)
 
 
 //Utility function to convert from float to string
-char * chimeComm::ftoa(float num)
+char* chimeComm::ftoa(float num)
 {
-	int i, dec, sign, size;
+	int i, j, k,  dec, sign, size;
 	char str[15], tempstr[15];
 
-	strcpy(tempstr, fcvt(num, 4, &dec, &sign));
+	strcpy(tempstr, fcvt(num, 7, &dec, &sign));
 	size = strlen(tempstr);
 
-	for (i = 0; i < dec; i=i+1)
-		str[i] = tempstr[i];
+	i = 0;
+	j = 0;
+	if(dec <= 0)
+	{		
+		str[i++] = '0'; 
+		str[i++] = '.'; //put the decimal point
 
-	str[dec] = '.'; //put the decimal point
+		for (k = 0; k < -dec; k++)
+			str[i++] = '0';
+	}
+	else
+	{
+		for (k = 0; k < dec; k++)
+			str[i++] = tempstr[k];
+		str[i++] = '.'; //put the decimal point
+		j = dec;
+	}	
 
-	for (i = dec; i <=size; i=i+1)
-		str[i+1] = tempstr[i];
+	for (k = j; k <= size; k++)
+		str[i++] = tempstr[k];
 
 	return strdup(str);
 }
+
 
 //Append given token to a string.
 bool chimeComm::AppendToken(char *command, char *token)

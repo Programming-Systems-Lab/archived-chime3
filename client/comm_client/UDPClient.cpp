@@ -10,9 +10,10 @@
 
 
 //this will just setup the socket for communication
-UDPClient::UDPClient(int _port) {
+UDPClient::UDPClient(int _port, chimeBrowser *_System) {
  
    Port = _port;
+   System = _System;
  
 }
 

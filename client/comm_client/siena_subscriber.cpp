@@ -12,10 +12,11 @@
 //client's username
 SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chimeBrowser *_nav) {
 
-	nav = _nav;
+	System = _nav;
 	username = _username;
 	host = _host;
 	port = _port;
+	strcpy(Component, "Siena Subscriber");
 
 
 	WORD wVersionRequested = MAKEWORD (2,2); // Version of Winsock that is used <2.2>
@@ -25,20 +26,26 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 	nRet = WSAStartup (wVersionRequested, &wsaData); // Initializes Winsock
 
 	// Checks for the correct version of winsock
-	if (wsaData.wVersion != wVersionRequested)
-		printf ("\n\nError: Winsock did not Initialize Properly\n\n");
+	if (wsaData.wVersion != wVersionRequested) {
+		System->ShowError(Component, "Winsock did not Initialize Properly\n");
+		return;
+	}
 
 	else
 	{
 		LPHOSTENT lpht = gethostbyname (host);
 
-		if (lpht == NULL)
-			fprintf (stderr, "\n\nWinsock Error: Host Not Found\n\n");
+		if (lpht == NULL) {
+			System->ShowError(Component, "Host Not Found", host);
+			return;
+		}
 
 		r = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-		if (r == INVALID_SOCKET)
-			fprintf (stderr, "\n\nWinsock Error: Invalid Socket\n\n");
+		if (r == INVALID_SOCKET) {
+			System->ShowError(Component, "Invalid Socket");
+			return;
+		}
 
 		SOCKADDR_IN saR;
 
@@ -48,17 +55,23 @@ SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chim
 
 		if (bind (r, (LPSOCKADDR) &saR, sizeof (struct sockaddr)) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Bind\n\n");
+			System->ShowError(Component, "Unable to Connect Socket to Server");
 			closesocket (r);
+			return;
 		}
 
 	}
 
 }
 
-void SienaSubscriber::subscribeRoom(char *room) {
+bool SienaSubscriber::subscribeRoom(char *room) {
 
-		SOCKET s = createSendSocket();
+		SOCKET s;
+		if ((s = createSendSocket()) != INVALID_SOCKET) {
+			System->ShowError(Component, "Can't Setup Socket");
+			return false;
+		}
+
 		// Create Header
 		sprintf (subscribeString, "senp{method=\"SUB\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
 		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
@@ -77,15 +90,21 @@ void SienaSubscriber::subscribeRoom(char *room) {
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+			System->ShowError(Component, "Can't Send Subscribe Room Request");
+			closesocket(s);
+			return false;
 		}
 
 		closesocket(s);
+		return true;
 }
 
-void SienaSubscriber::subscribeClient() {
-		SOCKET s = createSendSocket();
-
+bool SienaSubscriber::subscribeClient() {
+		SOCKET s;
+		if ((s = createSendSocket()) != INVALID_SOCKET) {
+			System->ShowError(Component, "Can't Setup Socket");
+			return false;
+		}
 
 
 		// Create Header
@@ -105,15 +124,22 @@ void SienaSubscriber::subscribeClient() {
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+			System->ShowError(Component, "Can't Send Client Subscription Request");
+			closesocket(s);
+			return false;
 		}
 
 		closesocket (s);
+		return true;
 }
 
 
-void SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
-		SOCKET s = createSendSocket();
+bool SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
+		SOCKET s;
+		if ((s = createSendSocket()) != INVALID_SOCKET) {
+			System->ShowError(Component, "Can't Setup Socket");
+			return false;
+		}
 
 		char subscribeString [1000];
 
@@ -140,14 +166,21 @@ void SienaSubscriber::subscribeMethod(char *method, bool include_myself) {
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+			System->ShowError(Component, "Can't Send Method Subscription Request");
+			closesocket(s);
+			return false;
 		}
 
 		closesocket (s);
+		return true;
 }
 
-void SienaSubscriber::unsubscribeRoom(char *room) {
-		SOCKET s = createSendSocket();
+bool SienaSubscriber::unsubscribeRoom(char *room) {
+		SOCKET s;
+		if ((s = createSendSocket()) != INVALID_SOCKET) {
+			System->ShowError(Component, "Can't Setup Socket");
+			return false;
+		}
 
 		char subscribeString [1000];
 
@@ -168,14 +201,21 @@ void SienaSubscriber::unsubscribeRoom(char *room) {
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+			System->ShowError(Component, "Can't Send Room Subscription Request");
+			closesocket(s);
+			return false;
 		}
 
 		closesocket (s);
+		return true;
 }
 
-void SienaSubscriber::unsubscribeClient() {
-		SOCKET s = createSendSocket();
+bool SienaSubscriber::unsubscribeClient() {
+		SOCKET s;
+		if ((s = createSendSocket()) != INVALID_SOCKET) {
+			System->ShowError(Component, "Can't Setup Socket");
+			return false;
+		}
 
 		char subscribeString [1000];
 
@@ -196,10 +236,13 @@ void SienaSubscriber::unsubscribeClient() {
 		// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+			System->ShowError(Component, "Can't Send Client Unsubscribe Request");
+			closesocket(s);
+			return false;
 		}
 
 		closesocket (s);
+		return true;
 }
 
 
@@ -212,21 +255,26 @@ SOCKET SienaSubscriber::createSendSocket() {
 
 	// Checks for the correct version of winsock
 	if (wsaData.wVersion != wVersionRequested) {
-		printf ("\n\nError: Winsock did not Initialize Properly\n\n");
-		return NULL;
+		System->ShowError(Component, "Winsock did not Initialize Properly");
+		return INVALID_SOCKET;
 	}
 
 	else
 	{
 		LPHOSTENT lpht = gethostbyname (host);
 
-		if (lpht == NULL)
-			fprintf (stderr, "\n\nWinsock Error: Host Not Found\n\n");
+		if (lpht == NULL) {
+			System->ShowError(Component, "Host Not Found", host);
+			return INVALID_SOCKET;
+		}
+
 
 		SOCKET s = socket (AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-		if (s == INVALID_SOCKET)
-			fprintf (stderr, "\n\nWinsock Error: Invalid Socket\n\n");
+		if (s == INVALID_SOCKET) {
+			System->ShowError(Component, "Invalid Socket");
+			return INVALID_SOCKET;
+		}
 
 		SOCKADDR_IN saS;
 		saS.sin_family		= AF_INET;
@@ -235,8 +283,9 @@ SOCKET SienaSubscriber::createSendSocket() {
 
 		if (connect (s, (LPSOCKADDR) &saS, sizeof (struct sockaddr)) == SOCKET_ERROR)
 		{
-			fprintf (stderr, "\n\nWinsock Error: Unable to Connect\n\n");
+			System->ShowError(Component, "Unable to Connect Socket to Server");
 			closesocket (s);
+			return INVALID_SOCKET;
 		}
 
 		return s;
@@ -252,7 +301,7 @@ void SienaSubscriber::formatResponse(char *string) {
 	int method = getMethod(string);
 
 	if (data != NULL && method != -1) {
-		nav->GetFunction(method, data);
+		System->GetFunction(method, data);
 	} else {
 		printf("Response couldn't be formatted properly\n Ignoring....\n");
 	}
@@ -352,7 +401,7 @@ int SienaSubscriber::getMethod(char *string) {
 }
 
 
-void SienaSubscriber::startServer() {
+bool SienaSubscriber::startServer() {
 
 	//make sure to subscribe the client
 	//don't think this is really necessary
@@ -374,8 +423,9 @@ void SienaSubscriber::startServer() {
 
 	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
 	{
-		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
+		System->ShowError(Component, "Unable to Listen");
 		closesocket (r);
+		return false;
 	}
 
 
@@ -388,8 +438,9 @@ void SienaSubscriber::startServer() {
 	// Infinite loop to keep receiving events for the client
 	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
 	{
-		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
+		System->ShowError(Component, "Unable to Listen");
 		closesocket (r);
+		return false;
 	}
 
 			SOCKET remoteSocket;
@@ -399,8 +450,9 @@ void SienaSubscriber::startServer() {
 
 			if (remoteSocket == INVALID_SOCKET)
 			{
-				fprintf (stderr, "\n\nWinsock Error: Unable to Accept\n\n");
+				System->ShowError(Component, "Unable to Accept Connection");
 				closesocket (r);
+				return false;
 			}
 
 
@@ -414,9 +466,10 @@ void SienaSubscriber::startServer() {
 
 				if ((length = recv (remoteSocket, recvString, sizeof(recvString), 0)) == SOCKET_ERROR)
 				{
-					fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
+					System->ShowError(Component, "Unable to Receive");
 					closesocket (r);
 					closesocket (remoteSocket);
+					return false;
 				}
 
 
@@ -461,7 +514,7 @@ void SienaSubscriber::startServer() {
 
 	WSACleanup ();
 
-	return;
+	return true;
 }
 
 //get the Local IP of this machine

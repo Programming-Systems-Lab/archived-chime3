@@ -164,6 +164,10 @@ private:
 
 public:
 
+	//Show an error
+	void ShowError(const char *component, const char* error_msg);
+	void ShowError(const char *component, const char* error_msg, const char *variable);
+
 	// Get the view.
 	csView* GetView () { return view; }
 	

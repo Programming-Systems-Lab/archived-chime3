@@ -47,6 +47,7 @@
 #define EVENTS_FOR_ANYONE 2
 
 
+
 //this is an equivalent of an interface you need to override
 /*class chimeBrowser {
 	volatile HANDLE hMutex; // Create a Mutex object
@@ -97,7 +98,7 @@ class UDPClient {
    struct   sockaddr_in sock_addr, dst_sock_addr, new_sock_addr;
    int      new_sock_addr_len;
    long     bytes;
-
+   chimeBrowser *System;
    int     Port;
    LPHOSTENT lpht;
 
@@ -105,7 +106,7 @@ class UDPClient {
 	   char* getFunction(int method);
 
    public:
-	   UDPClient(int _port);
+	   UDPClient(int _port, chimeBrowser *_System);
 	   void sendMess(char *IP_addr, int function, char *params);
 
 		//destructor
@@ -115,10 +116,11 @@ class UDPClient {
 
 class SienaSubscriber {
 	char subscribeString [1000]; 
-	chimeBrowser *nav;
+	chimeBrowser *System;
 	char *username;
 	char *host;
 	int port;
+	char Component[50];
 
 	SOCKET	r;
 	//SOCKADDR_IN saR, saS;
@@ -131,12 +133,12 @@ private:
 
 public:
 	SienaSubscriber(char *host, short port, char *_username, chimeBrowser *_nav);
-	void subscribeRoom(char *room);
-	void subscribeClient();
-	void subscribeMethod(char *method, bool include_myself);
-	void unsubscribeClient();
-	void unsubscribeRoom(char *room);
-	void startServer();
+	bool subscribeRoom(char *room);
+	bool subscribeClient();
+	bool subscribeMethod(char *method, bool include_myself);
+	bool unsubscribeClient();
+	bool unsubscribeRoom(char *room);
+	bool startServer();
 
 private:
 	SOCKET createSendSocket();
@@ -147,42 +149,44 @@ class SienaPublisher {
 	SOCKET	s;
 	SOCKADDR_IN saServer;
 
+	chimeBrowser *System;
 	char headerString [1000]; 
 	char *username;
 	char *password;
 	char hostname[1000];
 	int port;
 	char *host;
+	char Component[50];
 
 private:
-	void setupSocket();
+	bool setupSocket();
 	char* getLocalIP();
 
 public:
-	SienaPublisher(char *host, short port, char *username, char *password);
-	void publish(int function, char *params, char *address, char *prot);
+	SienaPublisher(char *host, short port, char *username, char *password, chimeBrowser *_System);
+	bool publish(int function, char *params, char *address, char *prot);
 	char* getFunction(int func);
 
 	//subscribe to all events in a room
-	void subscribeRoom(char *room, int option);
+	bool subscribeRoom(char *room, int option);
 
 	//subscribe to all events published by client
-	void subscribeClient();
+	bool subscribeClient();
 
 	//subscribe to all events of some method
-	void subscribeMethod(char *method, char *room, int option);
+	bool subscribeMethod(char *method, char *room, int option);
 
 	//unsubscribe from all events of some room
-	void unsubscribeRoom(char *room, int option);
+	bool unsubscribeRoom(char *room, int option);
 
 	//unsubscribe the client
-	void unsubscribeClient();
+	bool unsubscribeClient();
 
 	//subscribe to all interesting events of that room
-	void subscribeALL(char *room);
+	bool subscribeALL(char *room);
 
 	//unsubscribe from all events once leaving the room
-	void unsubscribeALL();
+	bool unsubscribeALL();
 
 
 
@@ -195,11 +199,12 @@ class ClientComm {
    UDPServer *uds;
    SienaSubscriber *siena_subscriber;
    SienaPublisher *siena_publisher;
+   chimeBrowser *nav;
    char *username;
    char *password;
 
    public:
-	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *nav);
+	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *_nav);
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 	   //subscribe to all events in a room

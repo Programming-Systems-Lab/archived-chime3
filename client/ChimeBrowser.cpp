@@ -362,7 +362,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	WaitForSingleObject(hMutex,INFINITE);
 	strcpy(username, "suhit");
 
-	comm_client = new ClientComm(9999, "eagle", 1234, username, "suhit", this);
+	comm_client = new ClientComm(9999, "localhost", 1234, username, "suhit", this);
 	comm.SetChimeCom(comm_client);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
@@ -2010,4 +2010,28 @@ char* chimeBrowser::getLocalIP()
 	WSACleanup();
 
     return inet_ntoa(addr);
+}
+
+
+//*********************************************************************************
+//*
+//* print an error using the error box
+//*
+//*********************************************************************************
+void chimeBrowser::ShowError(const char *component, const char* error_msg, const char *variable) {
+	char tmp[50];
+	sprintf(tmp, "%s\n%s : %s\n", component, error_msg, variable);
+	Alert(tmp);
+}
+
+//*********************************************************************************
+//*
+//* print an error using the error box
+//*
+//*********************************************************************************
+void chimeBrowser::ShowError(const char *component, const char* error_msg) {
+	char tmp[50];
+	sprintf(tmp, "%s\n%s\n", component, error_msg);
+	Alert(tmp);
+	//Printf (MSG_WARNING, "%s\n%s\n", component, error_msg);
 }
