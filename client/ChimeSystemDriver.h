@@ -64,8 +64,8 @@ class InfoStorer;
 
 
 //define popup menu options for the door
-#define DOOR_OPEN_LINK 88901
-#define DOOR_LINK_SOMEWHERE_ELSE 88902
+#define DOOR_OPEN_LINK 88810
+#define DOOR_LINK_SOMEWHERE_ELSE 88811
 
 class ChimeSystemDriver: public SysSystemDriver
 {
@@ -174,8 +174,7 @@ private:
 	bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint);
 	//Get rid of Popup menu
 	bool ChimeSystemDriver::WipePopupMenu();
-	//Handle an event originating from the popup menu
-	bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event); 
+	
 
 	char testRoom[500], google[500], google2[500], google3[500];
 
@@ -201,7 +200,8 @@ private:
 	bool BringUpDoorMenu(int doorNum, csVector2 screenpoint);
 	
 	//open the door
-	bool OpenDoor(int doorNum);
+	//will work if reqAtDoor has been set otherwise will not do anything
+	bool OpenDoor();
 
 	//setup a menu
 	bool SetupMenu();
@@ -257,6 +257,10 @@ public:
 	ChimeSector* GetCurChimeSector();
 	//Handles any mouse or keyboard event.
 	virtual bool HandleEvent (iEvent &Event);
+	
+	//Handle an event originating from the popup menu
+	bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event); 
+
 	//Handles all the keyboard event.
 	bool HandleKeyEvent (iEvent &Event);
 	// Function responsible for hndling right mouse button click

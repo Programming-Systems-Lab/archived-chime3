@@ -791,6 +791,7 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 
   }
 
+  (void)new csMenuItem (menu, "", -1);
   (void)new csMenuItem (menu, "~Open this link", DOOR_OPEN_LINK);
   (void)new csMenuItem (menu, "~Link this somewhere else", DOOR_LINK_SOMEWHERE_ELSE);
 
@@ -802,14 +803,16 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 
 /**************************************************************************
 /* 
-/*        Open the indicated door
+/*        Open the indicated door.
+/*  Note: Will work is reqAtDoor and reqAtSec are set. Otherwise
+/*        nothing will happen
 /*
 /**************************************************************************/
-bool ChimeSystemDriver::OpenDoor(int doorNum) {
+bool ChimeSystemDriver::OpenDoor() {
 	char *doorUrl;
 
-	if (reqAtDoor != -1 && reqAtSec != NULL) {
-		doorUrl = reqAtSec->GetDoorUrl(doorNum);
+	if (reqAtDoor != 0 && reqAtSec != NULL) {
+		doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
 		strcpy(reqRoomUrl, doorUrl);
 		comm.SubscribeRoom(doorUrl, info->GetUsername());
 		comm.GetRoom(doorUrl);
@@ -963,6 +966,7 @@ bool ChimeSystemDriver::WipePopupMenu()
 		return true;
 	} else 
 		return false;
+	
 }
 
 //*************************************************************************
@@ -974,6 +978,7 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
 {
   //if (superclass::HandleEvent (Event))
   // return true;
+
 
   switch (Event.Type)
   {
@@ -991,9 +996,13 @@ bool ChimeSystemDriver::HandleMenuEvent(iEvent &Event)
 		case OBJECT_DECREASE_SECURITY:
 		case OBJECT_PROPERTIES:
 		case DOOR_OPEN_LINK:
+			OpenDoor();
+			WipePopupMenu();
+			return true;
+
 		case DOOR_LINK_SOMEWHERE_ELSE:
 			WipePopupMenu();
-			break;
+			return true;
 	  }
   }
 
@@ -1280,7 +1289,9 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 	if (superclass::HandleEvent (Event))
 		return true;
 
-	HandleMenuEvent(Event);
+	//see if this is a popup menu command and handle it if it is
+	if (HandleMenuEvent(Event))
+		return true;
 
 	switch (Event.Type)
 	{

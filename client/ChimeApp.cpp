@@ -131,10 +131,16 @@ bool ChimeApp::Initialize (const char *iConfigName, InfoStorer *info)
 
 bool ChimeApp::HandleEvent (iEvent &Event)
 {
+  
   //handle an event from the application
   if (csApp::HandleEvent (Event))
     return true;
 
+  //see if our system can take care of this...
+  if (Event.Command.Code > 88800 && ((ChimeSystemDriver*)System)->HandleMenuEvent(Event))
+  	  return true;
+
+  
   switch (Event.Type)
   {
 	  case csevKeyDown:
