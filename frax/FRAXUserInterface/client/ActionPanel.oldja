@@ -1,0 +1,66 @@
+/**
+ * An Action panel for choosing FUI actions 
+ */
+package frax.FRAXUserInterface.client;
+
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.BorderFactory;
+import javax.swing.border.Border;
+
+public class ActionPanel extends JPanel{
+   private JLabel infoL        = null;
+   private JButton modifyMimeB = null;
+   private JButton modifyProtB = null;
+   private JButton auditLogB   = null;
+
+
+   public ActionPanel( ActionListener listener ){
+      infoL = new JLabel( "Please select an action", JLabel.CENTER );
+      modifyMimeB    = new JButton( "Modify MIME" );
+      modifyProtB    = new JButton( "Modify Protocols" );
+      auditLogB      = new JButton( "Audit Log" );
+
+      //the label
+      infoL.setBackground( new Color(255, 153, 0) );
+      
+      //the buttons panel
+      JPanel buttonsPanel = new JPanel();
+      buttonsPanel.setLayout( new FlowLayout(FlowLayout.CENTER) );
+
+      buttonsPanel.add( modifyMimeB );
+      buttonsPanel.add( modifyProtB );
+      buttonsPanel.add( auditLogB );
+     
+      modifyMimeB.setActionCommand( "modifyMimeB_ActionPanel" );
+      modifyMimeB.addActionListener( listener );		     
+
+      // the action panel
+      JPanel actionPanel = new JPanel();
+      actionPanel.setLayout( new BorderLayout(4, 0) );
+      actionPanel.add( infoL, "North" );
+      actionPanel.add( buttonsPanel , "South" );
+
+      //border, to make it nice...
+      Border etched = BorderFactory.createEtchedBorder();
+      actionPanel.setBorder( etched );
+      
+      //add the ActionPanel 
+      add( actionPanel );
+
+   }
+  //size
+  public Dimension getprefferedSize(){
+     return
+	 new Dimension( 100, 75 );
+   }
+ 
+}

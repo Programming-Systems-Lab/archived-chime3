@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#this is the compile file for the project
+
+alias java=/usr/local/java/jdk1.3.1/bin/java
+alias javac=/usr/local/java/jdk1.3.1/bin/javac
+
+myPath="/home/af590/project/jdom.jar:/home/af590/project/xerces.jar:/home/af590/project/"
+
+javac -classpath $myPath *.java

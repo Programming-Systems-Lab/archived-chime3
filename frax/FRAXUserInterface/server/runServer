@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#this is the compile file for the project
+
+alias java=/usr/java1.3/bin/java
+alias javac=/usr/java1.3/bin/javac
+
+myPath="/home/af590/project/jdom.jar:/home/af590/project/xerces.jar:/home/af590/project/"
+
+java -classpath $myPath frax.FRAXUserInterface.server.FRAXUserInterfaceServer
