@@ -56,10 +56,25 @@ class VemUtil
     {
 		File f = null;
 
-		f = new File ("C:\\pslroot\\psl\\chime\\vem\\VeM_Default");
+		//f = new File ("C:\\pslroot\\psl\\chime\\vem\\VeM_Default");
+		//Try the VeM_Default from the currentpath\vem dir, then try the hard coded location
+		//if it fails.
+		String vemDefaultLocation = System.getProperty("user.dir") + System.getProperty("file.separator")
+						+ "vem" +  System.getProperty("file.separator")
+						+ "VeM_Default";
+		f = new File (vemDefaultLocation);
 
 		if (!f.exists ())
-		    System.out.println ("The \"VeM_Default\" file is missing.");
+		{
+		    System.out.println ("could not find "+vemDefaultLocation);
+				
+		    System.out.println ("Trying c:\\pslroot\\psl\\chime\\vem\\VeM_Default");
+		    f = new File ("C:\\pslroot\\psl\\chime\\vem\\VeM_Default");
+				
+		    if (f.exists()) 
+		    	System.out.println ("The \"VeM_Default\" file is missing.");
+		}
+
 
 		Long temp = new Long (f.length ());
 		int fileSize = temp.intValue ();
