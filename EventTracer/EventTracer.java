@@ -274,11 +274,12 @@ public class EventTracer {
 
 		System.err.println("METHOD CALL: CLIENT.C_ENTEREDROOM");
 
-		if (st.countTokens() < 2)
+		if (st.countTokens() < 3)
 		    return;
+		String username = st.nextToken();
 		String userIP = st.nextToken();
 		String roomUrl = st.nextToken();
-		String username = e.getUsername();
+		//String username = e.getUsername();
 
 		// notify users in the old room
 		String oldRoom = null;
@@ -378,9 +379,10 @@ public class EventTracer {
 
 		System.err.println("METHOD CALL: CLIENT.C_LEFTROOM");
 
-		if (st.countTokens() < 2)
+		if (st.countTokens() < 3)
 		    return;
 		String user = st.nextToken();
+		String userIP = st.nextToken(); //no reason for this yet
 		String roomUrl = st.nextToken();
 
 
