@@ -6,13 +6,13 @@
 --------------------Configuration: chimeClient - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP14F.tmp" with contents
+Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP154.tmp" with contents
 [
 /nologo /MTd /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR"Debug/" /Fp"Debug/chimeClient.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\pslroot\psl\chime\client\comm_client\siena_subscriber.cpp"
+"C:\pslroot\psl\chime\client\ChimeBrowser.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP14F.tmp" 
-Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP150.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP154.tmp" 
+Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP155.tmp" with contents
 [
 zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/chimeClient.pdb" /debug /machine:I386 /out:"Debug/chimeClient.exe" /pdbtype:sept 
 .\Debug\ChimeBrowser.obj
@@ -30,12 +30,12 @@ zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib lib
 .\Debug\udpserver.obj
 .\Debug\vem.obj
 ]
-Creating command line "link.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP150.tmp"
+Creating command line "link.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP155.tmp"
 <h3>Output Window</h3>
 Compiling...
-siena_subscriber.cpp
+ChimeBrowser.cpp
 Linking...
-Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP151.tmp" with contents
+Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP156.tmp" with contents
 [
 /nologo /o"Debug/chimeClient.bsc" 
 .\Debug\ChimeBrowser.sbr
@@ -52,7 +52,7 @@ Creating temporary file "C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP151.tmp" with conte
 .\Debug\udpclient.sbr
 .\Debug\udpserver.sbr
 .\Debug\vem.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP151.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\sparky\LOCALS~1\Temp\RSP156.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

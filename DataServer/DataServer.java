@@ -349,7 +349,7 @@ public class DataServer {
 			    String tableName = "table" + ((SourceTuple)v.elementAt(0)).getID();
 			    Vector objects = findLinkTuple(tableName);
 			    if (objects == null || objects.size() == 0 ) {
-					e.setData(data + " 10 5 1 0\n");
+					e.setData(data + " 10 5 5 0\n");
 			    } else {
 					int ctr = objects.size();
 					Vector users = et.findRoomTuple(roomUrl);

@@ -63,6 +63,11 @@ chimeSector::~chimeSector()
 
 }
 
+//*******************************************************************************
+//*
+//* Convert all newlines to \\n due to Siena problem
+//*
+//*******************************************************************************
 int chimeSector::escapeEndlines(char *buf)
 {
 
@@ -194,7 +199,11 @@ bool chimeSector::InitStdVectors()
 	return true;
 }
 
-//Dummy room
+//*******************************************************************************
+//*
+//* Create Dummy room
+//*
+//*******************************************************************************
 bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
@@ -321,7 +330,11 @@ bool chimeSector::ReadRoom(char *fileName, iCollideSystem* collide_system)
 
 }
 
-//Build dynamic room as a function of number of objects in the room
+//*******************************************************************************
+//*
+//* Build dynamic room as a function of number of objects in the room ( NOT USED)
+//*
+//*******************************************************************************
 bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
@@ -524,7 +537,11 @@ bool chimeSector::BuildDynamicRoom(char *fileName, const csVector3 &pos, iCollid
 
 }
 
-//Build dynamic room as a function of number of objects in the room
+//*******************************************************************************
+//*
+//* Build dynamic room as a function of number of objects in the room
+//*
+//*******************************************************************************
 bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iCollideSystem* collide_system)
 {
 	if(!engine) return false;
@@ -580,8 +597,6 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 
 	curPos.z += roomSize.z/2 + 1;
-
-
 
 	connector2 = engine->CreateCsSector ("connector2");
 	BuildStandardConnector(connector2, connSize, curPos, CONN2);
@@ -753,6 +768,25 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 }
 
+
+//*******************************************************************************
+//*
+//* Add Collision Detection to a room
+//*
+//*******************************************************************************
+bool chimeSector::AddCollisionDetection(csSector *room, iCollideSystem* collide_system) {
+	iPolygonMesh* mesh;
+	mesh = QUERY_INTERFACE (room, iPolygonMesh);
+    (void)new csCollider (*room, collide_system, mesh);
+    mesh->DecRef ();
+	return true;
+}
+
+//*******************************************************************************
+//*
+//* Get the ith room
+//*
+//*******************************************************************************
 csSector* chimeSector::GetRoom(int index)
 {
 	return roomList[index];

@@ -61,7 +61,7 @@ class chimeSector
 
 	csStrVector	connList;				//List of connectors
 	csStrVector userList;				//List of users in the room
-	csStrVector containerList;				//List of containers
+	csStrVector containerList;			//List of containers
 
 	csPolygon3D *doorList[MAX_DOOR];
 
@@ -183,6 +183,9 @@ public:
 
 	//find the type of the link
 	int findType(const char *thing); 
+
+	//add collision detection to a room
+	bool AddCollisionDetection(csSector *room, iCollideSystem* collide_system);
 
 	//Add a container to a list of containers
 	bool AddContainer(char *location);

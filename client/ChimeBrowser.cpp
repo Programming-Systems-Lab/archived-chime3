@@ -689,6 +689,17 @@ bool chimeBrowser::MoveSelectedMesh(iEvent &Event)
 
 	chimeSector *curSect = GetCurChimeSector();
 
+	if (curSect == NULL) {
+		//this should never be the case but what the heck
+		return false;
+	}
+
+	if (curSect->findType(selectedMesh->GetName()) == USER) {
+		//can't move another User
+		return false;
+	}
+
+
 	csVector2 p (Event.Mouse.x, FrameHeight-Event.Mouse.y);
 	view->GetCamera ()->InvPerspective (p, 1, v);
 	newMeshPos = view->GetCamera ()->Camera2World (v);
