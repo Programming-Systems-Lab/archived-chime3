@@ -61,9 +61,8 @@ public class DataServer {
     private Statement statement; // sql statement
     private DatabaseMetaData meta; // database metadata
     private int current; // the largest assigned index
-    private HierarchicalDispatcher siena; // siena connection
-    private Filter filter1; // siena filter
-    private Filter filter2; // siena filter
+    private VemNotif vem;
+    private VemObject vobj;
 
     private static DataServer myself;
 
@@ -162,51 +161,6 @@ public class DataServer {
 	return tmp;
     }
 
-    // setting up siena connection to the server
-    public void subscribeEvent() {
-    }
-
-    private void connectSiena(String url) {
-	/*	try {
-	    siena = new HierarchicalDispatcher();
-	    siena.setMaster(url);
-
-	    filter1 = new Filter();
-	    filter1.addConstraint("component", "FRAX");
-	    filter2 = new Filter();
-	    filter2.addConstraint("component", "CLIENT");
-
-	    try {
-		siena.subscribe(filter1, this);
-		siena.subscribe(filter2, this);
-	    } catch (SienaException ex) {
-		System.err.println("Siena error:" + ex.toString());
-		System.exit(1);
-	    }
-	    System.out.println("CONNECTION TO SIENA SERVER ESTABLISHED.");
-	    System.out.println("SUBSCRIBING FOR " + filter.toString());
-	} catch (Exception ex) {
-	    ex.printStackTrace();
-	    System.exit(1);
-	}
-	*/
-    }
-
-    // disable connection to the siena server
-    private void disconnectSiena() {
-	/*
-	try {
-	    System.out.println("UNSUBSCRIBING");
-	    siena.unsubscribe(filter, this);
-	    siena.shutdown();
-	    System.out.println("CONNECTION TO SIENA SERVER CLOSED.");
-	} catch (Exception ex) {
-	    ex.printStackTrace();
-	    System.exit(1);
-	}
-	*/
-    }
-
     // handle an event
     public void eventReceived(SienaObject e) {
 
@@ -240,8 +194,8 @@ public class DataServer {
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 		    
 		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    VemNotif vem = VemNotif.getInstance();
-		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    vem = VemNotif.getInstance();
+		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 		    
 		    // create a table of links and images
@@ -262,8 +216,8 @@ public class DataServer {
 			}
 
 			// invoke VEM with t.getUrl(), token
-			VemNotif vem = VemNotif.getInstance();
-			VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+			vem = VemNotif.getInstance();
+			vobj = vem.getShape(t.getProtocol(),t.getUrl());
 			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 			
 			printTable(tableName);
@@ -286,8 +240,8 @@ public class DataServer {
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
 		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    VemNotif vem = VemNotif.getInstance();
-		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    vem = VemNotif.getInstance();
+		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		    // create a table of links and images
@@ -315,8 +269,8 @@ public class DataServer {
 						   token +
 						   "', 'IMAGE', null, null, null, null)");
 			    // invoke VEM with t.getUrl(), token
-			    VemNotif vem = VemNotif.getInstance();
-			    VemObject vobj = vem.getLinkShape(t.getUrl(),token);
+			    vem = VemNotif.getInstance();
+			    vobj = vem.getLinkShape(t.getUrl(),token);
 			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
 			    
 			    System.err.println("one iteration " + idx1 + " " + idx2);
@@ -335,8 +289,8 @@ public class DataServer {
 						   token +
 						   "', 'LINK', null, null, null, null)");
 			    // invoke VEM with t.getUrl(), token
-			    VemNotif vem = VemNotif.getInstance();
-			    VemObject vobj = vem.getLinkShape(t.getUrl(),token);
+			    vem = VemNotif.getInstance();
+			    vobj = vem.getLinkShape(t.getUrl(),token);
 			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
 			    
 			}
@@ -359,8 +313,8 @@ public class DataServer {
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
 		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    VemNotif vem = VemNotif.getInstance();
-		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    vem = VemNotif.getInstance();
+		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else if (type.equals("txt")) {
@@ -369,8 +323,8 @@ public class DataServer {
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
 		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    VemNotif vem = VemNotif.getInstance();
-		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    vem = VemNotif.getInstance();
+		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else if (type.equals("other")) {
@@ -379,8 +333,8 @@ public class DataServer {
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 
 		    // invoke VEM with t.getProtocol(), t.getUrl()
-		    VemNotif vem = VemNotif.getInstance();
-		    VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+		    vem = VemNotif.getInstance();
+		    vobj = vem.getShape(t.getProtocol(),t.getUrl());
 		    setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 
 		} else {
@@ -395,8 +349,9 @@ public class DataServer {
 			addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 			
 			// invoke VEM with t.getProtocol(), t.getUrl()
-			VemNotif vem = VemNotif.getInstance();
-			VemObject vobj = vem.getShape(t.getProtocol(),t.getUrl());
+			vem = VemNotif.getInstance();
+			vobj = vem.getShape(t.getProtocol(),t.getUrl());
+			
 			setShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), t.getProtocol(), t.getUrl());
 			
 		    } else {
