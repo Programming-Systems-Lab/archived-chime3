@@ -531,7 +531,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 	//Connect room and connector1 room
 	roomBackDoor[0]->CreatePortal(connector1);
-	roomBackDoor[0]->SetAlpha(200);
+	roomBackDoor[0]->SetAlpha(0);
 	conn1FrontDoor[0]->CreatePortal(room);
 	conn1FrontDoor[0]->SetAlpha(0);
 
@@ -550,7 +550,7 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 
 	//Prepare room for collision detection
 	iPolygonMesh* mesh;
-	iObject *obj;
+	//iObject *obj;
 	csColliderWrapper *collider;
 
 	//mesh = SCF_QUERY_INTERFACE (walls->GetMeshObject(), iPolygonMesh);

@@ -105,6 +105,19 @@ SOURCE=.\ChimeApp.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ChimeCollider.cpp
+
+!IF  "$(CFG)" == "chimeClient - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "chimeClient - Win32 Debug"
+
+# PROP Exclude_From_Build 1
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
 SOURCE=.\ChimeComm.cpp
 # End Source File
 # Begin Source File

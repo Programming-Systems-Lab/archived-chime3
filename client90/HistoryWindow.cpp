@@ -9,6 +9,7 @@
 #include "ChimeSystemDriver.h"
 
 class ChimeSystemDriver;
+extern ChimeSystemDriver *Sys;
 
 // Scroll bar class default palette
 HistoryWindow::~HistoryWindow() {}
@@ -86,9 +87,9 @@ bool HistoryWindow::HandleEvent (iEvent &Event)
 	    //Go There button was pressed
         case GO_THERE_PRESSED:
 			if (selected) {
-				//int temp;
-				//sscanf(selected, "%d. %s", &temp, selected);
-				//((ChimeSystemDriver *)System)->TransportToRoom(selected);
+				int temp;
+				sscanf(selected, "%d. %s", &temp, selected);
+				Sys->TransportToRoom(selected);
 			}
 		return true;
 

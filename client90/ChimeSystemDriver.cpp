@@ -935,18 +935,17 @@ void ChimeSystemDriver::writeMessage()
 //**********************************************************************
 bool ChimeSystemDriver::Transport(iSector *room, csVector3 pos, csVector3 lookPos, csVector3 lookUp)
 {
+	char temp[1024];
 	if(!room)
 		return false;
-
-
 	
 	view->GetCamera ()->SetSector (room);
-
 	long camera_number = view->GetCamera()->GetCameraNumber();
 	iCameraPosition *cam_pos = engine->GetCameraPositions()->Get(camera_number);
-	
+	strcpy(temp, room->QueryObject()->GetName());
+
 	if (cam_pos) {
-		cam_pos -> Set(room->QueryObject()->GetName(), pos, lookPos, lookUp);
+		cam_pos->Set(temp, pos, lookPos, lookUp);
 		return true;
 	}
 
