@@ -383,6 +383,11 @@ public class DataServer {
 
 		Vector v = findSourceTuple(protocol, data);
 
+		if (v == null)
+			System.err.println("The vector doesn't exist");
+		else
+			System.out.println("The vector size is: " + v.size());
+
 		// query frax
 		if ( v == null || v.size() == 0 ) {
 		    e.setFromComponent("data_server");
