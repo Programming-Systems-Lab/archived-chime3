@@ -398,6 +398,19 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	sscanf(line, "%s %f %f %f %d", roomURL, &roomSize.x, &roomSize.y, &roomSize.z, &numObjects);
 	buf += count;
 
+
+
+	//This part is needed for side door location track
+	sideDoorLocationRightWall = new int[roomSize.z + 2];
+	sideDoorLocationLeftWall  = new int[roomSize.z + 2];
+
+    // Initialize with 0. (1= a door already exists, 0 = a door does not exist)
+	for(int k=0; k<(roomSize.z+2);k++){
+		sideDoorLocationRightWall[k] = 0;
+		sideDoorLocationLeftWall[k] = 0;
+	}
+
+
 	strcpy(roomUrl, roomURL);
 	roomList[numRooms] = engine->CreateSector (roomURL);
 	room = roomList[numRooms];
@@ -1509,9 +1522,9 @@ bool ChimeSector::DisconnectSector()
 		iPolygon3D *linkedSectorDoor = linkedSector->GetSideDoor(linkedDoor);
 
 		linkedSectorDoor->GetPortal()->SetSector(NULL);
-		linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
+//		linkedSectorDoor->SetAlpha(SIDE_DOOR_ALPHA);
 		conn1BackDoor[0]->GetPortal()->SetSector(NULL);
-		conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
+//		conn1BackDoor[0]->SetAlpha(SIDE_DOOR_ALPHA);
 
 		linkedSector->SetSideDoorSector(linkedDoor, NULL); 
 		linkedSector = NULL;
@@ -1874,12 +1887,18 @@ iMeshWrapper* ChimeSector::BuildSideDoor(iSector *room, csVector3 const &objPos,
 	iMeshWrapper *doormesh = engine -> CreateSectorWallsMesh(room, "side_door");
 	iThingState *sidedoor = SCF_QUERY_INTERFACE(doormesh->GetMeshObject(), iThingState);
 
-	csVector3 pos(4.9999, 0, 7); //FIXIT: Should NOT be hardcoded
+	csVector3 pos(4.9999, 0, 0);
 	pos.z = objPos.z;
-//	pos.x = 4.9999 //FIXIT: This is not smart way
 
 	if(objPos.x > 0){
 		pos += offset;
+
+		if(sideDoorLocationRightWall[int(pos.z)] == 1 || sideDoorLocationRightWall[int(pos.z)] == 1){
+			return NULL;
+		}else{
+			sideDoorLocationRightWall[int(pos.z)] = 1;
+			sideDoorLocationRightWall[int(pos.z)+1] = 1;
+		}
 
 		iPolygon3D* sideDoorTemp;
 
@@ -1887,10 +1906,19 @@ iMeshWrapper* ChimeSector::BuildSideDoor(iSector *room, csVector3 const &objPos,
 
 		SetSideDoor(sideDoorTemp, nextSideDoorNum);
 		SetSideDoorDirection(nextSideDoorNum, RIGHT);
-		SetSideDoorLocation(nextSideDoorNum, pos);
+		SetSideDoorLocation(nextSideDoorNum, pos);		
+//		sideDoorTemp->SetAlpha(SIDE_DOOR_ALPHA); 
+	 
 	}else{
 		pos.x = -pos.x;
 		pos += offset;
+
+		if(sideDoorLocationLeftWall[int(pos.z)] == 1 || sideDoorLocationLeftWall[int(pos.z)] == 1){
+			return NULL;
+		}else{
+			sideDoorLocationLeftWall[int(pos.z)] = 1;
+			sideDoorLocationLeftWall[int(pos.z)+1] = 1;
+		}
 
 		iPolygon3D* sideDoorTemp;
 
@@ -1899,7 +1927,11 @@ iMeshWrapper* ChimeSector::BuildSideDoor(iSector *room, csVector3 const &objPos,
 		SetSideDoor(sideDoorTemp, nextSideDoorNum);
 		SetSideDoorDirection(nextSideDoorNum, LEFT);
 		SetSideDoorLocation(nextSideDoorNum, pos);
+//		sideDoorTemp->SetAlpha(SIDE_DOOR_ALPHA); 
 	}
+
+
+	sidedoor->DecRef();
 
 	++nextSideDoorNum;
 
@@ -1934,6 +1966,7 @@ iPolygon3D*  ChimeSector::GetSideDoor(int sideDoorNum)
 	}
 }
 
+// Set the side door with a corresponded 'ChimeSector'
 bool ChimeSector::SetSideDoorSector(int doorNum, ChimeSector *sec)
 {
 	if( doorNum >= 0 && doorNum < MAX_SIDE_DOOR)
@@ -1947,6 +1980,7 @@ bool ChimeSector::SetSideDoorSector(int doorNum, ChimeSector *sec)
 	}
 }
 
+// Set side door iPolygon3D to the side door array
 bool ChimeSector::SetSideDoor(iPolygon3D* doorPolygon, int sideDoorNum)
 {
 	if(sideDoorNum < MAX_SIDE_DOOR){
@@ -1957,6 +1991,7 @@ bool ChimeSector::SetSideDoor(iPolygon3D* doorPolygon, int sideDoorNum)
 	}
 }
 
+// Replace the side door URL to a new URL
 bool ChimeSector::ReplaceSideDoorUrl(int doorNum, char *doorUrl) {
 	
 	if (!doorUrl) 

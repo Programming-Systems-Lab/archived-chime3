@@ -79,7 +79,7 @@ class ChimeApp;
 #define DOOR_LINK_SOMEWHERE_ELSE 88811
 #define SIDE_DOOR_OPEN_LINK 88812
 
-// define Side Door in the room for reqAtDoor
+// define Side Door in the room for reqAtDoor(Could be any number more than MAX_DOOR)
 #define SIDE_DOOR 88888
 
 class ChimeSystemDriver
@@ -111,7 +111,7 @@ private:
 	ChimeApp *app;					//the app
 
 	ChimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
-	int sectorDirection[NUM_SECT];  //Direction of each sector
+	int sectorDirection[NUM_SECT];  //Direction of each sector (FRONT, RIGHT, LEFT, BACK)
 
 	int curSector, nextSector;
 
@@ -132,7 +132,7 @@ private:
 	char reqRoomUrl[MAX_URL];
 	ChimeSector *reqAtSec;
 	int		   reqAtDoor;
-	int        reqAtSideDoor;
+	int        reqAtSideDoor; // a currently selected side door
 
 
 	//the camera position
@@ -400,6 +400,7 @@ public:
 	void GetFunction(int method, char *received);
 
 	// Create a side door behind the clicked object
+	// @return true
 	int DrawSideDoor(csVector3 objPos, csVector3 offset, const char* url);
 
 };

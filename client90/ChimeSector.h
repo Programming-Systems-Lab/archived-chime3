@@ -34,6 +34,7 @@
 
 #define ACTIVE_DOOR_ALPHA 25
 #define INACTIVE_DOOR_ALPHA 100
+#define SIDE_DOOR_ALPHA 300
 
 struct iSector;
 struct iEngine;
@@ -48,6 +49,7 @@ struct iCollideSystem;
 #define DOOR_NOT_FOUND -1
 #define INACTIVE_DOOR  1
 #define ACTIVE_DOOR 2
+
 
 class ChimeSector
 {
@@ -98,11 +100,15 @@ class ChimeSector
 
 	//Polygons representing doors in the room
 	iPolygon3D **sideDoor;
+	//It represents next side door number (initialized in ChimeSector())
 	int nextSideDoorNum;
 
 	char doorUrl[MAX_DOOR][MAX_URL];
 	int sideDoorDirection[MAX_SIDE_DOOR]; // direction of side doors. Initialized by 0
 	csVector3 sideDoorLocation[MAX_SIDE_DOOR]; // location of side doors, Initialized by (0, 0, 0)
+
+	int* sideDoorLocationRightWall; // It holds the location of side doors so that doors are
+    int* sideDoorLocationLeftWall; // not drawn on other doors	
 
 
 	ChimeSector *doorSec[MAX_DOOR];		//sectors represented by the hallway doors
@@ -205,6 +211,7 @@ public:
 	ChimeSector* GetDoorSector(int doorNum);
 	char* GetDoorUrl(int doorNum);
 	char* GetSideDoorUrl(int doorNum);
+	// Set the side door with URL
 	void  SetSideDoorUrl(const char* url){ connList2.Push((void*)url); }
 
 	//Check If a given room belongs to this chime sector

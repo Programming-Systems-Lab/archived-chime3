@@ -656,8 +656,6 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	ReadRoom(testRoom);
 
 
-//	DrawSideDoor((0,0,0),(0,0,0), "http://www.titech.ac.jp/"); //FIXIT: Temporal for testing. Delete it !
-
 	// Open the procedural textures after the main texture manager has been prepared
 	//if (!OpenProcTextures ())
 	//   return false;
@@ -1201,6 +1199,7 @@ bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
   int result;
 
 
+  // This first part is to check if cliecked object is a side door
   if((result = currentSector->RoomHitBeam(origin, origin + (vw-origin) * 20, isect, doorNum)) != DOOR_NOT_FOUND){
 	  csVector2   screenPoint;
 	  screenPoint.x = Event.Mouse.x;
@@ -1432,8 +1431,7 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 		selectedMesh->GetTransformedBoundingBox(selectedMesh->GetMovable()->GetFullTransform().GetInverse() , box);
 
 
-		// From here by Tak for now....
-/*
+		// get orine and set diff so that it'd be corresponded to the coordinate of 'room'
 		csVector3 origin2 = selectedMeshNewSect->GetOrigin();
 		csVector3 diff(5, 0, -2);
 		csVector3 offset;
@@ -1443,8 +1441,8 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 
 		objPos = selectedMesh->GetMovable()->GetPosition() - offset;
 
-		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); //FIXIT: Should be selectedMesh->GetName()
-*/
+		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
+
 	}
 	else
 	{
@@ -2708,13 +2706,15 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 	{
 		if( sec1 )
 		{
+			// Check if the requested door is a side door. If so, call side door procedures.
 			if(reqAtDoor == SIDE_DOOR){
-//				csVector3 temp(4.99, 0, 7);	//FIXIT: Should NOT be hard coded
 				doorPos = sec1->GetSideDoorLocation(reqAtSideDoor);
 				int sideDoorDirection = sec1->GetSideDoorDirection(reqAtSideDoor);
+				// If the requested door is on the right side, a new sector direction should be rotated with 90 degree
 				if(sideDoorDirection == RIGHT){
-					sectorDirection[nextSector] = (sectorDirection[nextSector-1] + 8)%4;
+					sectorDirection[nextSector] = (sectorDirection[nextSector-1] + 12)%4;
 				}
+				// If the requested door is on the left side, a new sector direction should be rotated with -90 degree
 				else if(sideDoorDirection == LEFT){
 					sectorDirection[nextSector] = (sectorDirection[nextSector-1] + 4)%4;
 				}
@@ -2734,11 +2734,41 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 		sec2 = new ChimeSector(Sys, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
 
+		/**
+		* FIXIT
+		* This part should be
+		* if(sectorDirection[nextSector] == RIGHT) { ROTATE 90c; }
+		* if(sectorDirection[nextSector] == LEFT) { ROTATE 270c; }
+		* if(sectorDirection[nextSector] == BACK) { ROTATE 180c; }
+		* if(sectorDirection[nextSector] == FRONT) { DO NOTHING; }
+		*
+		* so that a newly created room(ChimeSector) will be rotated properly
+		*
+		**/
+
+		// This if clouse is dummy, just for testing for ChimeSectorrotation.
 		if(reqAtDoor == SIDE_DOOR){ // FIXIT: Dummy IF for testing
 			iSector* room;
 			csVector3 axis(0, 10, 0);
 			room = sec2->GetRoom(0);
-//			room->GetPrivateObject()->GetCullerMesh()->GetMovable().GetFullTransform().RotateThis(axis, 90); //FIXIT
+//			room->GetPrivateObject()->GetCullerMesh()->GetMovable().GetFullTransform().RotateThis(axis, 90);
+
+			//ROTATE
+			iMeshObjectType *ThingType = engine->GetThingType ();
+			iMeshObjectFactory *ThingFactory = ThingType->NewFactory ();
+			iMeshObject *ThingObject = ThingFactory->NewInstance ();
+			iMeshWrapper *ThingWrapper = engine->CreateMeshWrapper (ThingObject, "thing");
+
+			csTransform tr;
+			tr.SetOrigin (csVector3 (-6, 0, 0));
+			ThingWrapper->HardTransform (tr);
+			ThingWrapper->GetMovable ()->SetSector (room);
+			ThingWrapper->GetMovable ()->UpdateMove ();
+			ThingWrapper->GetFlags().Set (CS_ENTITY_CONVEX);
+			ThingWrapper->SetZBufMode (CS_ZBUF_USE);
+			ThingWrapper->SetRenderPriority (engine->GetWallRenderPriority ());
+
+			ThingWrapper->GetMovable()->GetFullTransform().RotateThis(axis, 90);	
 		}
 
 		comm.SubscribeRoom(sec2->GetUrl(), my_username);
@@ -2864,7 +2894,7 @@ void ChimeSystemDriver::ChangeMouseCursor() {
 
 //*********************************************************************************
 //*
-//* Open up a new room(sector) FIXIT: position of the door should not be hard coded
+//* Create a side door behind the clicked object only if there is no door behind the object
 //*
 //*********************************************************************************
 int ChimeSystemDriver::DrawSideDoor(csVector3 objPos, csVector3 offset, const char* url)
@@ -2873,7 +2903,6 @@ int ChimeSystemDriver::DrawSideDoor(csVector3 objPos, csVector3 offset, const ch
 	csVector3 doorSize(10, 3, 2);
 	csVector3 meshPos;
 
-	// Door positoin for debugging is (x, y, z) = (5, 0, 7)	
 	meshPos.x = 4.99;
 	meshPos.y = 0;
 	meshPos.z = 7; 
@@ -2883,29 +2912,19 @@ int ChimeSystemDriver::DrawSideDoor(csVector3 objPos, csVector3 offset, const ch
 
 	ChimeSector *&sec2 = sector[nextSector-1];
 
+	// Return value is NULL, if another door exists behind the clicked object
 	iMeshWrapper *doormesh = sec2->BuildSideDoor(sec2->GetRoom(0), objPos, offset, doorSize, mw, csVector3(2,3,0));
 
 
-	//Prepare the whole room.
 	iSector* room;
 	room = sec2->GetRoom(0);
 
-//	room->Prepare (room);
-//	room->InitLightMaps (false);
-//	room->ShineLights (); // move it after CreateLightMaps
-//	room->CreateLightMaps (System->G3D);
-	room->ShineLights ();
-//	room->DecRef();
+	// If the door was drawn, set URL and shine lights.
+    if(doormesh != NULL){
+		sec2->SetSideDoorUrl(url);
+		room->ShineLights ();
+	}
 
-//	engine->Prepare();
-
-
-	//Add collision detection ??????????
-//	iPolygonMesh* mesh;
-//	iMeshObject *s = doormesh->GetMeshObject();
-//	mesh = SCF_QUERY_INTERFACE (s, iPolygonMesh);
-
-    sec2->SetSideDoorUrl(url); // Hard coded for testing purpose
 	return 1;
 
 }
@@ -3022,17 +3041,6 @@ bool ChimeSystemDriver::UpdateSideDoorLink(ChimeSector *sec, int doorNum, char *
 	if (strcmp(new_door_url, orig_door_url) == 0)
 		return false;	
 		
-// Comment out ONLY when you want to change the object's URL when the side door's URL is changed
-/*********
-	csMeshWrapper *object = sec -> FindObject(orig_door_url, room);
-
-	// Object must exist !!
-	if (!object) 
-		return false;
-	else 
-		object->SetName(new_door_url);
-**********/
-
 	sec ->ReplaceSideDoorUrl(doorNum, new_door_url);
 	doorPoly->SetAlpha(25);
 
