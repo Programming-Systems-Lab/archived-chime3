@@ -1508,6 +1508,9 @@ bool ChimeSystemDriver::HandleLeftMouseDoubleClick(iEvent &Event)
 	//if it isn't then just launch the browser
 	else 	
 		{
+//			csVector3 objPos;
+//			csVector3 offset;
+//			DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
 			_spawnl(_P_NOWAIT, browserPath, "browser", selectedMesh->QueryObject()->GetName(), NULL);
 		}
 
