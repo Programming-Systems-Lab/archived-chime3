@@ -21,7 +21,7 @@
 #define c_disconnect 7			//	"userID"
 #define c_leftRoom	8			//  "userID oldRoomUrl"
 #define c_subscribeRoom	9		//  "roomUrl userID"
-#define c_unsubscribeRoom 10		//  "roomUrl userID"
+#define c_unsubscribeRoom 10	//  "roomUrl userID"
 #define c_talk 11
 
 ////////////////SERVER SIDE METHODS/////////////////////////

@@ -666,6 +666,8 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		else if (!strcmp(Class, "User"))
 		{
 			AddUser(objUrl, subClass);  //add the user to the list of users - subClass is the IP for users
+			strcat(objUrl, " ");
+			strcat(objUrl, subClass);
 		}
 
 		else if(!strcmp(Class, "Connector"))
@@ -1326,27 +1328,24 @@ int ChimeSector::findType(const char *thing)
 }
 
 
-
-
 //Add user name to the list of users in the sector
 bool ChimeSector::AddUser(char *username, char *ip_address)
 {
-	if(!username) return false;
+	UserIDType userID = MakeUserID(username, ip_address);
+
+	if(!userID) return false;
 
 	if (System && ((ChimeSystemDriver*)System)->GetApp() && 
 			 ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
 		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->AddLocalUser(username, ip_address);
 	}
 
-	char *tmp = new char[strlen(username)+ 1 + strlen(ip_address) + 4];
-	strcpy(tmp, username);
-	strcat(tmp, " ");
-	strcat(tmp, ip_address);
-	userList.Push(tmp);
+	userList.Push(userID);
 	return true;
 }
 
-//Delete user name from the list of users in the sector
+//Delete user name from the list of users in the sector. Comparison based on username only
+//CAREFUL - This is not the same as UserID
 bool ChimeSector::deleteUser(char *username)
 {
 	if(!username) return false;
@@ -1356,7 +1355,6 @@ bool ChimeSector::deleteUser(char *username)
 		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->DeleteLocalUser(username);
 	}
 
-	//char *user = NULL;
 	for(int i = 0; i < userList.Length(); i++)
 	{
 		char cur_username[100];
@@ -1370,6 +1368,44 @@ bool ChimeSector::deleteUser(char *username)
 	}
 	return false;
 }
+
+
+//Delete user name from the list of users in the sector. Comparison based on username and ip_address
+bool ChimeSector::deleteUser(char *username, char *ip_address)
+{
+	UserIDType userID = MakeUserID(username, ip_address);
+	
+	if(!userID) return false;
+
+	if (System && ((ChimeSystemDriver*)System)->GetApp() 
+			&&  ((ChimeSystemDriver*)System)->GetApp()->chatWindow) {
+		 ((ChimeSystemDriver*)System)->GetApp()->chatWindow->DeleteLocalUser(username, ip_address);
+	}
+
+	for(int i = 0; i < userList.Length(); i++)
+	{
+		if(!strcmp(userID, userList.Get(i)))
+		{
+			userList.Delete(i);
+			return true;
+		}
+	}
+	return false;
+}
+
+
+//make the user ID out of a username and ip_address
+char* ChimeSector::MakeUserID(const char *username, const char* ip_address) {
+	if (!username) return NULL;
+	if (!ip_address) return NULL;
+
+	char* userID = new char[strlen(username) + strlen(ip_address) + 2];
+	strcpy(userID, username);
+	strcat(userID, " ");
+	strcat(userID, ip_address);
+	return userID;
+}
+
 
 
 //Add a container to a list of containers

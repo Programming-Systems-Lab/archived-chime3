@@ -45,6 +45,8 @@ struct iCollideSystem;
 
 class ChimeSector
 {
+	typedef char* UserIDType;
+
 	char roomUrl[MAX_URL];				//Url represented by this sector
 	csSector* roomList[2];				//List of all the rooms in the sector
 	csSector *connector1, *connector2;	//Connector room
@@ -124,6 +126,9 @@ public:
 	csSector* GetConn1() { return connector1; };
 	csSector* GetConn2() { return connector2; };
 
+	//make a UserID
+	UserIDType MakeUserID(const char *username, const char* ip_address);
+
 	static int  getStrLine(const char *buf, char *line);
 	static int  escapeEndlines(char *buf);
 	bool ReadRoom(char *fileName, iCollideSystem* collide_system);
@@ -153,7 +158,8 @@ public:
 	//Add user name to the list of users in the sector
 	bool AddUser(char *username, char *IP_address);
 	//Delete user name from the list of users in the sector
-	bool deleteUser(char *userID);
+	bool deleteUser(char *username);
+	bool deleteUser(char *username, char *ip_address);
 
 	bool Connect(csPolygon3D *door, csSector *hallway);
 	bool SetDoorSector(int doorNum, ChimeSector *sec);

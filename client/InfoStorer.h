@@ -25,6 +25,9 @@ private:
   //chat port to use
   int chat_port;
 
+  //ip_address of this machine
+  char ip_address[50];
+
   //communication object
   ClientComm *comm_object;
 
@@ -40,7 +43,7 @@ public:
 	void SetCommObject(ClientComm *comm_object);
 
 	//get the username
-	const char* GetUsername();
+	char* GetUsername();
 
 	//get the password
 	const char* GetPassword();
@@ -68,6 +71,12 @@ public:
 
 	//set the port on which Siena is listening
 	void SetSienaPort(int siena_port);
+
+	//set my IP address
+	void SetMyIPAddress(char *ip_address);
+
+	//get my IP address
+	char* GetMyIPAddress();
 
 	char* GetLocalIP();
 };

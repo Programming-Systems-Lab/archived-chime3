@@ -79,7 +79,7 @@ bool chimeComm::AppendToken(char *command, char *token)
 }
 
 //Connect to a given CHIME Server
-bool chimeComm::Connect(char *server, char *userID, char *password)
+bool chimeComm::Connect(char *server, char *username, char *password)
 {
 	strcpy(command, server);
 	AppendToken(command, userID);
@@ -114,11 +114,12 @@ bool chimeComm::MoveObject(char *roomUrl, char *objectUrl, float x, float y, flo
 }
 
 //Send updated position of the user
-bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z, const csStrVector *userList)
+bool chimeComm::MoveUser(char *roomUrl, char *username, char *ip_address, float x, float y, float z, const csStrVector *userList)
 {
 
 	strcpy(command, roomUrl);
-	AppendToken(command, userID);
+	AppendToken(command, username);
+	AppendToken(command, ip_address);
 	AppendToken(command, ftoa(x));
 	AppendToken(command, ftoa(y));
 	AppendToken(command, ftoa(z));
@@ -132,14 +133,15 @@ bool chimeComm::MoveUser(char *roomUrl, char *userID, float x, float y, float z,
 }
 
 //Broadcast entrance of a user in a given room
-bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y, float z)
+bool chimeComm::UserEnteredRoom(char *username, char *ip_address, char *newRoomUrl, float x, float y, float z)
 {
 
 	//add it to the history window
 	if (System != NULL && System->historyWindow != NULL)
 		System->historyWindow->AddItem(newRoomUrl);
 
-	strcpy(command, userID);
+	strcpy(command, username);
+	AppendToken(command, ip_address);
 	AppendToken(command, newRoomUrl);
 	AppendToken(command, ftoa(x));
 	AppendToken(command, ftoa(y));
@@ -150,10 +152,11 @@ bool chimeComm::UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y
 }
 
 //Broadcast that a user has lift a given room
-bool chimeComm::UserLeftRoom(char *userID, char *oldRoomUrl)
+bool chimeComm::UserLeftRoom(char *username, char *ip_address, char *oldRoomUrl)
 {
 
-	strcpy(command, userID);
+	strcpy(command, username);
+	AppendToken(command, ip_address);
 	AppendToken(command, oldRoomUrl);
 
 	client_comm->SendSienaFunction(c_leftRoom, command, oldRoomUrl,"HTTP");
@@ -184,19 +187,19 @@ bool chimeComm::DeleteObject(char *roomUrl, char *objectUrl)
 }
 
 //Subscribe for events of this room
-bool chimeComm::SubscribeRoom(char *roomUrl, char *userID)
+bool chimeComm::SubscribeRoom(char *roomUrl, char *username)
 {
 	strcpy(command, roomUrl);
-	AppendToken(command, userID);
+	AppendToken(command, username);
 
 	client_comm->subscribeALL(roomUrl);
 	return true;
 }
 //Unsubscribe for events of this room
-bool chimeComm::UnsubscribeRoom(char *roomUrl, char *userID)
+bool chimeComm::UnsubscribeRoom(char *roomUrl, char *username)
 {
 	strcpy(command, roomUrl);
-	AppendToken(command, userID);
+	AppendToken(command, username);
 
 	client_comm->unsubscribeRoom(roomUrl, EVENTS_FOR_ANYONE);
 	//client_comm->SendSienaFunction(c_unsubscribeRoom, command, roomUrl,"HTTP");
@@ -204,9 +207,9 @@ bool chimeComm::UnsubscribeRoom(char *roomUrl, char *userID)
 }
 
 //Disconnect user from CHIME server
-bool chimeComm::Disconnect(char *userID)
+bool chimeComm::Disconnect(char *username)
 {
-	strcpy(command, userID);
+	strcpy(command, username);
 
 //	client_comm->SendSienaFunction(c_disconnect, command, roomUrl,"HTTP");
 	return true;

@@ -83,7 +83,8 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//DEBUG stuff. FIXIT
 
 	//strcpy(userID, "124.1.12.12");
-	strcpy(userID, getLocalIP());
+	//strcpy(username, "denis");
+	//strcpy(userIP, getLocalIP());
 
 	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 10\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
@@ -292,7 +293,7 @@ void ChimeSystemDriver::UserMoved()
 		{
 			if( sector[nextSector] )
 			{
-				comm.UnsubscribeRoom(sector[nextSector]->GetUrl(), userID);
+				comm.UnsubscribeRoom(sector[nextSector]->GetUrl(), info->GetUsername());
 				RemoveChimeSector(sector[nextSector]);
 			}
 
@@ -303,13 +304,13 @@ void ChimeSystemDriver::UserMoved()
 			//RemoveChimeSector( prevSector );
 			nextSector++;			//protect this room from caching out
 		}
-		comm.UserLeftRoom(userID, prevSector->GetUrl());
+		comm.UserLeftRoom(info->GetUsername(), info->GetMyIPAddress(), prevSector->GetUrl());
 
 		newPos = view->GetCamera()->GetOrigin();
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
-		comm.UserEnteredRoom(userID, sec->GetUrl(), newPos.x, newPos.y, newPos.z);
+		comm.UserEnteredRoom(info->GetUsername(), info->GetMyIPAddress(), sec->GetUrl(), newPos.x, newPos.y, newPos.z);
 	}
 	else
 	{
@@ -318,7 +319,7 @@ void ChimeSystemDriver::UserMoved()
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 
-		comm.MoveUser(roomUrl, userID, newPos.x, 0, newPos.z, sec->GetUserList());
+		comm.MoveUser(roomUrl, info->GetUsername(), info->GetMyIPAddress(), newPos.x, 0, newPos.z, sec->GetUserList());
 		//MoveUser(roomUrl, "1.1.1.1", newPos.x, 0, newPos.z+4);
 	}
 
@@ -681,7 +682,7 @@ bool ChimeSystemDriver::HandleRightMouseClick(iEvent &Event)
 	  reqAtDoor  = doorNum;
 	  doorUrl = reqAtSec->GetDoorUrl(doorNum);
 	  strcpy(reqRoomUrl, doorUrl);
-	  comm.SubscribeRoom(doorUrl, userID);
+	  comm.SubscribeRoom(doorUrl, info->GetUsername());
 	  comm.GetRoom(doorUrl);
 	  return true;
 	  //FIXIT Remove this debug code
@@ -893,7 +894,7 @@ bool ChimeSystemDriver::HandleLeftMouseDoubleClick(iEvent &Event)
 	if (m)  {
 		
 		if (curSect->findType(selectedMesh->GetName()) == CONTAINER) {
-			comm.SubscribeRoom((char*) selectedMesh->GetName(), userID);
+			comm.SubscribeRoom((char*) selectedMesh->GetName(), info->GetUsername());
 			comm.GetRoom((char*) selectedMesh->GetName());
 		}
 	
@@ -1642,11 +1643,12 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 	case s_moveUser:
 		{
 			char roomUrl[MAX_URL];
-			char userID[MAX_URL];
+			char username[MAX_URL];
+			char ip_address[MAX_URL];
 			float x, y, z;
 
-			sscanf(params, "%s %s %f %f %f", roomUrl, userID, &x, &y, &z);
-			result = MoveUser(roomUrl, userID, x, y, z);
+			sscanf(params, "%s %s %s %f %f %f", roomUrl, username, ip_address, &x, &y, &z);
+			result = MoveUser(roomUrl, username, ip_address, x, y, z);
 			break;
 		}
 	case s_addObject:
@@ -1680,10 +1682,11 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 	case s_leftRoom:
 		{
 			char oldRoomUrl[MAX_URL];
-			char userID[MAX_URL];
+			char username[MAX_URL];
+			char ip_address[MAX_URL];
 
-			sscanf(params, "%s %s", userID, oldRoomUrl);
-			result = DeleteUser(oldRoomUrl, userID);
+			sscanf(params, "%s %s %s", username, ip_address, oldRoomUrl);
+			result = DeleteUser(oldRoomUrl, username, ip_address);
 			break;
 		}
 
@@ -1693,7 +1696,7 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 			char objectUrl[MAX_URL];
 
 			sscanf(params, "%s %s", roomUrl, objectUrl);
-			result = DeleteUser(roomUrl, objectUrl);
+			result = DeleteObject(roomUrl, objectUrl);  //used to be DeleteUser
 			break;
 		}
 
@@ -1773,13 +1776,17 @@ bool ChimeSystemDriver::MoveObject(char *roomUrl, char *objectUrl, float x, floa
 //* Move a specified user.
 //*
 //*********************************************************************************
-bool ChimeSystemDriver::MoveUser(char *roomUrl, char *userID, float x, float y, float z)
+bool ChimeSystemDriver::MoveUser(char *roomUrl, char *username, char *ip_address, float x, float y, float z)
 {
 	ChimeSector *sec = NULL;
 	csSector	*room = NULL;
 
 	sec = FindSector( roomUrl );
 	if(!sec) return false;
+
+	char *userID = sec->MakeUserID(username, ip_address);
+	if (!userID)
+		return false;
 
 	csVector3 newPos = sec->GetOrigin();
 	newPos.x += x;
@@ -1929,10 +1936,12 @@ bool ChimeSystemDriver::AddUser(char *roomUrl, char *username, char *ip_address,
 //* Delete a specified user from a given room
 //*
 //*********************************************************************************
-bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *userID)
+bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *username, char *ip_address)
 {
 	ChimeSector *sec = FindSector( roomUrl );
 	if( !sec ) return false;
+
+	char *userID = sec->MakeUserID(username, ip_address);
 
 	csSector * room;
 	room = sec->GetRoom(0);
@@ -2024,7 +2033,7 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 		sec2 = new ChimeSector(System, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
 
-		comm.SubscribeRoom(sec2->GetUrl(), userID);
+		comm.SubscribeRoom(sec2->GetUrl(), info->GetUsername());
 
 		if( sec1 )
 		{
@@ -2039,7 +2048,7 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 			csVector3 newPos = view->GetCamera()->GetOrigin();
 			csVector3 roomOrigin = sec2->GetOrigin();
 			newPos -= roomOrigin;
-			comm.UserEnteredRoom(userID, sec2->GetUrl(), newPos.x, newPos.y, newPos.z);
+			comm.UserEnteredRoom(info->GetUsername(), info->GetMyIPAddress(), sec2->GetUrl(), newPos.x, newPos.y, newPos.z);
 		}
 	}
 

@@ -157,6 +157,33 @@ void ChatWindow::AddGlobalUser(char *username, char *ip_address) {
 	(void) new UserListBoxItem (global_users_lb, username, ip_address, cslisEmphasized);
 }
 
+
+//make the user ID out of a username and ip_address
+char* ChatWindow::MakeUserID(const char *username, const char* ip_address) {
+	if (!username) return NULL;
+	if (!ip_address) return NULL;
+
+	char* userID = new char[strlen(username) + strlen(ip_address) + 2];
+	strcpy(userID, username);
+	strcat(userID, " ");
+	strcat(userID, ip_address);
+	return userID;
+}
+
+
+//delete a local user
+void ChatWindow::DeleteLocalUser(char *username, char *ip_address) {
+	csListBoxItem* to_delete = (csListBoxItem*) local_users_lb -> ForEachItem(DeleteMe, username, true);
+	local_users_lb->Delete(to_delete);
+}
+
+//delete a global user
+void ChatWindow::DeleteGlobalUser(char *username, char *ip_address) {
+
+	csListBoxItem* to_delete = (csListBoxItem*) global_users_lb -> ForEachItem(DeleteMe, username, true);
+	global_users_lb->Delete(to_delete);
+}
+
 //delete a local user
 void ChatWindow::DeleteLocalUser(char *userID) {
 	csListBoxItem* to_delete = (csListBoxItem*) local_users_lb -> ForEachItem(DeleteMe, userID, true);
@@ -272,7 +299,7 @@ ChatAreaItem::FindSpace(const char* str, int max_chars, int *earliest_break, int
 }
 
 //no real reason for having this yet but knowing Suhit there will be one :-)
-UserListBox::UserListBox(csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_DEFAULTVALUE, iFrameStyle=cslfsThinRect ) {
+UserListBox::UserListBox(csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_VSCROLL | CSLBS_MULTIPLESEL, iFrameStyle=cslfsThinRect ) {
 	last_ID = 0;
 	csListBox::csListBox(iParent, iStyle, iFrameStyle);
 }

@@ -20,6 +20,9 @@ InfoStorer::InfoStorer() {
   //client communications object
   comm_object = NULL;
 
+  //set the ip address of this machine
+  SetMyIPAddress(GetLocalIP());
+
 }
 
 ClientComm* InfoStorer::GetCommObject() {
@@ -31,7 +34,7 @@ void InfoStorer::SetCommObject(ClientComm* comm_object) {
 }
 
 //get the username
-const char* InfoStorer::GetUsername() {
+char* InfoStorer::GetUsername() {
 	return username;
 }
 
@@ -118,4 +121,13 @@ char* InfoStorer::GetLocalIP()
 	WSACleanup();
 
     return inet_ntoa(addr);
+}
+
+
+void InfoStorer::SetMyIPAddress(char *ip_address) {
+	strcpy(InfoStorer::ip_address, ip_address);
+}
+
+char* InfoStorer::GetMyIPAddress() {
+	return ip_address;
 }

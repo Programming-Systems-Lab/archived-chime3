@@ -79,7 +79,6 @@ private:
 	csEngine* engine;				//Pointer to the Crystal-Space engine;
 	ChimeSector *sector[NUM_SECT];	//NumSect sectors that can exist concurrently
 	int curSector, nextSector;
-	char userID[80];
 
 	bool freeLook;				//Toggle for turning free look on or off
 	csVector3 camAngle;			//Current camera orientation.
@@ -139,7 +138,7 @@ private:
 	// Move a specified object
 	bool MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z);
 	// Move a specified user
-	bool ChimeSystemDriver::MoveUser(char *roomUrl, char *userID, float x, float y, float z);
+	bool ChimeSystemDriver::MoveUser(char *roomUrl, char *username, char* ip_address, float x, float y, float z);
 	// Add a specified object in a given room
 	bool ChimeSystemDriver::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z);
@@ -148,7 +147,7 @@ private:
 	// Add a specified user in a given room
 	bool ChimeSystemDriver::AddUser(char *roomUrl, char *username, char *ip_address, char *shape, float x, float y, float z);
 	// Add a specified user in a given room
-	bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *userID);
+	bool ChimeSystemDriver::DeleteUser(char *roomUrl, char *username, char*ip_address);
 	// Change shape of a givn 3d object
 	bool ChimeSystemDriver::ChangeClass(char *desc);
 	// Read a given room description

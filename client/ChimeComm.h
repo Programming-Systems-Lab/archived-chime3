@@ -50,21 +50,21 @@ public:
 	//Send updated position of a moved object
 	bool MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z);
 	//Send updated position of the user
-	bool MoveUser(char *roomUrl, char *userID, float x, float y, float z, const csStrVector *userList);
+	bool MoveUser(char *roomUrl, char *username, char *ip_address, float x, float y, float z, const csStrVector *userList);
 	//Broadcast entrance of a user in a given room
-	bool UserEnteredRoom(char *userID, char *newRoomUrl, float x, float y, float z);
-	//Broadcast that a user has lift a given room
-	bool UserLeftRoom(char *userID, char *oldRoomUrl);
+	bool UserEnteredRoom(char *username, char *ip_address, char *newRoomUrl, float x, float y, float z);
+	//Broadcast that a user has left a given room
+	bool UserLeftRoom(char *username, char *ip_address, char *oldRoomUrl);
 	//Broadcast addition of new object in a given room
 	bool AddObject(char *roomUrl, char *objectUrl, float x, float y, float z);
 	//Broadcast deletion of new object in a given room
 	bool DeleteObject(char *roomUrl, char *objectUrl);
 	//Subscribe for events of this room
-	bool SubscribeRoom(char *roomUrl, char *userID);
+	bool SubscribeRoom(char *roomUrl, char *username);
 	//Unsubscribe for events of this room
-	bool UnsubscribeRoom(char *roomUrl, char *userID);
+	bool UnsubscribeRoom(char *roomUrl, char *username);
 	//Disconnect user from CHIME server
-	bool Disconnect(char *userID);
+	bool Disconnect(char *username);
 
 
 	//Utility function to convert float to string

@@ -169,8 +169,12 @@ public:
   void AddGlobalUser(char *username, char *ip_address);
   void DeleteLocalUser(char *userID);
   void DeleteGlobalUser(char *userID);
+  void DeleteLocalUser(char *username, char *ip_address);
+  void DeleteGlobalUser(char *userID, char *ip_address);
   static bool DeleteMe(csComponent *item, void *userID);
   //virtual bool Initialize (const char *iConfigName);
+  char* MakeUserID(const char *username, const char* ip_address);
+
 
 };
 
