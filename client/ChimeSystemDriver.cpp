@@ -385,7 +385,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	WaitForSingleObject(hMutex,INFINITE);
 	strcpy(username, "denis");
 
-	comm_client = new ClientComm(9999, "128.59.19.233", 1234, username, "denis", this);
+	comm_client = new ClientComm(9999, "eagle", 1234, username, "denis", this);
 	comm.SetChimeCom(comm_client, this);
 
 	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");

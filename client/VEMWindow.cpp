@@ -387,7 +387,7 @@ VEMWindow::VEMWindow(csComponent *iParent)
   {
 
   SetRect (app->bound.Width() / 4, app->bound.Height() / 4 * 3, app->bound.Width() / 2.25 + app->bound.Width() / 4, app->bound.Height());
-  SetState(CSS_DISABLED, true);
+  //SetState(CSS_DISABLED, true);
   
   //this -> SetSize (500, 285);
   //this -> Center ();

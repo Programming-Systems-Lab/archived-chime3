@@ -220,16 +220,18 @@ public:
 
 class ChatArea : public csListBox
 {
-
+	int chars_per_line;
 public:
-	ChatArea (csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
+	ChatArea (int chars_per_line, csComponent *iParent, int iStyle=CSLBS_DEFAULTVALUE, csListBoxFrameStyle iFrameStyle=cslfsThickRect);
+	int GetCharsPerLine() { return chars_per_line; };
+	void SetCharsPerLine(int chars_per_line) { ChatArea::chars_per_line = chars_per_line; };
 };
 
-class ChatAreaItem : public csListBoxItem
+class ChatAreaItem //: public csListBoxItem
 {
 
 public:
-	ChatAreaItem( csComponent *iParent, const char *iText, int iID=0, csListBoxItemStyle iStyle=cslisNormal);
+	ChatAreaItem( ChatArea *chat_area, const char *iText, int iID=0, csListBoxItemStyle iStyle=cslisNormal);
 };
 
 #endif //CHIME_WINDOW_H

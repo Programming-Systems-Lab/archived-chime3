@@ -23,7 +23,7 @@ HistoryWindow::HistoryWindow(csComponent *iParent)
   //SetState(CSS_SELECTABLE, true);
 
   SetRect (0, 15, app->bound.Width() / 4, app->bound.Height() / 3);
-  SetState(CSS_DISABLED, true);
+  //SetState(CSS_DISABLED, true);
 
   int px = 15, py = 20;
   int labelw = 150;
