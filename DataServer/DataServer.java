@@ -261,13 +261,14 @@ public class DataServer {
 			data = t.getOpt()[2];
 			System.err.println("get into loop");
 			System.err.println(data);
-			while ( idx2<data.length() ) {
+			while ( idx2 < data.length() ) {
 			    idx1 = data.indexOf("<Source>", idx1)+8;
 			    idx2 = data.indexOf("</Source>", idx2);
 			    if (idx1>=data.length() || idx2>=data.length()
 				|| idx1<=7 || idx2 <=0)
 				break;
 
+				System.err.println("The index is: " + idx1 + " " + idx2);
 			    token = data.substring(idx1,idx2);
 			    statement.executeQuery("insert into " +
 						   tableName +
@@ -280,6 +281,7 @@ public class DataServer {
 			    setLinkShape(vobj.getClasstype(), vobj.getSubclass(), vobj.getShape(), vobj.getShape2D(), vobj.getProtocol(), t.getUrl(), token);
 
 			    System.err.println("one iteration " + idx1 + " " + idx2);
+			    idx2 = idx2 + 8; //advance the counter past the word "source"
 			}
 
 			System.err.println("out of loop");
@@ -643,7 +645,7 @@ public class DataServer {
     public int addSourceTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String[] opt) {
 	if (opt == null)
 	    return addSourceTuple(protocol, url, size, type, created, last_mod, src, null, null, null, null, null);
-	else 
+	else
 	    return addSourceTuple(protocol, url, size, type, created, last_mod, src, opt[0], opt[1], opt[2], opt[3], opt[4]);
     }
 
@@ -927,13 +929,19 @@ public class DataServer {
     /* set the shape field of a tuple in the database */
     public boolean setLinkShape(String classtype, String subtype, String shape, String shape2d, String protocol, String roomUrl, String url) {
 
-	if (protocol == null)
+	if (protocol == null || protocol.equals(""))
 	    protocol = "http";
 	else
 	    protocol = protocol.toLowerCase();
 
+	shape2d = shape2d.trim();
+	url = url.trim();
 	url = url.toLowerCase();
+	roomUrl = roomUrl.trim();
 	roomUrl = roomUrl.toLowerCase();
+
+	System.err.println("In setLinkShape the args are: " + classtype + " " + subtype + " " + shape + " " + shape2d + " " + protocol + " " + roomUrl + " " + url);
+
 
 	Vector tmp = findSourceTuple(protocol, roomUrl);
 	if (tmp == null)
@@ -943,15 +951,34 @@ public class DataServer {
 
 	try {
 	    //System.err.println("Try to set shape " + url);
+	    System.err.println("Executing: update " + tableName +
+				   " set CLASSTYPE='" + classtype +
+				   "' where URL = '" + url + "'");
+
 	    statement.executeQuery("update " + tableName +
 				   " set CLASSTYPE='" + classtype +
 				   "' where URL = '" + url + "'");
+
+		System.err.println("Executing: update " + tableName +
+				   " set SUBTYPE='" + subtype +
+				   "' where URL = '" + url + "'");
+
 	    statement.executeQuery("update " + tableName +
 				   " set SUBTYPE='" + subtype +
 				   "' where URL = '" + url + "'");
+
+		System.err.println("Executing: update " + tableName +
+				   " set SHAPE='" + shape +
+				   "' where URL = '" + url + "'");
+
 	    statement.executeQuery("update " + tableName +
 				   " set SHAPE='" + shape +
 				   "' where URL = '" + url + "'");
+
+		System.err.println("Executing: update " + tableName +
+				   " set SHAPE2D='" + shape2d +
+				   "' where URL = '" + url + "'");
+
 	    statement.executeQuery("update " + tableName +
 				   " set SHAPE2D='" + shape2d +
 				   "' where URL = '" + url + "'");
@@ -960,11 +987,15 @@ public class DataServer {
 	  return false;
 	}
 
-	
+
 	// create an siena object and publish it.
 	// method: s_changeClass
+
+	/*
 	Subscriber subscriber = Subscriber.getInstance();
 	HierarchicalDispatcher dispatcher = subscriber.getDispatcher();
+
+	System.err.println("Creating new siena object");
 	SienaObject sienaObj = new SienaObject(protocol,url,"data_server","","","",false);
 	sienaObj.setDispatcher(dispatcher);
 	sienaObj.setMethod("s_changeClass");
@@ -978,7 +1009,8 @@ public class DataServer {
     } catch (Exception e) {
 		e.printStackTrace();
 	}
-	
+	*/
+
 	return true;
     }
 
@@ -1085,9 +1117,9 @@ public class DataServer {
 
     // testing function
     public static void main(String argv[]) {
-	
+
 	DataServer ds = DataServer.getInstance();
-	
+
 	/* TEST1 and TEST2
 	ds.addSourceTuple("http", "http://www.columbia.edu", 20, "DIR", 1234, 3456, null, null);
 	ds.setShape("classA", "subTypeA", "robot", "circle", "http", "http://www.columbia.edu");

@@ -8,14 +8,15 @@
 #include "chimemenu.h"
 
 
-
 // Scroll bar class default palette
+
 static int palette_VEM[] =
 {
   cs_Color_Gray_D,			// Application workspace
   cs_Color_Green_L,			// End points
   cs_Color_Red_L,			// lines
   cs_Color_White			// Start points
+
 };
 
 ConnectDialog::~ConnectDialog() {}
@@ -33,18 +34,21 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
   int labelw = 150;
 
   //////////create the dialog///////////////
+
   csDialog *d = new csDialog(this);
   this->SetDragStyle (this->GetDragStyle () & ~CS_DRAG_SIZEABLE);
-  
-   
+
    //////////////////////Username field//////////////////////////////
+
   username = new csInputLine(d);
   username->SetSize(300,30);
   username->SetPos(px+labelw,py);
+
   
   //set the text to the previous value
   //not implemented yet
   //username->SetText(font->GetFontName());
+
   
   csStatic *usr_lbl = new csStatic(d, username, "~Username:");
   usr_lbl->SetRect(px, py, px+labelw,py+username->bound.Height());
@@ -52,28 +56,32 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
 
 
   /////////////////////Password Field////////////////////////////////
+
   password = new csInputLine(d);
   password->SetSize(300,30);
   password->SetPos(px+labelw,py);
+
   
+
   //set the text to the previous value
   //not implemented yet
   //password->SetText(font->GetFontName());
-  
+
   csStatic *pass_lbl = new csStatic(d, password, "~Password:");
   pass_lbl->SetRect(px, py, px+labelw,py+password->bound.Height());
   py += password->bound.Height();
+
 
 
   /////////////////////Chime Server////////////////////////////////
   chime_server = new csInputLine(d);
   chime_server->SetSize(300,30);
   chime_server->SetPos(px+labelw,py);
-  
+
   //set the text to the previous value
   //not implemented yet
   //password->SetText(font->GetFontName());
-  
+
   csStatic *serv_lbl = new csStatic(d, chime_server, "~Chime Server Name:");
   serv_lbl->SetRect(px, py, px+labelw,py+chime_server->bound.Height());
   py += chime_server->bound.Height();
@@ -85,6 +93,7 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
   butOK->SetSuggestedSize(16,8);
   butOK->SetPos(70, 175); 
 
+
   //cancel button
   csButton *butCAN = new csButton(d, 66801);
   butCAN->SetText("Cancel"); 
@@ -92,7 +101,6 @@ ConnectDialog::ConnectDialog(csComponent *iParent)
   butCAN->SetPos(300, 175); 
 
 }
-
 
 
 bool ConnectDialog::HandleEvent (iEvent &Event)
@@ -103,6 +111,7 @@ bool ConnectDialog::HandleEvent (iEvent &Event)
 
   switch (Event.Type)
   {
+
     case csevCommand:
       switch (Event.Command.Code)
       {
@@ -111,16 +120,15 @@ bool ConnectDialog::HandleEvent (iEvent &Event)
 		  Close();
 		  return true;
       
+
 		 //Cancel Button has been pressed
 		case 66801:
 		  Close();
 		  return true;
 	  }
-	  
-      break;
-	
+
+      break;	
   }
 
   return false;
 }
-

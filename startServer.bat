@@ -11,8 +11,8 @@ SET SHEN=%ROOT%\jars\hsql.jar;%ROOT%\jars\jdom.jar;%ROOT%\jars\xerces.jar;%ROOT%
 SET CLASSPATH=%ROOT%;%JARS%;%FRAX%;%AUTH%;%SIENAUTILS%;%SHEN%;%DATASERVER%;%EVENT_TRACER%;%VEM%;.
 
 
-del ET.*
-del DB.*
+rem del ET.*
+rem del DB.*
 start "Siena Server" /min java siena.StartServer -port 1234
 sleep 2
 java psl.chime.sienautils.Subscriber senp://localhost:1234

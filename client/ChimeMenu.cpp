@@ -69,14 +69,11 @@ bool ChimeMenu::Initialize (const char *iConfigName)
   printf (MSG_INITIALIZATION, "Crystal Space version %s (%s).\n", CS_VERSION, CS_RELEASE_DATE);
   printf (MSG_INITIALIZATION, "ChimeMenu.\n\n");
 
-
-
   csKeyboardAccelerator *ka = new csKeyboardAccelerator (this);
   csMenu *menu = new csMenu (this, csmfsBar, 0);
   menu->id = CSWID_MENUBAR;
   menu->SetFont(mainfont);
   csMenu *submenu = new csMenu (NULL);
-
 
 
   ///////////////////////////////////////////MAIN MENU/////////////////////////////
@@ -85,33 +82,17 @@ bool ChimeMenu::Initialize (const char *iConfigName)
 	//popup the connection dialog box
     (void)new csMenuItem (submenu, "~New Connection\tCtrl+N", 66600);
 
-
-
-
-
   ////////////////////////////////SUBMENU of FIRST COLUMN//////////////////////////
-
-
-
   (void)new csMenuItem(submenu);
 
     //get the object menu
-
 	(void)new csMenuItem (submenu, "~Get Object\tCtrl+G", 66601);
-
     ka->Command ('g', CSMASK_CTRL, 66601);
 
-
-
 	//popup the VEM console
-
 	(void)new csMenuItem (submenu, "~VEM Console\tCtrl+C", 66602);
-
 	ka->Command ('v', CSMASK_CTRL, 66602);
 		
-
-  
-
   ////////////////////////////////LAST SUBMENU OF FIRST COLUMN////////////////////////
 
 	(void)new csMenuItem(submenu);
@@ -120,37 +101,24 @@ bool ChimeMenu::Initialize (const char *iConfigName)
 		HintAdd ("Choose this menu item to quit the program", mi);
 		ka->Command ('q', CSMASK_CTRL, 66698);
 
-
   /////////////////////////////CREATE SECOND COLUMN/////////////////////////////////
   submenu = new csMenu (NULL);
   (void)new csMenuItem (menu, "~Settings", submenu);
 
-
-
 	//some crystal space specific setting if needed
     (void)new csMenuItem (submenu, "C~rystal Space Settings\tCtrl+R", 66700);
-
 	 ka->Command ('r', CSMASK_CTRL, 66700);
 
-
-
 	 //some siena settings
-
 	(void)new csMenuItem (submenu, "~Siena Settings\tCtrl+S", 66701);
-
 	ka->Command ('s', CSMASK_CTRL, 66701);
 
-
-	
 
   int fh; menu->GetTextSize("", &fh);
   menu->SetRect (0, 0, bound.xmax, fh + 8);
 
-
    //popup the connection dialog box
-
   (void)new ConnectDialog(this);
-
 
   return true;
 }
@@ -164,7 +132,6 @@ bool ChimeMenu::HandleEvent (iEvent &Event)
 
   switch (Event.Type)
   {
-
 	  case csevKeyDown:
 
 		  if(Event.Key.Code == CSKEY_ESC)  
@@ -185,71 +152,42 @@ bool ChimeMenu::HandleEvent (iEvent &Event)
 		  {
 			  
 			  //a new connection has been opened    
-			  
 		  case 66600:
-			  
 			  {
-				  
-				  (void)new ConnectDialog(this);
-				  
+				  (void)new ConnectDialog(this);  
 				  return true;
-				  
 			  }
 			  
-		  
 			  //get a Certain Object dialog is opened
 			  
 		  case 66601:
-			  
 			  {
-				  
-				  (void)new ObjectToRetrieveDialog(this);
-				  
+				  (void)new ObjectToRetrieveDialog(this);	  
 				  return true;
-				  
 			  }			  
 			  
 			  //a VEM console is requested
-			  
 		  case 66602:
-			  
 			  {
-				  
-				  (void)new VEM(this);
-				  
+				  (void)new VEM(this);	  
 				  return true;
-				  
 			  }
 
-
-
-
-
 		//Siena settings need to be updated
-
         case 66701:
-
         {
-
-		(void)new SienaDialog(this);
-
-          return true;
-
+			(void)new SienaDialog(this);
+			return true;
         }
 
-
-        
         case 66698:
         {
 		  ShutDown();
           return true;
         }
 
-
         //show the list of all active windows
-
 		case 66699:
-
 		{
           WindowList ();
           return true;

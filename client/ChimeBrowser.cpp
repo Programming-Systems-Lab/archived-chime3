@@ -69,18 +69,32 @@ chimeBrowser::chimeBrowser()
 	strcpy(reqRoomUrl, "");
 
 	//DEBUG stuff. FIXIT
+	
 	strcpy(userID, "124.2.12.1");
 
-	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 4\nhttp://www.cnn.com/ cube txt txt 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
+	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube txt txt 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
 	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
+	strcat(testRoom, "http://www.navy.mil/ stool LINK LINK 1\n");
+	strcat(testRoom, "http://www.philgross.com/ stool LINK LINK 1\n");
+	strcat(testRoom, "http://www.suhit.com/ stool LINK LINK 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
-	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
+/*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
 	strcat(google, "www.yahoo.com stool LINK LINK 1\n");
 	strcat(google, "www.yahoo.com/test.jpg violin image image 1\n");
-	strcat(google, "www.google.com cube LINK LINK 1\n");
-		
+	strcat(google, "www.google.com cube LINK LINK 1\n");	
+
+	strcpy(google2, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
+	strcat(google2, "www.yahoo.com stool LINK LINK 1\n");
+	strcat(google2, "www.yahoo.com/test.jpg violin image image 1\n");
+	strcat(google2, "www.google.com cube LINK LINK 1\n");
+
+	strcpy(google3, "www.navy.mil 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
+	strcat(google3, "www.yahoo.com stool LINK LINK 1\n");
+	strcat(google3, "www.yahoo.com/test.jpg violin image image 1\n");
+	strcat(google3, "www.google.com cube LINK LINK 1\n");
+*/
 }
 
 chimeBrowser::~chimeBrowser()
@@ -271,7 +285,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	comm_client = new ClientComm(9999, "astor.psl.cs.columbia.edu", 1234, "suhit", "suhit", this);
 	comm.SetChimeCom(comm_client);
 
-//	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
+	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
 
 
 	// csView is a view encapsulating both a camera and a clipper.

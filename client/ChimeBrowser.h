@@ -122,7 +122,7 @@ private:
 	// Read a given room description
 	bool chimeBrowser::ReadRoom(char *desc);
 	
-	char testRoom[500], google[500];
+	char testRoom[500], google[500], google2[500], google3[500];
 	
 	///***** Comm section
 	volatile HANDLE hMutex; // Create a Mutex object

@@ -50,11 +50,12 @@ public class VemNotif implements Notifiable
 	//otherwise you will get null
 	public VemObject getShape(String protocol, String url) {
 		for (int i = 0; i < Default.length; i++) {
-			if (url.indexOf(Default[i].type) != -1) {
+			if (url.indexOf(Default[i].file) != -1) {
 				VemObject obj = new VemObject();
 				obj.setUrl(url);
 				obj.setProtocol(protocol);
 				obj.setShape(Default[i].object);
+				obj.setShape2D(Default[i].object);
 				obj.setClasstype(Default[i].type);
 				obj.setSubclass(Default[i].sub);
 				return obj;
@@ -69,6 +70,7 @@ public class VemNotif implements Notifiable
 		System.err.println("&&&&&&&&&&DEFAULT[0] is: " + Default[0].object);
 		obj.setProtocol(protocol);
 		obj.setShape(Default[0].object);
+		obj.setShape2D(Default[0].object);
 		obj.setClasstype(Default[0].type);
 		obj.setSubclass(Default[0].sub);
 		return obj;
@@ -78,11 +80,12 @@ public class VemNotif implements Notifiable
 	//get the shape description associated with this object url
 	public VemObject getLinkShape(String roomUrl, String objUrl) {
 		for (int i = 0; i < Default.length; i++) {
-			if (objUrl.indexOf(Default[i].type) != -1) {
+			if (objUrl.indexOf(Default[i].file) != -1) {
 				VemObject obj = new VemObject();
 				obj.setRoomUrl(roomUrl);
 				obj.setObjUrl(objUrl);
 				obj.setShape(Default[i].object);
+				obj.setShape2D(Default[i].object);
 				obj.setClasstype(Default[i].type);
 				obj.setSubclass(Default[i].sub);
 				return obj;
@@ -96,6 +99,7 @@ public class VemNotif implements Notifiable
 		obj.setObjUrl(objUrl);
 		obj.setUrl(objUrl);
 		obj.setShape(Default[0].object);
+		obj.setShape2D(Default[0].object);
 		obj.setClasstype(Default[0].type);
 		obj.setSubclass(Default[0].sub);
 		return obj;
