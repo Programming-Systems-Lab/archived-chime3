@@ -58,16 +58,16 @@ public:
 	const int GetSienaPort();
 
 	//set the username
-	void SetUsername(char *username);
+	void SetUsername(const char *username);
 
 	//set the password
-	void SetPassword(char *password);
+	void SetPassword(const char *password);
 
 	//set the port used to send chat commands
 	void SetChatPort(int chat_port);
 
 	//set the hostname of the siena
-	void SetSienaLocation(char *siena_location);
+	void SetSienaLocation(const char *siena_location);
 
 	//set the port on which Siena is listening
 	void SetSienaPort(int siena_port);

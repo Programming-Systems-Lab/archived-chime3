@@ -127,7 +127,13 @@ bool chimeComm::MoveUser(char *roomUrl, char *username, char *ip_address, float 
 	//Send signal to all the user in this room
 	for(int i = 0 ; i < userList->Length(); i++)
 	{
-		client_comm->SendUDPFunction(userList->Get(i), c_moveUser, command);
+		char *to_username = strtok(userList->Get(i), " ");
+		char *to_ip_address = strtok(NULL, " ");
+
+		if (to_username != NULL && to_ip_address != NULL && 
+			!strcmp(to_ip_address, ip_address)) //don't send it to yourself
+		
+			client_comm->SendUDPFunction(to_ip_address, c_moveUser, command);
 	}
 	return true;
 }
@@ -136,7 +142,7 @@ bool chimeComm::MoveUser(char *roomUrl, char *username, char *ip_address, float 
 bool chimeComm::UserEnteredRoom(char *username, char *ip_address, char *newRoomUrl, float x, float y, float z)
 {
 
-	//add it to the history window
+	//add user to the history window
 	if (System != NULL && System->historyWindow != NULL)
 		System->historyWindow->AddItem(newRoomUrl);
 

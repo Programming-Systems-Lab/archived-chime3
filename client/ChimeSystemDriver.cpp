@@ -90,11 +90,11 @@ ChimeSystemDriver::ChimeSystemDriver()
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
-	strcat(testRoom, "suhit ninja User 192.168.1.101 1\n");
+	strcat(testRoom, "suhit ninja User 192.168.1.102 1\n");
 	strcat(testRoom, "http://www.navy.mil/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.philgross.com/ stool Connector Connector 1\n");
 	strcat(testRoom, "http://www.suhit.com/ stool Connector Connector 1\n");
-	strcat(testRoom, "navdeep mdl1 User 192.168.1.102 1\n");
+	strcat(testRoom, "navdeep mdl1 User 192.168.1.103 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 /*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
@@ -304,6 +304,7 @@ void ChimeSystemDriver::UserMoved()
 			//RemoveChimeSector( prevSector );
 			nextSector++;			//protect this room from caching out
 		}
+		
 		comm.UserLeftRoom(info->GetUsername(), info->GetMyIPAddress(), prevSector->GetUrl());
 
 		newPos = view->GetCamera()->GetOrigin();
@@ -311,6 +312,7 @@ void ChimeSystemDriver::UserMoved()
 		newPos -= roomOrigin;
 
 		comm.UserEnteredRoom(info->GetUsername(), info->GetMyIPAddress(), sec->GetUrl(), newPos.x, newPos.y, newPos.z);
+		ResetLocalChatBuddies(sec);
 	}
 	else
 	{
@@ -323,6 +325,18 @@ void ChimeSystemDriver::UserMoved()
 		//MoveUser(roomUrl, "1.1.1.1", newPos.x, 0, newPos.z+4);
 	}
 
+}
+
+//**********************************************************************
+//*
+//* Get rid of everyone in the local chat window
+//*
+//********************************************************************** 
+void ChimeSystemDriver::ResetLocalChatBuddies(ChimeSector *cur_sec) {
+	if (app && app->chatWindow) {
+		app->chatWindow->DeleteAllLocalUsers();
+		app->chatWindow->AddLocalUsers(cur_sec->GetUserList());
+	}
 }
 
 //**********************************************************************
@@ -366,7 +380,6 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	engine = Engine->GetCsEngine ();
 	Engine->DecRef ();
 
-
 	//Turn of light caching
 	engine->EnableLightingCache (false);
 
@@ -387,10 +400,13 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE);
 	
-	
-	info->SetUsername("denis");
-	info->SetPassword("denis");
-	info->SetSienaLocation("eagle");
+	if (info->GetPassword() == NULL || info->GetUsername() == NULL ||
+		info->GetSienaLocation() == NULL) {
+			info->SetUsername("denis");
+			info->SetPassword("denis");
+			info->SetSienaLocation("eagle");
+	}
+
 	info->SetSienaPort(1234);
 	info->SetChatPort(9999);
 	
@@ -400,37 +416,107 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	comm.SetChimeCom(comm_client, this);
 	info->SetCommObject(comm_client);
 
-	//comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
-
-
 	// csView is a view encapsulating both a camera and a clipper.
 	// You don't have to use csView as you can do the same by
 	// manually creating a camera and a clipper but it makes things a little
 	// easier.
 
-	//FrameWidth = FrameWidth*2/3;
-	//FrameHeight = FrameHeight*2/3;
-	//G3D->SetDimensions(FrameWidth, FrameHeight);
+	view = new csView (engine, G3D);	
 
-	view = new csView (engine, G3D);
-	//view->GetCamera ()->SetPerspectiveCenter ((0 + FrameWidth) / 2, (0 + FrameHeight) / 2);
+	main_txtmgr = G3D->GetTextureManager ();
+	main_txtmgr->ResetPalette ();
+	main_txtmgr->SetVerbose (true);
 
-	//FIXIT Temporary . Must be removed
-	//Printf (MSG_INITIALIZATION, "Building  Sector 1!...\n");
+	 // Initialize the texture manager
+	int r,g,b;
+	for (r = 0; r < 8; r++)
+		for (g = 0; g < 8; g++)
+			for (b = 0; b < 4; b++)
+				main_txtmgr->ReserveColor (r * 32, g * 32, b * 64);
+	
+	main_txtmgr->SetPalette ();
+
+	// Initialise the procedural textures.
+	// we do it first because if a level is loaded it will erase everything 
+	// previously loaded into the engine.
+	InitProcTextures ();
 
 	ReadRoom(testRoom);
 
 	curSector = 0;
-	//AddUser("http://www.yahoo.com/", "1.1.1.1", "mdl1", 5, 0, 5);
-	//AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
-
-	//view->SetSector (sector[curSector]->GetRoom(0));
-	//view->GetCamera ()->SetPosition (csVector3 (0, 2, 2));
-	//view->SetRectangle (0, 0, FrameWidth/2, FrameHeight);
 
 	engine->Prepare ();
+
+	// Open the procedural textures after the main texture manager has been prepared
+	if (!OpenProcTextures ())
+		return false;
+
 	return true;
 }
+
+//**********************************************************************
+//*
+//* Initialize a procedural texture
+//*
+//**********************************************************************
+void ChimeSystemDriver::Init (ProcTexture *pt)
+{
+  if (!pt->Initialize ())
+  {
+    System->Printf (MSG_STDOUT, "Proc %s failed\n", pt->GetName()); 
+    delete pt;
+  }
+  else
+    TexVec.Push (pt);
+}
+
+//**********************************************************************
+//*
+//* Initialize all procedural textures
+//*
+//**********************************************************************
+void ChimeSystemDriver::InitProcTextures ()
+{
+  ProcTexture::System = this;
+  ProcTexture::Engine = engine;
+  ProcTexture::MainTxtMgr = main_txtmgr;
+
+  ProcTexture *pt = (ProcTexture*) new EngineProcTexture ();
+  Init (pt);
+}
+
+//**********************************************************************
+//*
+//* prepare all of our texture animations
+//*
+//**********************************************************************
+bool ChimeSystemDriver::OpenProcTextures ()
+{
+  int i;
+  for (i = 0; i < TexVec.Length (); i++)
+  {
+    ProcTexture *pt = (ProcTexture*)TexVec.Get (i);
+    if (!pt->PrepareAnim (GetCurChimeSector()->GetRoom(0)))
+      return false;
+  }
+  return true;
+}
+
+//**********************************************************************
+//*
+//* Animate all of our procedural textures
+//*
+//**********************************************************************
+void ChimeSystemDriver::AnimateProcTextures (cs_time current_time, cs_time elapsed_time)
+{
+  int i;
+  for (i = 0; i < TexVec.Length (); i++)
+  {
+    ProcTexture *pt = (ProcTexture*)TexVec.Get (i);
+    pt->Animate (current_time, elapsed_time);
+  }
+}
+
 
 //**********************************************************************
 //*
@@ -492,8 +578,12 @@ void ChimeSystemDriver::NextFrame ()
   cs_time elapsed_time, current_time;
   GetElapsedTime (elapsed_time, current_time);
 
+  engine->NextFrame (current_time);
+  
   static cs_time inactive_time = 0;
 
+  // OK do the labeling thing
+  AnimateProcTextures (current_time, elapsed_time);
 
   if( active )
   {
@@ -519,6 +609,8 @@ void ChimeSystemDriver::NextFrame ()
 		  UserMoved();
 	  }
 
+	  engine->SetContext (G3D);
+
 	  // Tell 3D driver we're going to display 3D things.
 	  if (!G3D->BeginDraw (engine->GetBeginDrawFlags () | CSDRAW_2DGRAPHICS|CSDRAW_3DGRAPHICS))
 		  return;
@@ -529,7 +621,7 @@ void ChimeSystemDriver::NextFrame ()
   }
   
 
-	writeMessage();
+	//writeMessage();
 
 	// Start drawing 2D graphics.
 	if (!G3D->BeginDraw (CSDRAW_2DGRAPHICS))
@@ -1640,7 +1732,9 @@ bool ChimeSystemDriver::HandleNetworkEvent(int method, char *params)
 			break;
 		}
 
+		
 	case s_moveUser:
+	case c_moveUser:
 		{
 			char roomUrl[MAX_URL];
 			char username[MAX_URL];
@@ -1778,6 +1872,7 @@ bool ChimeSystemDriver::MoveObject(char *roomUrl, char *objectUrl, float x, floa
 //*********************************************************************************
 bool ChimeSystemDriver::MoveUser(char *roomUrl, char *username, char *ip_address, float x, float y, float z)
 {
+	
 	ChimeSector *sec = NULL;
 	csSector	*room = NULL;
 

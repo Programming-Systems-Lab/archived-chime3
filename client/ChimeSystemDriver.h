@@ -35,6 +35,7 @@ class InfoStorer;
 #include "ChimeWindow.h"
 #include "ChimeComm.h"
 #include "comm_client/ClientComm.h"
+#include "ChimeLabeling.h"
 //#include "ChimeSector.h"
 
 //changes the number of sectors that need to be opened to delete a sector
@@ -65,8 +66,13 @@ class InfoStorer;
 class ChimeSystemDriver: public SysSystemDriver
 {
   typedef SysSystemDriver superclass;
+  DECLARE_TYPED_VECTOR (ptTexVec, ProcTexture);
+  ptTexVec TexVec;
 
 private:
+
+	 // The main renderers texture manager
+	iTextureManager *main_txtmgr;
 
 	InfoStorer *info;				//pointer to all the info about this session
 	csComponent *CoordinateConvertor;		//use this to convert coordinates to Chime World Coordinates
@@ -106,6 +112,13 @@ private:
 
 	//Path to the internet browser
 	char browserPath[400];
+
+	//Texture stuff
+	void ChimeSystemDriver::InitProcTextures ();
+	bool ChimeSystemDriver::OpenProcTextures ();
+	void ChimeSystemDriver::AnimateProcTextures (cs_time current_time, cs_time elapsed_time);
+	void ChimeSystemDriver::Init (ProcTexture *pt);
+
 
 	//Remove selected chime sector.
 	bool RemoveChimeSector(ChimeSector* &sec2);
@@ -180,7 +193,11 @@ private:
 	//when a talk message has been received
 	bool ReceivedTalkMessage(const char *username, const char* ip, const char* msg);
 
+
 public:
+
+	//reset the local chat buddies list
+	void ResetLocalChatBuddies(ChimeSector *cur_sec);
 
 	//transport to some room
 	bool ChimeSystemDriver::TransportToRoom(char *name); 

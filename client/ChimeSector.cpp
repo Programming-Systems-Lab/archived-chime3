@@ -688,22 +688,22 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	hallway->SetAmbientColor(50,50,50);
 
 	//Prepare the whole room.
-	room->Prepare (room);
+	//room->Prepare (room);
 	room->InitLightMaps (false);
 	room->ShineLights ();
 	room->CreateLightMaps (System->G3D);
 
-	connector1->Prepare (connector1);
+	//connector1->Prepare (connector1);
 	connector1->InitLightMaps (false);
 	connector1->ShineLights ();
 	connector1->CreateLightMaps (System->G3D);
 
-	connector2->Prepare (connector2);
+	//connector2->Prepare (connector2);
 	connector2->InitLightMaps (false);
 	connector2->ShineLights ();
 	connector2->CreateLightMaps (System->G3D);
 
-	hallway->Prepare (hallway);
+	//hallway->Prepare (hallway);
 	hallway->InitLightMaps (false);
 	hallway->ShineLights ();
 	hallway->CreateLightMaps (System->G3D);
@@ -964,20 +964,24 @@ bool ChimeSector::BuildHallway(csSector *room, csVector3 const &size, csVector3 
 	float doorOff = (size.x - 2)/2;
 	//Load sandard texure for walls
 	txt = engine->GetMaterials ()->FindByName ("marble1");
+	
 	//Build front wall of the room
 	trans.Set(-size.x/2.0, 0, size.z/2.0);
 	trans += pos;
 	buildFrontDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 10, 2, hallFrontDoor);
 	//BuildWall(room, size, trans, FRONT, txt, csVector3(3,3,3));
+	
 	//Build back wall of the room
 	trans.Set(-size.x/2.0, 0, -size.z/2.0);
 	trans += pos;
 	buildBackDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(2,3,0), 1, doorOff, hallBackDoor);
+
 	//Build Left wall of the room
 	trans.Set(-size.x/2, 0, -size.z/2.0);
 	trans += pos;
 	///buildLeftDoorWall(room, size, trans, txt, csVector3(3,3,3), csVector3(0,3,2), 5, 2, hallLeftDoor);
 	BuildWall(room, size, trans, LEFT, txt, csVector3(3,3,3));
+
 	//Build Right wall of the room
 	trans.Set(size.x/2, 0, -size.z/2.0);
 	trans += pos;
@@ -1038,6 +1042,7 @@ csPolygon3D * ChimeSector::BuildWall(csSector *room, csVector3 const &size, csVe
 	p->AddVertex (v3.x, v3.y, v3.z);
 	p->AddVertex (v4.x, v4.y, v4.z);
 	//p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x);
+
 	if(type == RIGHT || type == BACK)
 	{
 		p->SetTextureSpace (p->Vobj (2), p->Vobj (3), txtSize.x, p->Vobj (1), txtSize.y);
@@ -1047,8 +1052,60 @@ csPolygon3D * ChimeSector::BuildWall(csSector *room, csVector3 const &size, csVe
 		p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x, p->Vobj (3), txtSize.y);
 	}
 
+
 	return p;
 }
+
+bool ChimeSector::CreateLabel(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csVector3 const &txtSize) {
+	csVector3 v1, v2, v3, v4, new_pos;
+
+	v1 = stdVector[type+0];
+	v2 = stdVector[type+1];
+	v3 = stdVector[type+2];
+	v4 = stdVector[type+3];
+
+	csPolygon3D *p = NULL;
+
+	v1.x = v1.x * size.x * 2; v1.y = (v1.y * size.y) ; v1.z = v1.z * size.z;  //divide y/3
+	v2.x = v2.x * size.x * 2; v2.y = (v2.y * size.y) ; v2.z = v2.z * size.z;
+	v3.x = v3.x * size.x * 2; v3.y = (v3.y * size.y) ; v3.z = v3.z * size.z;
+	v4.x = v4.x * size.x * 2; v4.y = (v4.y * size.y) ; v4.z = v4.z * size.z;
+
+	new_pos.x = pos.x - (size.x / 2);
+	new_pos.y = size.y + pos.y;
+	new_pos.z = pos.z;
+
+	v1 += new_pos;
+	v2 += new_pos;
+	v3 += new_pos;
+	v4 += new_pos;
+
+	//get all the materials
+	csMaterialWrapper *pt_engine = engine->GetMaterials ()->FindByName ("pt_engine");
+	csMaterialWrapper *label = engine->GetMaterials ()->FindByName ("woodfloor");
+
+	p = room->NewPolygon (label);
+	p->AddVertex (v1.x, v1.y, v1.z);
+	p->AddVertex (v2.x, v2.y, v2.z);
+	p->AddVertex (v3.x, v3.y, v3.z);
+	p->AddVertex (v4.x, v4.y, v4.z);
+
+	if (pt_engine)
+		p->SetMaterial (pt_engine);
+
+	if(type == RIGHT || type == BACK)
+	{
+		p->SetTextureSpace (p->Vobj (2), p->Vobj (3), txtSize.x * 2, p->Vobj (1), txtSize.y);
+	}
+	else
+	{
+		p->SetTextureSpace (p->Vobj (0), p->Vobj (1), txtSize.x * 2, p->Vobj (3), txtSize.y);
+	}
+
+	return true;
+}
+
+
 //Build right wall with doors
 bool ChimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVector3 const &pos, csMaterialWrapper *txt, csVector3 const &txtSize,
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
@@ -1085,6 +1142,7 @@ bool ChimeSector::buildRightDoorWall(csSector *room, csVector3 const &size, csVe
 
 		pList[i] = BuildWall(room, doorSize, curPos, RIGHT, t, doorTxtSize);
 		curPos.z += doorSize.z;
+
 	}
 	size1.z = (pos.z + size.z - curPos.z);
 	if(size1.z > 0)
@@ -1142,12 +1200,15 @@ bool ChimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
-	csVector3 size1, size2, curPos, doorTxtSize;
+	csVector3 size1, size2, curPos, doorTxtSize, label_size;
 
 	doorTxtSize.x = doorSize.x;
 	doorTxtSize.y = doorSize.y;
 	doorTxtSize.z = 0;				//Its ignored by BuildWall() anyway.
 
+	label_size.x = doorSize.x;
+	label_size.y = doorSize.y;
+	label_size.z = doorSize.z;
 
 	curPos = pos;
 	size1.x = offset;
@@ -1174,6 +1235,11 @@ bool ChimeSector::buildFrontDoorWall(csSector *room, csVector3 const &size, csVe
 		curPos.x += offset;
 
 		pList[i] = BuildWall(room, doorSize, curPos, FRONT, t, doorTxtSize);
+
+		//create a label on the wall above the door
+		CreateLabel(room, label_size, curPos, FRONT, csVector3(3,3,3));
+
+
 		curPos.x += doorSize.x;
 	}
 	size1.x = (pos.x + size.x - curPos.x);
@@ -1189,7 +1255,7 @@ bool ChimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVec
 		                csVector3 const &doorSize, int numDoors, float offset, csPolygon3D *pList[])
 {
 
-	csVector3 size1, size2, curPos, doorTxtSize;
+	csVector3 size1, size2, curPos, doorTxtSize, label_size;
 
 	doorTxtSize.x = doorSize.x;
 	doorTxtSize.y = doorSize.y;
@@ -1219,6 +1285,7 @@ bool ChimeSector::buildBackDoorWall(csSector *room, csVector3 const &size, csVec
 			BuildWall(room, size1, curPos, BACK, txt, txtSize);
 		curPos.x += offset;
 		pList[i] = BuildWall(room, doorSize, curPos, BACK, t, doorTxtSize);
+
 		curPos.x += doorSize.x;
 	}
 	size1.x = (pos.x + size.x - curPos.x);

@@ -208,6 +208,10 @@ public:
 	ChimeSector(csSystemDriver  *Sys, csEngine *e);
 	virtual ~ChimeSector();
 
+	//create label
+	bool CreateLabel(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csVector3 const &txtSize);
+
+
 };
 
 #endif // !defined(AFX_ChimeSector_H__B2D2C4E8_7AC2_4A3F_AD9A_776822C11E86__INCLUDED_)

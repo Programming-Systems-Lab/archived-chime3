@@ -140,6 +140,10 @@ SOURCE=.\InfoStorer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ProcTexture.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\comm_client\SienaPublisher.cpp
 # End Source File
 # Begin Source File
@@ -177,6 +181,10 @@ SOURCE=.\ChimeApp.h
 # Begin Source File
 
 SOURCE=.\ChimeComm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChimeLabeling.h
 # End Source File
 # Begin Source File
 

@@ -6,7 +6,8 @@
 #include "ifontsrv.h"
 #include "icfgnew.h"
 #include "ChimeWindow.h"
-
+#include "InfoStorer.h"
+#include "ChimeApp.h"
 
 // Scroll bar class default palette
 ConnectWindow::~ConnectWindow() {}
@@ -95,6 +96,8 @@ ConnectWindow::ConnectWindow(csComponent *iParent)
 
 bool ConnectWindow::HandleEvent (iEvent &Event)
 {
+  
+  InfoStorer *info = NULL;
 
   if (csWindow::HandleEvent (Event))
     return true;
@@ -107,8 +110,21 @@ bool ConnectWindow::HandleEvent (iEvent &Event)
       {
 	    //OK button was pressed
         case 66800:
-		  Close();
-		  return true;
+
+			info = ((ChimeApp*) app)->GetInfo();
+
+			if (info == NULL) {
+				Close();
+				return false;
+			
+			} else {
+				info->SetUsername(username->GetText());
+				info->SetPassword(password->GetText());
+				info->SetSienaLocation(chime_server->GetText());
+			}
+
+			Close();
+			return true;
 
 
 		 //Cancel Button has been pressed

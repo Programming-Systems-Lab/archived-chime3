@@ -23,6 +23,11 @@ InfoStorer::InfoStorer() {
   //set the ip address of this machine
   SetMyIPAddress(GetLocalIP());
 
+  *username = NULL;
+
+  *password = NULL;
+
+  *siena_location = NULL;
 }
 
 ClientComm* InfoStorer::GetCommObject() {
@@ -59,12 +64,12 @@ const int InfoStorer::GetSienaPort() {
 }
 
 //set the username
-void InfoStorer::SetUsername(char *username) {
+void InfoStorer::SetUsername(const char *username) {
 	strcpy(InfoStorer::username, username);
 }
 
 //set the password
-void InfoStorer::SetPassword(char *password) {
+void InfoStorer::SetPassword(const char *password) {
 	strcpy(InfoStorer::password, password);
 }
 
@@ -74,7 +79,7 @@ void InfoStorer::SetChatPort(int chat_port) {
 }
 
 //set the hostname of the siena
-void InfoStorer::SetSienaLocation(char *siena_location) {
+void InfoStorer::SetSienaLocation(const char *siena_location) {
 	strcpy(InfoStorer::siena_location, siena_location);
 }
 

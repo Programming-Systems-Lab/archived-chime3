@@ -175,6 +175,17 @@ public:
   //virtual bool Initialize (const char *iConfigName);
   char* MakeUserID(const char *username, const char* ip_address);
 
+  //is user in listbox?
+  bool UserThere(UserListBox *user_list, char *username);
+
+  //special method used in ForEachItem()
+  static bool IsThere(csComponent *item, void *username);
+
+  //delete all local users
+  void DeleteAllLocalUsers();
+
+  //delete all global users
+  void DeleteAllGlobalUsers();
 
 };
 

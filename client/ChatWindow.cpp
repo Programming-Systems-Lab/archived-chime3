@@ -64,7 +64,11 @@ ChatWindow::ChatWindow(csComponent *iParent)
 
 }
 
-
+//**********************************************************************
+//*
+//* Handle All Events in the Chat Window
+//*
+//**********************************************************************
 bool ChatWindow::HandleEvent (iEvent &Event)
 {
 
@@ -96,36 +100,55 @@ bool ChatWindow::HandleEvent (iEvent &Event)
   return false;
 }
 
-//to send a message or not
+//**********************************************************************
+//*
+//* to send a message or not
+//*
+//**********************************************************************
 bool ChatWindow::SendMsg(csComponent *item, void *chat_window_class) {
 	if (item->GetState(CSS_LISTBOXITEM_SELECTED))
 		((ChatWindow*) chat_window_class)->SendMessage(((UserListBoxItem*) item)->GetIPAddress(), ((ChatWindow*) chat_window_class)->user_msg_line->GetText());
 	return false;
 }
 
-//send a message to someone
+//**********************************************************************
+//*
+//* send a message to someone
+//*
+//**********************************************************************
 void ChatWindow::SendMessage(const char *ip_address, const char *msg) {
 	char temp[1000];
 	sprintf(temp, "%s %s %s",((ChimeApp*) app)->GetInfo()->GetLocalIP(), ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
 	((ChimeApp*) app)->GetInfo()->GetCommObject()->SendUDPFunction(ip_address, c_talk, temp);
 }
 
-//show the message in the chat area box
+//**********************************************************************
+//*
+//* show the message in the chat area box
+//*
+//**********************************************************************
 void ChatWindow::ShowMessage(const char* msg) {
 	char temp[1000];
 	sprintf(temp, "%s: %s", ((ChimeApp*) app)->GetInfo()->GetUsername(), msg);
 	new ChatAreaItem(chat_area, temp, last_ID);
 }
 
-//show the message in the chat area box
+//**********************************************************************
+//*
+//* show the message in the chat area box
+//*
+//**********************************************************************
 void ChatWindow::ShowMessage(const char *username, const char* msg) {
 	char temp[1000];
 	sprintf(temp, "%s: %s", username, msg);
 	new ChatAreaItem(chat_area, temp, last_ID);
 }
 
-
-//add local users to the chat window
+//**********************************************************************
+//*
+//* add local users to the chat window
+//*
+//**********************************************************************
 void ChatWindow::AddLocalUsers(csStrVector *user_list) {
 	for (int i = 0; i < user_list->Length(); i++) {
 		char username[100];
@@ -135,14 +158,48 @@ void ChatWindow::AddLocalUsers(csStrVector *user_list) {
 	}
 }
 
-
-//add a user to the local list
+//**********************************************************************
+//*
+//* add a user to the local list
+//*
+//**********************************************************************
 void ChatWindow::AddLocalUser(char *username, char *ip_address) {
-	(void) new UserListBoxItem (local_users_lb, username, ip_address, cslisEmphasized);
+	if (!UserThere(local_users_lb, username))
+		(void) new UserListBoxItem (local_users_lb, username, ip_address, cslisEmphasized);
+	
 	AddGlobalUser(username, ip_address);		
 }
 
-//add global users to the chat window
+//**********************************************************************
+//*
+//* is the user in the listbox?
+//*
+//**********************************************************************
+bool ChatWindow::UserThere(UserListBox *user_list, char *username) {
+	if (user_list -> ForEachItem(IsThere, username, false) == NULL)
+		return false;
+	else
+		return true;
+}
+
+//**********************************************************************
+//*
+//* special method syntax used in ForEachItem(). Sees if the user is the
+//* same as the current item in the listbox
+//*
+//**********************************************************************
+bool ChatWindow::IsThere(csComponent *item, void *username) {
+	if (strcmp( ((UserListBoxItem*)item)->GetUsername(), (char*) username) == 0)
+		return true;
+	else 
+		return false;
+}
+
+//**********************************************************************
+//*
+//* add global users to the chat window
+//*
+//**********************************************************************
 void ChatWindow::AddGlobalUsers(csStrVector *user_list) {
 	for (int i = 0; i < user_list->Length(); i++) {
 		char username[100];
@@ -152,13 +209,21 @@ void ChatWindow::AddGlobalUsers(csStrVector *user_list) {
 	}
 }
 
-//add a user to the global list
+//**********************************************************************
+//*
+//* add a user to the global list
+//*
+//**********************************************************************
 void ChatWindow::AddGlobalUser(char *username, char *ip_address) {
-	(void) new UserListBoxItem (global_users_lb, username, ip_address, cslisEmphasized);
+	if (!UserThere(global_users_lb, username))
+		(void) new UserListBoxItem (global_users_lb, username, ip_address, cslisEmphasized);
 }
 
-
-//make the user ID out of a username and ip_address
+//**********************************************************************
+//*
+//* make the user ID out of a username and ip_address
+//*
+//**********************************************************************
 char* ChatWindow::MakeUserID(const char *username, const char* ip_address) {
 	if (!username) return NULL;
 	if (!ip_address) return NULL;
@@ -170,34 +235,70 @@ char* ChatWindow::MakeUserID(const char *username, const char* ip_address) {
 	return userID;
 }
 
-
-//delete a local user
+//**********************************************************************
+//*
+//* delete a local user
+//*
+//**********************************************************************
 void ChatWindow::DeleteLocalUser(char *username, char *ip_address) {
 	csListBoxItem* to_delete = (csListBoxItem*) local_users_lb -> ForEachItem(DeleteMe, username, true);
 	local_users_lb->Delete(to_delete);
 }
 
-//delete a global user
+//**********************************************************************
+//*
+//* delete all local users
+//*
+//**********************************************************************
+void ChatWindow::DeleteAllLocalUsers() {
+	local_users_lb -> DeleteAll();
+}
+
+//**********************************************************************
+//*
+//* delete all global users
+//*
+//**********************************************************************
+void ChatWindow::DeleteAllGlobalUsers() {
+	global_users_lb -> DeleteAll();
+}
+
+//**********************************************************************
+//*
+//* delete a global user
+//*
+//**********************************************************************
 void ChatWindow::DeleteGlobalUser(char *username, char *ip_address) {
 
 	csListBoxItem* to_delete = (csListBoxItem*) global_users_lb -> ForEachItem(DeleteMe, username, true);
 	global_users_lb->Delete(to_delete);
 }
 
-//delete a local user
+//**********************************************************************
+//*
+//* delete a local user
+//*
+//**********************************************************************
 void ChatWindow::DeleteLocalUser(char *userID) {
 	csListBoxItem* to_delete = (csListBoxItem*) local_users_lb -> ForEachItem(DeleteMe, userID, true);
 	local_users_lb->Delete(to_delete);
 }
 
-//delete a global user
+//**********************************************************************
+//*
+//* delete a global user
+//*
+//**********************************************************************
 void ChatWindow::DeleteGlobalUser(char *userID) {
 	csListBoxItem* to_delete = (csListBoxItem*) global_users_lb -> ForEachItem(DeleteMe, userID, true);
 	global_users_lb->Delete(to_delete);
 }
 
-
-//to delete or not to delete
+//**********************************************************************
+//*
+//* to delete or not to delete. Special method used in ForEachItem()
+//*
+//**********************************************************************
 bool ChatWindow::DeleteMe(csComponent *item, void *userID) {
 	if (strcmp(item->GetText(), (const char*) userID) == 0)
 		return true;
@@ -205,7 +306,13 @@ bool ChatWindow::DeleteMe(csComponent *item, void *userID) {
 		return false;
 }
 
-//the chat area used for chatting
+
+
+//**********************************************************************
+//*
+//* Build the chat area which will be used for chatting
+//*
+//**********************************************************************
 ChatArea::ChatArea(int chars_per_line, csComponent *iParent, int iStyle, csListBoxFrameStyle iFrameStyle) : csListBox(iParent, iStyle=CSLBS_DEFAULTVALUE, iFrameStyle=cslfsThickRect ) {
 	SetCharsPerLine(chars_per_line);
 	SetState(CSS_SELECTABLE, false);
