@@ -216,7 +216,7 @@ void chimeBrowser::UserMoved()
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
 		
-		comm.UserEnteredRoom(userID, prevSector->GetUrl(), newPos.x, newPos.y, newPos.z);
+		comm.UserEnteredRoom(userID, sec->GetUrl(), newPos.x, newPos.y, newPos.z);
 	}
 	else
 	{
