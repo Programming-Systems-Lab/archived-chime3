@@ -11,6 +11,7 @@
 #include "chimeComm.h"
 #include "comm_client/ClientComm.h"
 
+
 chimeComm::chimeComm()
 {
 
@@ -32,6 +33,11 @@ void chimeComm::SetChimeCom(ClientComm *client_comm, ChimeSystemDriver *System)
 {
 	chimeComm::System = System;
 	chimeComm::client_comm = client_comm;
+}
+
+void chimeComm::UpdateChimeComm()
+{
+	chimeComm::client_comm = System->info->GetCommObject();
 }
 
 

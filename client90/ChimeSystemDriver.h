@@ -100,7 +100,6 @@ private:
 	 // The main renderers texture manager
 	iTextureManager *main_txtmgr;
 
-	InfoStorer *info;					//pointer to all the info about this session
 	csComponent *CoordinateConvertor;		//use this to convert coordinates to Chime World Coordinates
 	csMenu *menu;					//the popup menu object
 	bool menu_drawn;				//whether the popup menu is currently on the screen
@@ -227,8 +226,7 @@ private:
 	///***** Comm section
 	volatile HANDLE hMutex; // Create a Mutex object
 	
-	//communication helper class
-	chimeComm comm;
+
 	//this is the class that we will use for all communication
 	ClientComm *comm_client;
 
@@ -266,6 +264,8 @@ private:
 
 public:
 
+	InfoStorer *info;					//pointer to all the info about this session
+
 	iEngine *engine;
 
 	iGraphics2D *myG2D;               //pointer to graphics 2D
@@ -281,6 +281,11 @@ public:
 	iVFS* myVFS;
 	iLoader* LevelLoader;
 	iMotionManager *myMotionMan;
+	
+	//communication helper class
+	chimeComm comm;
+
+	void DeleteCommObject();
 
 	void Report (int severity, const char* msg, ...);
 

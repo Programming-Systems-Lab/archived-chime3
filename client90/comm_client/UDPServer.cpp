@@ -19,7 +19,7 @@ UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
    if (RetCode != 0)
    {
         printf ("\nUDPServer: Error in DLL initialization %d", RetCode);
-        exit(1);
+        return;
    }
 
 
@@ -29,7 +29,7 @@ UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
 					   IPPROTO_UDP))== INVALID_SOCKET)			// Protocol)) 
    {
        printf ("\nUDPServer: Error creating socket - %d", WSAGetLastError());
-       exit(1);
+       return;
    }
 
    printf ("Port: %d\n", Port);
@@ -42,7 +42,7 @@ UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
    if (bind(sock, (LPSOCKADDR) &sock_addr, sizeof(sock_addr))==SOCKET_ERROR)
         {
             printf ("\nUDPServer: Error in binding the socket - %d", WSAGetLastError());
-            exit(1);
+            return;
         }
 
    printf("\n\nListening...\n\n");

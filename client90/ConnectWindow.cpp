@@ -9,6 +9,8 @@
 #include "InfoStorer.h"
 #include "ChimeApp.h"
 
+extern ChimeSystemDriver *Sys;
+
 // Scroll bar class default palette
 ConnectWindow::~ConnectWindow() {}
 
@@ -104,6 +106,10 @@ bool ConnectWindow::HandleEvent (iEvent &Event)
 
   switch (Event.Type)
   {
+	case csevKeyDown:
+		return true;
+	case csevKeyUp:
+		return true;
 
     case csevCommand:
       switch (Event.Command.Code)
@@ -121,6 +127,15 @@ bool ConnectWindow::HandleEvent (iEvent &Event)
 				info->SetUsername(username->GetText());
 				info->SetPassword(password->GetText());
 				info->SetSienaLocation(chime_server->GetText());
+				
+				//Sys->DeleteCommObject();
+				ClientComm *comm_client = info->GetCommObject();
+
+				comm_client = new ClientComm(info->GetChatPort(), chime_server->GetText(), 
+					info->GetSienaPort(), username->GetText(), password->GetText(), Sys);
+	
+				Sys->comm.SetChimeCom(comm_client, Sys);
+				info->SetCommObject(comm_client);
 			}
 			Close();
 				

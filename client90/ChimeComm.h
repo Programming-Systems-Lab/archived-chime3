@@ -17,6 +17,7 @@
 #define __CHIME_COMM_H__
 
 #include "csutil/csstrvec.h"
+#include "InfoStorer.h"
 
 class ClientComm;
 class ChimeSystemDriver;
@@ -66,6 +67,7 @@ public:
 	//Disconnect user from CHIME server
 	bool Disconnect(char *username);
 
+	void UpdateChimeComm();
 
 	//Utility function to convert float to string
 	static char* ftoa(float num);

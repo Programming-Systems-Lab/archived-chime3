@@ -61,8 +61,6 @@ SCF_REGISTER_STATIC_LIBRARY (engine)
 
 //this is the method we register with the registry
 static bool ChimeHandleEvent(iEvent& ev) {
-	
-	int i = 0;
 
 	if (ev.Type == csevBroadcast && ev.Command.Code == cscmdProcess) {
 		Sys->SetupFrame();
@@ -149,7 +147,7 @@ bool ChimeSystemDriver::TransportToRoom(char *name) {
 	
 	if(sec) {
 		camLocation = sec->GetCamLocation();
-		Transport(sec->GetRoom(0), *camLocation, csVector3(0,0, 1), csVector3(0,1, 0));
+		Transport(sec->GetRoom(0), *camLocation, csVector3(0,0, 1), csVector3(0, -1, 0));
 		return true;
 	}
 
@@ -215,6 +213,15 @@ void ChimeSystemDriver::GetFunction(int method, char *received)
 
 	ReleaseMutex(hMutex);
 
+}
+
+
+void ChimeSystemDriver::DeleteCommObject() {
+	WaitForSingleObject(hMutex,INFINITE);
+	ClientComm *comm_client = info->GetCommObject();
+	delete comm_client;
+	comm_client = NULL;
+	ReleaseMutex(hMutex);
 }
 
 //**********************************************************************
@@ -947,6 +954,7 @@ bool ChimeSystemDriver::Transport(iSector *room, csVector3 pos, csVector3 lookPo
 	if(!room)
 		return false;
 	
+	lookUp = lookUp.y * -1;
 	cam_pos -> Set(room->QueryObject()->GetName(), pos, lookPos, lookUp);
 	cam_pos -> Load(view->GetCamera(), engine);
 
@@ -1784,6 +1792,7 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 		break;
 	case csevKeyUp:
 		break;
+		/*
 	case csevKeyDown:
 		
 		HandleKeyEvent(Event);
@@ -1822,6 +1831,7 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 			//engine->Prepare();
 		}
 
+	*/
 
 	}//Switch
 
