@@ -237,7 +237,7 @@ public class DataServer {
 		    SourceTuple t = p.parseDoc();
 		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 		    // invoke VEM with t.getProtocol, t.getUrl()
-		    
+
 		    // create a table of links and images
 		    try {
 			String tableName = "table" + tupleID;
@@ -254,7 +254,7 @@ public class DataServer {
 						   token +
 						   "', 'FILE', null, null, null, null)");
 			}
-			
+
 			// invoke VEM with t.getUrl(), token
 
 			printTable(tableName);
@@ -295,7 +295,7 @@ public class DataServer {
 			    if (idx1>=data.length() || idx2>=data.length()
 				|| idx1<=7 || idx2 <=0)
 				break;
-			    
+
 			    token = data.substring(idx1,idx2);
 			    statement.executeQuery("insert into " +
 						   tableName +
@@ -303,7 +303,7 @@ public class DataServer {
 						   token +
 						   "', 'IMAGE', null, null, null, null)");
 			    // invoke VEM with t.getUrl(), token
-			    
+
 			    System.err.println("one iteration " + idx1 + " " + idx2);
 			}
 
@@ -338,8 +338,8 @@ public class DataServer {
 		    p = new ImageParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-		
-		
+
+
 		    // invoke VEM with t.getProtocol, t.getUrl()
 
 
@@ -350,13 +350,13 @@ public class DataServer {
 
 
 		    // invoke VEM with t.getProtocol, t.getUrl()
-		    
+
 		} else if (type.equals("other")) {
 		    p = new OtherParser(doc);
 		    SourceTuple t = p.parseDoc();
 		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-		
-		    
+
+
 		    // invoke VEM with t.getProtocol, t.getUrl()
 
 		} else {
@@ -875,7 +875,7 @@ public class DataServer {
 
     /* set the shape field of a tuple in the database */
     public boolean setShape(String classtype, String subtype, String shape, String shape2d, String protocol, String url) {
-	
+
 	if (protocol == null)
 	    protocol = "http";
 	else
@@ -902,7 +902,7 @@ public class DataServer {
 	  System.err.println(e);
 	  return false;
 	}
-	
+
 	return true;
     }
 
@@ -951,16 +951,20 @@ public class DataServer {
 	SienaObject sienaObj = new SienaObject(protocol,url,"data_server","","","",false);
 	sienaObj.setDispatcher(dispatcher);
 	sienaObj.setMethod("s_changeClass");
-	
+
 	sienaObj.setData("" + roomUrl + " " + url + " " + classtype + " " +
 			 subtype + " " + shape + " " + shape2d);
-	
+
+	//SHEN, I added the try - catch clause
+	try {
 	sienaObj.publish();
-	
+    } catch (Exception e) {
+		e.printStackTrace();
+	}
 	return true;
     }
-    
-    
+
+
     // find the url corresponding to direct parent of input string
     public String getParentDomain(String input) {
 
