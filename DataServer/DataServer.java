@@ -382,8 +382,9 @@ public class DataServer {
 	    if (method.equals("c_getRoom")) {
 
 		System.err.println("DS METHOD CALL: CLIENT.C_GETROOM");
+		String roomUrl = data;
 
-		Vector v = findSourceTuple(protocol, data);
+		Vector v = findSourceTuple(protocol, roomUrl);
 
 		if (v == null)
 			System.err.println("The vector doesn't exist");
@@ -413,10 +414,6 @@ public class DataServer {
 			int length = 2* (ctr + 1);
 			if (length < 10)
 			    length = 10;
-			int isDefault = 1;
-			double x = 0;
-			double y = 0;
-			double z = 0;
 			LinkTuple tmp;
 			data += " 10 5 " + length + " " + ctr + "\n";
 			for (int i=0; i<ctr; i++) {
@@ -424,9 +421,23 @@ public class DataServer {
 			    data += tmp.getLink() + " " +
 				tmp.getShape() + " " +
 				tmp.getClasstype() + " " +
-				tmp.getSubtype() + " " +
-				isDefault + " " +
-				x + " " + y + " " + z + "\n";
+				tmp.getSubtype() + " ";
+
+				MovementTuple mv = et.findLastMovement(roomUrl, tmp.getLink());
+
+				if (mv != null) {
+					int isDefault = 0;
+					data += isDefault + " " +  //not the default
+					mv.getX1() + " " + mv.getY1() + " " + mv.getZ1() + "\n";
+				}
+
+				else {
+					int isDefault = 1;
+					double x = 0;
+					double y = 0;
+					double z = 0;
+					data += isDefault + " " + x + " " + y + " " + z + "\n";
+				}
 			}
 			e.setData(data);
 		    }
