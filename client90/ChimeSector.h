@@ -279,7 +279,8 @@ public:
 	// Set side door's location
 	void SetSideDoorLocation(int sideDoorNum, csVector3 location){sideDoorLocation[sideDoorNum]= location;}
 
-
+	// ADDED BY Suhit - to build ai2tv screen
+	iPolygon3D* BuildScreenOnWall(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize);
 
 };
 

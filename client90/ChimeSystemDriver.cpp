@@ -47,6 +47,9 @@
 #include "iengine/motion.h"
 #include <process.h>
 
+/* AI2TV */
+#include "AIVideoPlayer.h"
+
 extern ChimeSystemDriver *Sys;
 
 //------------------------------------------------- We need the 3D engine -----
@@ -135,6 +138,9 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//strcat(testRoom, "navdeep mdl1 User 192.168.1.103 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
+	// from AI2TV
+	myVideoPlayer=0;
+
 }
 
 //**********************************************************************
@@ -195,6 +201,19 @@ ChimeSystemDriver::~ChimeSystemDriver()
 	SCF_DEC_REF(myG3D);
 	SCF_DEC_REF(collide_system);
 	SCF_DEC_REF(view);
+
+	/**************************************
+	*
+	*	AI2TV Implementation: Cleanup VideoPlayer
+	*
+	***************************************/
+	if (!myVideoPlayer) delete myVideoPlayer;
+	/**************************************
+	*
+	*	AI2TV Implementation:
+	*
+	***************************************/
+
 }
 
 //**********************************************************************
@@ -1441,7 +1460,7 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 
 		objPos = selectedMesh->GetMovable()->GetPosition() - offset;
 
-		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
+//		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); 
 
 	}
 	else
@@ -1677,6 +1696,61 @@ bool ChimeSystemDriver::HandleKeyEvent (iEvent &Event)
 
 
 //    view->GetCamera ()->Rotate (VEC_ROT_RIGHT, speed);
+
+	/******************************************
+	*
+	*	AI2TV Implementation. Pressing 'v' while
+	*	an object is selected, will start the video 
+	*	player on that object. The goal is that you 
+	*	can eventually have "Video" objects that 
+	*	when double clicked, will open the screen 
+	*	behind them...
+	*
+	********************************************/
+		// Test function. Can be removed.
+		/*
+		if (Event.Key.Code == 'z'){
+			AIVideoPlayer::TestMusicStatic();
+		}
+		*/
+		if (Event.Key.Code == 'v'){
+			try{
+	
+		// First get the corresponding object, and statically
+		// set the transform needed to show screen on the wall.
+
+			if (!myVideoPlayer   &&			// no video player yet
+				selectedMeshNewSect  !=0 && // an object was selected.
+				selectedMeshNewSect->GetOrigin()!=0){
+
+				csVector3 origin2 = selectedMeshNewSect->GetOrigin();
+				csVector3 diff(5, +2, -2);
+				csVector3 offset;
+				csVector3 objPos;
+
+			// More detection for null pointers	
+				if (origin2!=0&&selectedMesh!=0 && 
+					selectedMesh->GetMovable() !=0 && 
+					selectedMesh->QueryObject()!=0){
+		
+					offset = origin2 + diff;
+					objPos = selectedMesh->GetMovable()->GetPosition() - offset;
+
+					// finally if no null pointers, let's draw the video screen
+					DrawVideoScreen(objPos, offset, selectedMesh->QueryObject()->GetName());
+				} // if (origin2...
+			} // if (!myVideoPlayer...
+			
+		}catch(...){	return false;	}
+		return true; 
+		} // if 'v'
+
+	/******************************************
+	*
+	*	END AI2TV Implementation.
+	*
+	********************************************/
+
 
 		break;
 	}
@@ -3046,3 +3120,55 @@ bool ChimeSystemDriver::UpdateSideDoorLink(ChimeSector *sec, int doorNum, char *
 
 	return true;
 }
+
+	/***************************************************
+	*
+	* AI2TV Function: DrawVideoScreen
+	*
+	*	Draws the "screen" jpeg picture of a TV and
+	*	creates the instance of the player....
+	*	much of this code is similar to buildsidedoor, where
+	*	it was "borrowed"
+	*
+	****************************************************/
+int ChimeSystemDriver::DrawVideoScreen(csVector3 objPos, csVector3 offset, const char* url)
+{
+
+	// we used to play upon creation. Not any more
+	// if (myVideoPlayer!=0){myVideoPlayer->playThread(); return 1;}
+
+	// The screen image size, in coordinates
+	csVector3 doorSize(0, 4, 4);
+	
+	// The position of the screen
+	csVector3 meshPos;
+	meshPos.x = 4.99;
+	meshPos.y = 0;
+	meshPos.z = 0; 
+	
+	// if we don't have a player yet, we will create one
+	if (!myVideoPlayer){
+	myVideoPlayer = AIVideoPlayer::getInstance(this);
+
+	// This actually draws the screen on the wall
+	myVideoPlayer->DrawScreen(objPos);
+
+	// We used to play when it was created. Now we just leave it paused.
+	 myVideoPlayer->playThread();
+		return 0;
+	}
+	
+	else {
+		// We used to play whenever a creation was requested...
+		//	myVideoPlayer->playThread();
+		return 0;
+	}
+
+}
+
+	/***************************************************
+	*
+	* END AI2TV Function: DrawVideoScreen
+	*
+	*
+	****************************************************/

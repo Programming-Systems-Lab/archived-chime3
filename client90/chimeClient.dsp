@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib /nologo /subsystem:windows /machine:I386
+# ADD LINK32 urlmon.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib /nologo /subsystem:windows /machine:I386
 
 !ELSEIF  "$(CFG)" == "chimeClient - Win32 Debug"
 
@@ -69,7 +69,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR /YX /FD /GZ /c
+# ADD CPP /nologo /MT /W3 /Gm /GX /ZI /Od /D "NDEBUG" /D "_WINDOWS" /D "WIN32" /D "WIN32_VOLATILE" /D "__CRYSTAL_SPACE__" /FR /YX /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -79,8 +79,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsgeom.lib libcsgfx.lib csparser.lib libcssys.lib libcsutil.lib libcstool.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 Cache.lib urlmon.lib zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsgeom.lib libcsgfx.lib csparser.lib libcssys.lib libcsutil.lib libcstool.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /verbose /machine:I386 /nodefaultlib:"libcmt.lib" /pdbtype:sept
+# SUBTRACT LINK32 /pdb:none /debug
 
 !ENDIF 
 
@@ -91,6 +91,42 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+# Begin Source File
+
+SOURCE=.\AICacheController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AICommController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIDownloader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AISyncController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AITimeController.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoFrame.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoFrameBuffer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoPlayer.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoPlayerWindow.cpp
+# End Source File
 # Begin Source File
 
 SOURCE=.\AlwaysVisibleWindow.cpp
@@ -186,6 +222,50 @@ SOURCE=.\VEMWindow.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
+SOURCE=.\AI2TVConstants.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AICache.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AICacheController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AICommController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIDownloader.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AISyncController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AITimeController.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoFrame.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoFrameBuffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoPlayer.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\AIVideoPlayerWindow.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ChimeApp.h
 # End Source File
 # Begin Source File
@@ -233,5 +313,9 @@ SOURCE=.\WindowToolkit.h
 
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # End Group
+# Begin Source File
+
+SOURCE=..\..\ai2tv\NextToFinal\bin\Cache.dll
+# End Source File
 # End Target
 # End Project

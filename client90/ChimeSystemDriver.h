@@ -1,6 +1,3 @@
-//Author: Navdeep S. Tinna
-//Date	: 03/05/2001
-//File	: ChimeSystemDriver.cpp
 
 //Copyright 2001 PSL lab, Columbia University
 
@@ -20,6 +17,7 @@
 //Includes from Crystal space
 #include "cssys/sysdriv.h"
 #include "csengine/meshobj.h"
+#include "AIVideoPlayer.h"
 
 //Forward declaration for classes
 struct iEngine;
@@ -402,6 +400,28 @@ public:
 	// Create a side door behind the clicked object
 	// @return true
 	int DrawSideDoor(csVector3 objPos, csVector3 offset, const char* url);
+
+	/**************************************
+	*
+	*	AI2TV Implementation:
+	*
+	*	Reference to VideoPlayer, and its startup function
+	*
+	***************************************/
+	struct iSoundLoader;
+	struct iSoundRender;
+	iSoundLoader* SoundLoader; // ADDED FOR AI2TV
+	iSoundRender* SoundRender; // ADDED FOR AI2TV
+
+	AIVideoPlayer *myVideoPlayer;
+	int DrawVideoScreen(csVector3 objPos, csVector3 offset, const char* url);
+
+	/**************************************
+	*
+	*	END AI2TV Implementation:
+	*
+	***************************************/
+
 
 };
 

@@ -2065,3 +2065,50 @@ bool ChimeSector::ConnectSectors2(ChimeSector *otherSect, int atDoor)
 }
 
 
+/*****************************
+*
+*	added by Suhit AI2TV - build wallscreen, and return poly3d
+*
+******************************/
+
+
+// Build a screen on the wall
+iPolygon3D* ChimeSector::BuildScreenOnWall(iSector *room, csVector3 const &objPos, csVector3 const &offset, csVector3 const &size, iMaterialWrapper *txt, csVector3 const &txtSize)
+{
+
+	iMeshWrapper *doormesh = engine -> CreateSectorWallsMesh(room, "side_door");
+	iThingState *sidedoor = SCF_QUERY_INTERFACE(doormesh->GetMeshObject(), iThingState);
+
+	csVector3 pos(4.9999, 0, 7); //FIXIT: Should NOT be hardcoded
+	pos.z = objPos.z;
+//	pos.x = 4.9999 //FIXIT: This is not smart way
+
+		iPolygon3D* sideDoorTemp;
+
+	if(objPos.x > 0){
+		pos += offset;
+
+		
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, RIGHT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, RIGHT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}else{
+		pos.x = -pos.x;
+		pos += offset;
+
+	
+
+		sideDoorTemp = BuildWall(sidedoor, "side_door", size, pos, LEFT, txt, txtSize);
+
+		SetSideDoor(sideDoorTemp, nextSideDoorNum);
+		SetSideDoorDirection(nextSideDoorNum, LEFT);
+		SetSideDoorLocation(nextSideDoorNum, pos);
+	}
+
+	++nextSideDoorNum;
+
+	return sideDoorTemp;
+}

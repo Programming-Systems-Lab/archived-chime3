@@ -70,6 +70,69 @@ char* UDPClient::getFunction(int func) {
 		return NULL;
 }
 
+//-------------------ai2tv added version
+void UDPClient::sendMess(const char *host, char *string) {
+
+//	char *function = getFunction(func);
+
+	//check for proper DLLs
+   RetCode = WSAStartup(0x0101, &wsaData);
+
+   if (RetCode != 0)
+   {
+        printf ("\nError in DLL initialization %d", RetCode);
+        return;
+   }
+
+
+   lpht = gethostbyname (host);
+   if (!lpht) {
+	   return;
+   }
+
+   // Creating Udp Socket
+   if ((sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == INVALID_SOCKET)
+   {
+       printf ("\nUDPClient:Error creating socket - %d", WSAGetLastError());
+       return;
+   }
+
+   printf ("Port: %d\n", Port);
+ 
+   sock_addr.sin_family = AF_INET;
+   sock_addr.sin_addr = *((LPIN_ADDR)*lpht -> h_addr_list);
+   sock_addr.sin_port = htons (Port);
+
+
+	if (connect (sock, (LPSOCKADDR) &sock_addr, sizeof (struct sockaddr)) == SOCKET_ERROR)
+	{
+		fprintf (stderr, "\n\nWinsock Error: Unable to Connect\n\n");
+		closesocket (sock);
+		return;
+	}
+	
+
+	if (2 + strlen(string)>500)
+	{
+          printf("\nCan't send full messg: Truncating");
+	}
+
+	//sprintf(buf, "%s", msg);
+
+	printf("Sending message: %s\n", string);
+
+	if (send(sock, string, strlen(string), 0) == SOCKET_ERROR)
+	{
+		fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		closesocket (sock);
+		return;
+	}
+
+	//free(msg);
+}
+
+//-------------------end ai2tv addition
+
 //this will send a message using this UDPClient
 void UDPClient::sendMess(const char *host, int func, char *params) {
 

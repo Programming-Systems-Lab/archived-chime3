@@ -6,7 +6,8 @@
 #include <string.h>
 #include "ClientComm.h"
 #include <iostream.h>
-
+#include "../AICommController.h"
+#include "../ChimeApp.h"
 
 UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
 
@@ -51,6 +52,13 @@ UDPServer::UDPServer(int port, ChimeSystemDriver *_nav) {
 
 //parse the response for Navdeep
 void UDPServer::parseResponse(char *string) {
+	nav->GetApp()->chatWindow->ShowMessage(string);
+	//change chatWindow to something else to re-route the debug messages
+	if (nav->myVideoPlayer && nav->myVideoPlayer->Comm->parseResponse(string)){
+	
+		 return;
+	}
+
 	char *method = strtok(string, "\t");
 	char *params = strtok(NULL, "\t");
 

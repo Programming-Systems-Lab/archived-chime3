@@ -281,6 +281,9 @@ bool ChimeApp::HandleEvent (iEvent &Event)
 
         case QUIT_CHIME:
         {
+		  // AI2TV PLAYER SHUTDOWN
+			if (Sys->myVideoPlayer) Sys->myVideoPlayer->ShutDown();
+		  // END AI2TV PLAYER SHUTDOWN
 		  ShutDown();
           return true;
         }

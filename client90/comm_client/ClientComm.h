@@ -114,7 +114,8 @@ class UDPClient {
    public:
 	   UDPClient(int _port, ChimeSystemDriver *_System);
 	   void sendMess(const char *IP_addr, int function, char *params);
-
+		//-------------------ai2tv added version
+		void sendMess(const char *host, char *string);
 		//destructor
 	   ~UDPClient();
 };
