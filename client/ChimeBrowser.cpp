@@ -8,6 +8,7 @@
 #include "cssys/system.h"
 #include "chimeBrowser.h"
 
+
 #include "csengine/engine.h"
 #include "csengine/csview.h"
 #include "csengine/sector.h"
@@ -88,20 +89,12 @@ chimeBrowser::~chimeBrowser()
 
 void chimeBrowser::GetFunction(int method, char *received) 
 {
-	//keep everyone waiting
+	//Communication thread waits here until main thread
+	//releases the lock on hMutex
 	WaitForSingleObject(hMutex,INFINITE); 
-	char err[100000];
-	char val[5];
 
+	HandleNetworkEvent(method, received);
 
-	FILE *fp = fopen("test.txt", "w");
-	fprintf(fp, "%d %s",method, received);
-	fclose(fp);
-
-	//this is the lucky thread
-	//printf("\n\nIn Navdeep's Receiver\n");
-	//printf("\nThe method was: %d\n", method);
-	//printf("\nThe parameters are: %s\n", received);
 	ReleaseMutex(hMutex);
 	
 }
@@ -293,10 +286,10 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	
 	engine->Prepare ();	
 
-	WaitForSingleObject(hMutex,INFINITE); 
+/*	WaitForSingleObject(hMutex,INFINITE); 
 	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
 	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
-
+*/
 	return true;
 }
 
@@ -416,7 +409,7 @@ void chimeBrowser::NextFrame ()
   // Print the final output.
   G3D->Print (NULL);
 
-  ReleaseMutex(hMutex);
+//  ReleaseMutex(hMutex);
 
 }
 
@@ -1174,7 +1167,10 @@ csMeshWrapper* chimeBrowser::SelectMesh (csCamera *camera, csVector2 *screenCoor
 	
 	chimeSector *curSect = GetCurChimeSector();
 	closestMesh = curSect->SelectMesh(origin, origin + (vw-origin) * 20, isect, dist);
-	if( closestMesh ) selectedMeshSect = curSect;
+	if( closestMesh )
+	{
+		selectedMeshSect = selectedMeshNewSect = curSect;
+	}
 
 	return closestMesh;
 }
@@ -1225,6 +1221,89 @@ bool chimeBrowser::UpdateObjPos()
 
 
 //			**** Recieved info handling functions ***
+
+bool chimeBrowser::HandleNetworkEvent(int method, char *params)
+{
+	bool result = false;
+	
+	switch( method )
+	{
+	case s_moveObject:
+		{
+			char roomUrl[MAX_URL];
+			char objectUrl[MAX_URL];
+			float x, y, z;
+			
+			sscanf(params, "%s %s %f %f %f", roomUrl, objectUrl, &x, &y, &z);
+			result = MoveObject(roomUrl, objectUrl, x, y, z);
+			break;
+		}
+		
+	case s_moveUser:
+		{
+			char roomUrl[MAX_URL];
+			char userID[MAX_URL];
+			float x, y, z;
+			
+			sscanf(params, "%s %s %f %f %f", roomUrl, userID, &x, &y, &z);
+			result = MoveUser(roomUrl, userID, x, y, z);
+			break;
+		}
+	case s_addObject:
+		{
+			char roomUrl[MAX_URL];
+			char objectUrl[MAX_URL];
+			char shape[MAX_URL];
+			char Class[MAX_URL];
+			char subClass[MAX_URL];
+			float x, y, z;
+			
+			sscanf(params, "%s %s %s %s %s %f %f %f", roomUrl, objectUrl, shape, Class, subClass, &x, &y, &z);
+			result = AddObject(roomUrl, objectUrl, shape, Class, subClass, x, y, z);
+			break;
+		}
+		
+	case s_enteredRoom:
+		{
+			char newRoomUrl[MAX_URL];
+			char userID[MAX_URL];
+			float x, y, z;
+			
+			sscanf(params, "%s %s %f %f %f", userID, newRoomUrl, &x, &y, &z);
+			result = AddUser(newRoomUrl, userID, "mdl1", x, y, z);
+			break;
+		}
+		
+		
+	case s_leftRoom:
+		{
+			char oldRoomUrl[MAX_URL];
+			char userID[MAX_URL];
+			
+			sscanf(params, "%s %s", userID, oldRoomUrl);
+			result = DeleteUser(oldRoomUrl, userID);
+			break;
+		}
+		
+	case s_deleteObject:
+		{
+			char roomUrl[MAX_URL];
+			char objectUrl[MAX_URL];
+			
+			sscanf(params, "%s %s", roomUrl, objectUrl);
+			result = DeleteUser(roomUrl, objectUrl);
+			break;
+		}
+		
+	case s_roomInfo:
+		{
+			result = ReadRoom(params);
+		}
+	}
+
+	return result;
+
+}
 
 // Move a specified object
 bool chimeBrowser::MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z)
@@ -1281,7 +1360,7 @@ bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float
 }
 
 // Add a specified object in a given room
-bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char subClass,
+bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z)
 {
 

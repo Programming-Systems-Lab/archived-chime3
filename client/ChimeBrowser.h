@@ -16,18 +16,25 @@
 #ifndef __CHIME_BROWSER_H__
 #define __CHIME_BROWSER_H__
 
+
 //Includes from Crystal space
 #include "cssys/sysdriv.h"
 #include "csengine/meshobj.h"
-
-#include "ChimeSector.h"	
-#include "ChimeComm.h"
-#include "comm_client/udp.h"
 
 //Forward declaration for classes
 class csEngine;
 class csView;
 class ClientComm;
+class chimeComm;
+class chimeBrowser;
+
+#include "ChimeComm.h"
+#include "comm_client/udp.h"
+#include "ChimeSector.h"	
+
+
+
+
 
 #define NUM_SECT 5
 
@@ -65,10 +72,7 @@ private:
 
 	//If 3D view is active or not
 	bool active;
-
-	//ommunication class
-	chimeComm comm;
-
+	
 	//Remove selected chime sector.
 	bool RemoveChimeSector(chimeSector* &sec2);
 	//Remove the first sector of the chimeworld
@@ -96,12 +100,13 @@ private:
 	csSector* FindSectContainingPoint(csVector3 &pos, chimeSector *&sect);
 	
 	//			**** Recieved info handling functions ***
+	bool HandleNetworkEvent(int method, char *params);
 	// Move a specified object
 	bool MoveObject(char *roomUrl, char *objectUrl, float x, float y, float z);
 	// Move a specified user
 	bool chimeBrowser::MoveUser(char *roomUrl, char *userID, float x, float y, float z);
 	// Add a specified object in a given room
-	bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char subClass,
+	bool chimeBrowser::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z);
 	// Delete a specified object
 	bool chimeBrowser::DeleteObject(char *roomUrl, char *objectUrl);
@@ -116,10 +121,11 @@ private:
 	
 	char testRoom[500], google[500];
 	
-	///Comm section
+	///***** Comm section
 	volatile HANDLE hMutex; // Create a Mutex object
-
-	//this is the class which we will use for all communication
+	//communication helper class
+	chimeComm comm;
+	//this is the class that we will use for all communication
 	ClientComm *comm_client;
 
 

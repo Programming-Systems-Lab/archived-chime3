@@ -18,21 +18,26 @@
 
 #include "csutil/csstrvec.h"
 
+class ClientComm;
+
 class chimeComm
 {
-  
 
 private:	
    char *userID;
-   char command[500];	
+   char command[500];
+   ClientComm *client_comm;
 
    //Append given token to a string.
 	bool AppendToken(char *command, char *token);
 public:		
 	//Default constructor  
 	chimeComm(); 
+	//Constructor  
+	chimeComm(ClientComm *client_comm);
 	//Destructor to clean up and shutdown the engine.
 	~chimeComm(); 
+	void SetChimeCom(ClientComm *client_comm);
 	
 	//Connect to a given Chime Server
 	bool connect(char *server, char *userID, char *password);
