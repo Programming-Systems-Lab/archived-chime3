@@ -1,0 +1,51 @@
+
+ Application Manifest
+ ====================
+
+   blocks - A falling blocks game (think 3D Teris).
+
+   cctest - A test application for the Crystal Clear library and plug-in module.
+
+  csfedit - A simple GUI based font editor for Crystal Space.
+
+    csvid - A test application for the OpenDivX video plugin. To run this application
+            you will need to download and install the OpenDivX codec for Windows, which
+            can be obtained from: http://www.projectmayo.com
+
+ cswstest - This application tests the Crystal Space Windowing System (CSWS),
+            which is designed to provide a clean, effective and cross-platform
+            base for creating CrystalSpace-related utilites.
+
+  demosky - An application demonstrating the sky procedural texture.
+
+    dnapp - A test application for the dungeon plug-in module, the random level
+            generator. It allows to set the output options for the plug-in via
+            command-line parameters.
+
+  g2dtest - The Crystal Space canvas plugin test application.
+
+  gfxtest - The Crystal Space image manipulator.
+
+  levtool - A level maintenance tool (work in progress!). 
+
+    mazed - This application is the Crystal Space map editor. It is a work
+            currently in progress.
+
+ metademo - A demostration application which draws texture-mapped meta-balls
+            in a free-form, dynamic blob.
+
+ perftest - This is a tool to test graphics performance.
+
+ phyztest - This application tests the physics library for proper operation.
+
+    ptlab - A test application for procedural textures.
+
+   scfreg - This application is used to register plug-in modules, such as the
+            software and hardware renderers, with Crystal Space's SCF mechanism.
+
+   simple - Developers should use this application as a guide when devloping their
+            new programs. Its code tends to be much cleaner than that of `walktest',
+            and makes proper use of various modules in the engine
+
+ walktest - The quintessential Crystal Space test program. `walktest' is the test
+            harness for most of the features which get added to the engine.
