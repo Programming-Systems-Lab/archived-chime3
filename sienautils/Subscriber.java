@@ -2,17 +2,48 @@ package psl.chime.sienautils;
 import siena.*;
 import psl.chime.frax.*;
 import psl.chime.auth.*;
+import psl.chime.DataServer.*;
+import psl.chime.EventTracer.*;
 
 public class Subscriber {
 
-    HierarchicalDispatcher siena;
+    public HierarchicalDispatcher siena;
+    private static Subscriber myself;
+
+
+    /*
+    * This is the method which should be called in order to start a subscriber
+    */
+    public static synchronized Subscriber getInstance(String siena_location) {
+        if (myself == null) {
+            myself = new Subscriber(siena_location);
+        }
+        return myself;
+    }
+
+    /*
+     * This is the method which should be called to get an instance of a Subscriber
+     */ 
+    public static synchronized Subscriber getInstance() {
+	if (myself == null) {
+	    System.err.println("Need Location in order to Start Subscriber - please use other getInstance method");
+	    System.exit(1);
+        }
+        return myself;
+    }
+
 
     /**
      * Check if the siena server is really running where the
      * user has told it is running
      */
-    public Subscriber(String siena_location) {
+    private Subscriber(String siena_location) {
 	
+	Vem V = new Vem ();
+	V.VemSetHost (siena_location);
+	V.start ();
+
+
 	Runtime.getRuntime().addShutdownHook(new Thread() {
 		public void run() {
 		    System.err.println("SLT shutting down");
@@ -33,6 +64,13 @@ public class Subscriber {
 	}
     }
     
+    /*
+     * Get a Hierarchical Dispatcher
+     */
+    public HierarchicalDispatcher getDispatcher() {
+	return siena;
+    }
+
 
     /** 
      * Setup the subscription filters
@@ -45,7 +83,7 @@ public class Subscriber {
 	    fraxSubscriber();
 	    dataServerSubscriber();
 	    vemSubscriber();
-	    themeManagerSubscriber();
+	    eventPackagerSubscriber();
 	    //loop forever until we shutdown
 	    while(true);
 
@@ -153,27 +191,115 @@ public class Subscriber {
      * Theme Subscriber
      */
     
-    public void themeManagerSubscriber() throws Exception {
+    public void eventPackagerSubscriber() throws Exception {
+	//subscribe for all message from VEM
 	Filter f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "vem");
-	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("from_component", Op.EQ, "vem"); 
 		
 	System.out.println("subscribing for " + f.toString());
 	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertTheme(new SienaObject(e)); }
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
 		public void notify(Notification [] s) { } 
 	    });
+
+	//subscribe for all messages from client where the method is: c_connect
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_connect");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_moveObject
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_moveObject");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_enteredRoom
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_enteredRoom");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_subscribeRoom
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_subscribeRoom");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_leftRoom
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_leftRoom");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_unsubscribeRoom
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_unsubscribeRoom");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//subscribe for all messages from client where the method is: c_disconnect
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_disconnect");
+		
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+
     }
 
     /**
      * Alert the theme manager to an interesting event
      */
 
-    public void alertTheme(SienaObject s) {
+    public void alertEventPackager(SienaObject s) {
 	s.setDispatcher(siena);
 
 	//call the method which deals with an event that is interesting to a theme manager
+	EventTracer ev = EventTracer.getInstance();
+	ev.eventReceived(s);
     }
 
     /**
@@ -191,6 +317,44 @@ public class Subscriber {
 		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
 		public void notify(Notification [] s) { } 
 	    });
+
+
+	//the c_getroom method
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_getroom");
+	
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+
+	//the c_getroom method
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_addObject");
+	
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
+
+	//the c_deleteObject method
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("method", Op.EQ, "c_addObject");
+	
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+		public void notify(Notification [] s) { } 
+	    });
     }
 
     /**
@@ -201,6 +365,8 @@ public class Subscriber {
 	s.setDispatcher(siena);
 
 	// alert the data server that an interesting event has occurred
+	DataServer ds = DataServer.getInstance();
+	ds.eventReceived(s);
     }
 
     
@@ -214,7 +380,7 @@ public class Subscriber {
 	    System.exit(1);
 	}
 	
-	Subscriber s = new Subscriber(args[0]);
+	Subscriber s = Subscriber.getInstance(args[0]);
     }
 }
 

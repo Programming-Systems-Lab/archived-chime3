@@ -53,6 +53,7 @@ public class SienaObject {
 	setAccess(not.getAttribute("access").stringValue());
 	setProtocol(not.getAttribute("prot").stringValue());
 	setAddress(not.getAttribute("address").stringValue());
+	setMethod(not.getAttribute("method").stringValue());
     }
 
 
@@ -70,6 +71,7 @@ public class SienaObject {
 	e.putAttribute("prot", getProtocol());
 	e.putAttribute("address", getAddress());
 	e.putAttribute("access", getAccess());
+	e.putAttribute("method", getMethod());
 	return e;
     }
 
