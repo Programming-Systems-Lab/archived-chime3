@@ -43,15 +43,8 @@ HistoryWindow::HistoryWindow(csComponent *iParent)
   GoBut->SetPos(bound.Width() / 10, bound.Height() / 6 * 5);
   
   last_item = NULL;
+  AddItem("http://www.yahoo.com/");
 
-  /*
-  for (int i = 1; i < 100; i++)
-    {
-      char tmp[20];
-      sprintf (tmp, "item %d - dummy", i);
-      (void)new csListBoxItem (lb, tmp, i);
-   }
-   */
 }
 
 //Add an item to the History Box
