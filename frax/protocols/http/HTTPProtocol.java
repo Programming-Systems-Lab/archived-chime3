@@ -189,7 +189,7 @@ public class HTTPProtocol extends FRAXProtocol  {
 
 	const_param[3] = siena_obj;
 	const_param[0] = metaData;
-	System.out.println("*********The metaData is: " + metaData);
+	//System.out.println("*********The metaData is: " + metaData);
 
 	const_param[1] = returned;
 

@@ -14,11 +14,13 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.text.html.parser.*;
 import psl.chime.frax.plugs.FRAXPlug;
+import psl.chime.sienautils.*;
 
 public class HTMLPlug extends FRAXPlug {
 
     private String metaData;
     private Reader reader;
+    private SienaObject siena_obj;
 
     /** A number of constructructors which shows the
      * robustness of such a system. All create the same
@@ -31,8 +33,9 @@ public class HTMLPlug extends FRAXPlug {
 	reader = (Reader) new InputStreamReader(is);
     }
 
-    public HTMLPlug(String added, DataInputStream is, Long length) {
-	System.out.println("In inputStream constructor");
+    public HTMLPlug(String added, DataInputStream is, Long length, SienaObject s) {
+	siena_obj = s;
+	//System.out.println("In inputStream constructor");
 	metaData = added;
 	reader = (Reader) new InputStreamReader(is);
     }
@@ -80,7 +83,7 @@ public class HTMLPlug extends FRAXPlug {
 	HTMLEditorKit.ParserCallback callback =
 	    new HTMLEditorKit.ParserCallback () {
 
-		    Buffer buffer = new Buffer();
+		    Buffer buffer = new Buffer(siena_obj.getAddress());
 
 		    public void handleStartTag(HTML.Tag tag,
 					       MutableAttributeSet attrSet, int pos) {
@@ -92,9 +95,6 @@ public class HTMLPlug extends FRAXPlug {
 			}
 		    }
 
-		    public void handleText(char[] text, int position) {
-				//System.out.println("The text is: " + new String(text));
-		    }
 
 		    public void handleSimpleTag(HTML.Tag tag,
 						MutableAttributeSet attrSet, int pos) {
@@ -115,7 +115,7 @@ public class HTMLPlug extends FRAXPlug {
 	}
 
 	String final_xml =  "<?xml version=\"1.0\"?>\n<MetaInfo createDate=\'" + System.currentTimeMillis() + "\' type = \'html\'>\n" + metaData + Buffer.images + Buffer.links + "</MetaInfo>\n\n";
-	System.out.println(final_xml);
+	//System.out.println(final_xml);
 	return final_xml;
 
     }
@@ -129,21 +129,32 @@ public class HTMLPlug extends FRAXPlug {
     public static class Buffer {
 	public static String links = new String();
 	public static String images = new String();
+	public static URL address;
 
+	public Buffer(String object) {
+	    try {
+		address = new URL(object);
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	}
 
 	/**
 	 * Create XML from an image tag
 	 */
 	public static String createXMLImg(MutableAttributeSet attrSet) {
+
 	    String temp = "<Image>\n";
-	    temp = temp + "\"";
-	    if  (attrSet.getAttribute(HTML.Attribute.SRC) != null)
-		temp = temp + "\t<Source>" +  attrSet.getAttribute(HTML.Attribute.SRC) + "</Source>\n";
+	    //temp = temp + "\"";
+	    if  (attrSet.getAttribute(HTML.Attribute.SRC) != null) {
+		String path = fullPath(attrSet.getAttribute(HTML.Attribute.SRC).toString());
+		temp = temp + "\t<Source>" + path  + "</Source>\n";
+	    }
 
 	    if  (attrSet.getAttribute(HTML.Attribute.ALT) != null)
 		temp = temp + "\t<Alt>" + attrSet.getAttribute(HTML.Attribute.ALT) + "</Alt>\n";
 
-		temp = temp + "\"";
+	    //temp = temp + "\"";
 	    return temp + "</Image>\n";
 	}
 
@@ -154,13 +165,40 @@ public class HTMLPlug extends FRAXPlug {
 	public static String createXMLLink(MutableAttributeSet attrSet) {
 	    String temp = "";
 	    if  (attrSet.getAttribute(HTML.Attribute.HREF) != null) {
-		temp = "<Link>" +  attrSet.getAttribute(HTML.Attribute.HREF) + "</Link>\n";
-	   }
+		String path = fullPath(attrSet.getAttribute(HTML.Attribute.HREF).toString());
+		temp = "<Link>" +  path + "</Link>\n";
+	    }
 	    return temp;
 
 
 	}
 
+	/**
+	 * Clean up the path from the url
+	 */
+
+	public static String fullPath(String path) {
+	    path = path.trim();
+	    //System.err.println("The path is: " + path);
+
+	    if (path.startsWith("http://"))
+		return path;
+
+	    if (path.startsWith("/")) {
+		if (address.getPort() != -1) {
+		    return address.getHost() + ":" + address.getPort() + "/" + path;
+		} else {
+		    return address.getHost() + "/" + path;
+		}
+	    }
+
+	    else {
+		String temp = address.toString();
+		temp = temp.substring(0, temp.lastIndexOf("/"));
+		return temp + "/" + path;
+	    }
+
+	}
     }
 }
 
