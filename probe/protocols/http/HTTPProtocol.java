@@ -240,7 +240,11 @@ public class HTTPProtocol extends ProbeProtocol  {
     private String generateMetaData(HTTPResponse rsp) {
 	String temp = "<Protocol>" + PROTOCOL_NAME + "</Protocol>\n";
 	try {
-	    temp = temp + "<Name>" + rsp.getEffectiveURI().toString() + "</Name>\n";
+		String new_url = rsp.getEffectiveURI().toString();
+		if (!new_url.endsWith("/"))
+	    	temp = temp + "<Name>" + new_url + "</Name>\n";
+	    else
+	    	temp = temp + "<Name>" + new_url + "index.html" + "</Name>\n";
 	} catch (Exception e) {
 	    System.err.println("can't get URL");
 	}

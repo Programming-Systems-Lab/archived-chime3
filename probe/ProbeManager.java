@@ -110,9 +110,10 @@ public class ProbeManager {
 			latest_obj.setLocation(location);
 			boolean different = false;
 
+			System.err.println(((String) pass_to_manager[0]).length());
 			if (((ConfigObject) cfg_obj).lookAtMetadata()) {
 				latest_obj.setMetadata((String) pass_to_manager[0]);
-				System.err.println("The metadata is: " + pass_to_manager[0]);
+				System.err.println("The metadata in CheckDifference is: " + pass_to_manager[0]);
 				if (!latest_obj.equals(po, po.COMPARE_METADATA)) { //compare to old object - look at metadata
 					sendOutEvent("Notification: The Meta Data of " + location + " has changed");
 					different = true;
@@ -156,6 +157,9 @@ public class ProbeManager {
 
 			//store everything in case rules change
 			po.setMetadata((String) pass_to_manager[0]);
+
+			System.err.println(((String) pass_to_manager[0]).length());
+			System.err.println("The metadata in addToMonitor is: " + pass_to_manager[0]);
 			try {
 				po.setData((DataInputStream) pass_to_manager[1]);
 			} catch (Exception e) {

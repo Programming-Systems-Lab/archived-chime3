@@ -30,7 +30,7 @@ public class ProbeObject {
 	}
 
 	void setData(String data) {
-			this.data = md5.toDigest(data);
+			this.data = md5.toDigest(data.trim());
 	}
 
 	void setData(DataInputStream ds) throws IOException {
@@ -39,7 +39,7 @@ public class ProbeObject {
 		while((temp = br.readLine()) != null)
 			data = data + temp + "\n";
 
-		setData(data);
+		setData(data.trim());
 	}
 
 
@@ -57,11 +57,11 @@ public class ProbeObject {
 	}
 
 	void setProtocol(String protocol) {
-			this.protocol = protocol;
+			this.protocol = protocol.trim();
 	}
 
 	void setLocation(String location) {
-			this.location = location;
+			this.location = location.trim();
 	}
 
 	String getMetadata() {
