@@ -1,0 +1,312 @@
+// -*- C++ -*-
+//
+//  This file is part of Siena, a wide-area event notification system.
+//  See http://www.cs.colorado.edu/serl/siena/
+//
+//  Author: Antonio Carzaniga <carzanig@cs.colorado.edu>
+//  See the file AUTHORS for full details. 
+//
+//  Copyright (C) 1998-2001  University of Colorado
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+//  USA, or send email to serl@cs.colorado.edu.
+//
+//
+// $Id$
+//
+#include <siena/Siena.h>
+
+inline void SienaBase::advertise(const Filter &, const SienaId &) {};
+inline void SienaBase::unadvertise(const Filter &, const SienaId &) {};
+inline void SienaBase::unadvertise(const SienaId &) {};
+inline void SienaBase::shutdown() {};
+
+inline void SienaPush::subscribe(const Pattern &, Notifiable *) {};
+inline void SienaPush::unsubscribe(const Pattern &, Notifiable *) {};
+
+inline void SienaPull::subscribe(const Pattern &) {};
+inline void SienaPull::unsubscribe(const Pattern &) {};
+
+inline AttributeValue::AttributeValue(): sxtype(SX_null) {};
+inline AttributeValue::AttributeValue(const string &s): 
+    sxtype(SX_string), str(new string(s)) {};
+inline AttributeValue::AttributeValue(const char *s): 
+    sxtype(SX_string), str(new string(s)) {};
+inline AttributeValue::AttributeValue(int x): 
+    sxtype(SX_integer), num((int32_t)x) {};
+inline AttributeValue::AttributeValue(long x): 
+    sxtype(SX_integer), num((int32_t)x) {};
+inline AttributeValue::AttributeValue(short x): 
+    sxtype(SX_integer), num((int32_t)x) {};
+inline AttributeValue::AttributeValue(bool x): sxtype(SX_bool), bln(x) {};
+inline AttributeValue::AttributeValue(double x): sxtype(SX_double), dbl(x) {};
+
+inline AttributeValue & AttributeValue::operator = (const string &s) {
+    if (sxtype == SX_string && str != NULL) {
+	*str = s;
+    } else {
+#ifdef WITH_DATE
+	if (sxtype == SX_date && date != NULL) delete(date);
+#endif
+	sxtype = SX_string;
+	str = new string(s);
+    }
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (const char *s) {
+    if (sxtype == SX_string && str != NULL) {
+	*str = s;
+    } else {
+#ifdef WITH_DATE
+	if (sxtype == SX_date && date != NULL) delete(date);
+#endif
+	sxtype = SX_string;
+	str = new string(s);
+    }
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (int i) {
+    if (sxtype == SX_string) {
+	if (str != NULL) delete(str);
+    }
+#ifdef WITH_DATE
+    else if (sxtype == SX_date) {
+	if (date != NULL) delete(date);
+    }
+#endif
+    sxtype = SX_integer;
+    num = (int32_t)i;
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (long i) {
+    if (sxtype == SX_string) {
+	if (str != NULL) delete(str);
+    }
+#ifdef WITH_DATE
+    else if (sxtype == SX_date) {
+	if (date != NULL) delete(date);
+    }
+#endif
+    sxtype = SX_integer;
+    num = (int32_t)i;
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (short i) {
+    if (sxtype == SX_string) {
+	if (str != NULL) delete(str);
+    }
+#ifdef WITH_DATE
+    else if (sxtype == SX_date) {
+	if (date != NULL) delete(date);
+    }
+#endif
+    sxtype = SX_integer;
+    num = (int32_t)i;
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (bool b) {
+    if (sxtype == SX_string) {
+	if (str != NULL) delete(str);
+    }
+#ifdef WITH_DATE
+    else if (sxtype == SX_date) {
+  	if (date != NULL) delete(date);
+    }
+#endif
+    sxtype = SX_bool;
+    bln = b;
+    return *this;
+}
+
+inline AttributeValue & AttributeValue::operator = (double d) {
+    if (sxtype == SX_string) {
+	if (str != NULL) delete(str);
+    } 
+#ifdef WITH_DATE
+    else if (sxtype == SX_date) {
+  	if (date != NULL) delete(date);
+    }
+#endif
+    sxtype = SX_double;
+    dbl = d;
+    return *this;
+}
+
+#ifdef WITH_DATE
+inline AttributeValue & AttributeValue::operator = (const Date &d) {
+    if (sxtype == SX_date && date != NULL) {
+  	*date = d;
+    } else {
+  	if (sxtype == SX_string && str != NULL) delete(str);
+  	sxtype = SX_date;
+  	date = new Date(d);
+    }
+    return *this;
+}
+#endif
+
+inline bool AttributeValue::operator == (const AttributeValue &a) const {
+    return apply_operator(SX_eq, *this, a);
+}
+
+inline bool AttributeValue::operator < (const AttributeValue &a) const {
+    return apply_operator(SX_lt, *this, a);
+}
+
+inline BadType::BadType(SXType t): type(t) {};
+
+inline SXType AttributeValue::type() const { return sxtype; }
+
+inline int32_t & AttributeValue::int_value() { 
+    if (sxtype == SX_integer) return num; 
+    else throw BadType(sxtype);
+}
+inline bool & AttributeValue::bool_value() { 
+    if (sxtype == SX_bool) return bln;
+    else throw BadType(sxtype);
+}
+inline string & AttributeValue::string_value() { 
+    if (sxtype == SX_string && str != NULL) return *str;
+    else throw BadType(sxtype);
+}
+#ifdef WITH_DATE
+inline Date & AttributeValue::date_value() { 
+    if (sxtype == SX_date && date != NULL) return *date;
+    else throw BadType(sxtype);
+}
+#endif
+inline double & AttributeValue::double_value() { 
+    if (sxtype == SX_double) return dbl;
+    else throw BadType(sxtype);
+}
+inline const int32_t & AttributeValue::int_value() const { 
+    if (sxtype == SX_integer) return num; 
+    else throw BadType(sxtype);
+}
+inline const bool & AttributeValue::bool_value() const { 
+    if (sxtype == SX_bool) return bln;
+    else throw BadType(sxtype);
+}
+inline const string & AttributeValue::string_value() const { 
+    if (sxtype == SX_string && str != NULL) return *str;
+    else throw BadType(sxtype);
+}
+#ifdef WITH_DATE
+inline const Date & AttributeValue::date_value() const { 
+    if (sxtype == SX_date && date != NULL) return *date;
+    else throw BadType(sxtype);
+}
+#endif
+inline const double & AttributeValue::double_value() const { 
+    if (sxtype == SX_double) return dbl;
+    else throw BadType(sxtype);
+}
+inline AttributeValue::operator long () const {
+    if (sxtype == SX_integer) return (long)num; 
+    else throw BadType(sxtype);
+}
+
+inline AttributeValue::operator int () const {
+    if (sxtype == SX_integer) return (int)num; 
+    else throw BadType(sxtype);
+}
+
+inline AttributeValue::operator short () const {
+    if (sxtype == SX_integer) return (short)num; 
+    else throw BadType(sxtype);
+}
+
+inline AttributeValue::operator string () const {
+    if (sxtype == SX_string && str != NULL) return *str;
+    else throw BadType(sxtype);
+}
+#ifdef WITH_DATE
+inline AttributeValue::operator Date () const {
+    if (sxtype == SX_date && date != NULL) return *date;
+    else throw BadType(sxtype);
+}
+#endif
+inline AttributeValue::operator bool () const {
+    if (sxtype == SX_bool) return bln;
+    else throw BadType(sxtype);
+}
+inline AttributeValue::operator double () const {
+    if (sxtype == SX_double) return dbl;
+    else throw BadType(sxtype);
+}
+
+inline Notification::Notification(): map<string, AttributeValue, less<string> >() {};
+inline Notification::Notification(const Notification &e):
+    map<string, AttributeValue, less<string> >(e) {};
+inline Filter::Filter(): multimap<string, AttributeConstraint, less<string> >() {};
+inline Filter::Filter(const Filter &f): 
+    multimap<string, AttributeConstraint, less<string> >(f) {};
+
+inline AttributeConstraint::AttributeConstraint(): op(SX_eq), value() {}
+inline AttributeConstraint::AttributeConstraint(const AttributeValue &v): 
+    op(SX_eq), value(v) {}
+inline AttributeConstraint::AttributeConstraint(SXOperator o,
+						const AttributeValue &v): 
+    op(o), value(v) {}
+inline AttributeConstraint::AttributeConstraint(const AttributeConstraint &f): 
+    op(f.op), value(f.value) {}
+
+inline bool AttributeConstraint::apply_to(const AttributeValue &y) {
+    return apply_operator(op, y, value);
+}
+
+inline Filter::iterator Filter::add_constraint(const string & name, 
+					       SXOperator op, 
+					       const AttributeValue & v) {
+    return insert(value_type(name, AttributeConstraint(op, v)));
+}
+
+inline Filter::iterator Filter::add_constraint(const string & name, 
+					       const AttributeConstraint & c) {
+    return insert(value_type(name, c));
+}
+
+inline Pattern::Pattern(): vector<Filter>() {}
+inline Pattern::Pattern(const Pattern &p): vector<Filter>(p) {}
+
+inline NotificationSequence::NotificationSequence(): vector<Notification>() {}
+inline NotificationSequence::NotificationSequence(const NotificationSequence &s): 
+    vector<Notification>(s) {}
+
+inline AttributeConstraint & AttributeConstraint::operator = (const AttributeConstraint &f) {
+    op = f.op;
+    value = f.value;
+    return *this;
+}
+
+inline AttributeConstraint & AttributeConstraint::operator = (const AttributeValue &a) {
+    op = SX_eq;
+    value = a;
+    return *this;
+}
+
+inline BadOperator::BadOperator(SXOperator o): op(o) {}; 
+inline NullFilter::NullFilter(const AttributeConstraint &f1, 
+			      const AttributeConstraint &f2):
+    af1(f1), af2(f2) {};
+inline NullFilter::NullFilter(const string & s, 
+			      const AttributeConstraint &f1, 
+			      const AttributeConstraint &f2):
+    name(s), af1(f1), af2(f2) {};

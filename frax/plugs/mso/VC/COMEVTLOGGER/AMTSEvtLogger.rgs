@@ -1,0 +1,26 @@
+HKCR
+{
+	COMEvtLogger.AMTSEvtLogger.1 = s 'AMTSEvtLogger Class'
+	{
+		CLSID = s '{F8C74D83-9A9C-4BD5-9664-256E4836C05B}'
+	}
+	COMEvtLogger.AMTSEvtLogger = s 'AMTSEvtLogger Class'
+	{
+		CLSID = s '{F8C74D83-9A9C-4BD5-9664-256E4836C05B}'
+		CurVer = s 'COMEvtLogger.AMTSEvtLogger.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {F8C74D83-9A9C-4BD5-9664-256E4836C05B} = s 'AMTSEvtLogger Class'
+		{
+			ProgID = s 'COMEvtLogger.AMTSEvtLogger.1'
+			VersionIndependentProgID = s 'COMEvtLogger.AMTSEvtLogger'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Free'
+			}
+			'TypeLib' = s '{B3009F54-D7AE-4391-B46C-C63FD1B0BF4B}'
+		}
+	}
+}

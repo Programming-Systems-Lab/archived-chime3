@@ -1,0 +1,40 @@
+
+This package contains the C++ API of Siena.
+ 
+Siena is a wide-area event notification system.
+
+Copyright (C) 1998-1999 University of Colorado
+
+Authors: Antonio Carzaniga <carzanig@cs.colorado.edu>
+         David S. Rosenblum <dsr@ics.uci.edu>
+         Alexander L. Wolf <alw@cs.colorado.edu>
+
+         See AUTHORS for full details.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License (file LICENSE) for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program (see LICENSE); if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+USA, or send email to serl@cs.colorado.edu.
+
+CONTACT:
+
+If you use Siena, we would appreciate a notification from you. Please,
+send email to any one of the authors.  Any sort of feedback will be
+much appreciated. Technical questions, bug reports, etc. should be
+directed to Antonio Carzaniga <carzanig@cs.colorado.edu>.
+
+DOCUMENTATION:
+
+The documentation for this package is accessible through index.html.
+Also, check out the on-line documentation at
+http://www.cs.colorado.edu/serl/dot/siena.html

@@ -1,0 +1,19 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8447.0 (1a4bc531).
+//
+// msoProp.tli
+//
+// Wrapper implementations for Win32 type library msoProp.dll
+// compiler-generated file created 02/05/02 at 21:05:17 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface _IMsoDocProp wrapper method implementations
+//
+
+inline _bstr_t _IMsoDocProp::ViewHyperlinks ( _bstr_t strFullQDoc ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewHyperlinks(strFullQDoc, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}

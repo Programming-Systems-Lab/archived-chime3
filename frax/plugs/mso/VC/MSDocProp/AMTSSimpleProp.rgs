@@ -1,0 +1,26 @@
+HKCR
+{
+	MSDocProp.AMTSSimpleProp.1 = s 'AMTSSimpleProp Class'
+	{
+		CLSID = s '{E4920D42-218D-4AE5-BCE5-8A6B3B276D80}'
+	}
+	MSDocProp.AMTSSimpleProp = s 'AMTSSimpleProp Class'
+	{
+		CLSID = s '{E4920D42-218D-4AE5-BCE5-8A6B3B276D80}'
+		CurVer = s 'MSDocProp.AMTSSimpleProp.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {E4920D42-218D-4AE5-BCE5-8A6B3B276D80} = s 'AMTSSimpleProp Class'
+		{
+			ProgID = s 'MSDocProp.AMTSSimpleProp.1'
+			VersionIndependentProgID = s 'MSDocProp.AMTSSimpleProp'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Neutral'
+			}
+			'TypeLib' = s '{A8E91268-2919-4397-A099-9F4B672F9583}'
+		}
+	}
+}

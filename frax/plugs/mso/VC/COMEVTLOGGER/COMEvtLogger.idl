@@ -1,0 +1,42 @@
+// COMEvtLogger.idl : IDL source for COMEvtLogger.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (COMEvtLogger.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(2C4C8D6D-F7A1-472D-942D-E2D4EF0F0846),
+		dual,
+		helpstring("IAMTSEvtLogger Interface"),
+		pointer_default(unique)
+	]
+	interface IAMTSEvtLogger : IDispatch
+	{
+		[id(1), helpstring("method AddEventSource")] HRESULT AddEventSource([in] BSTR bstrSource, [out,retval] VARIANT_BOOL* pStat);
+		[id(2), helpstring("method ReportErrorEvent")] HRESULT ReportErrorEvent([in] BSTR bstrEventData, [in] BSTR bstrEventSource, [out,retval] VARIANT_BOOL* pStat);
+		[id(3), helpstring("method ReportInfoEvent")] HRESULT ReportInfoEvent([in] BSTR bstrEventData, [in] BSTR bstrEventSource, [out,retval] VARIANT_BOOL* pStat);
+		[id(4), helpstring("method ReportWarningEvent")] HRESULT ReportWarningEvent([in] BSTR bstrEventData, [in] BSTR bstrEventSource, [out,retval] VARIANT_BOOL* pStat);
+	};
+
+[
+	uuid(B3009F54-D7AE-4391-B46C-C63FD1B0BF4B),
+	version(1.0),
+	helpstring("COMEvtLogger 1.0 Type Library")
+]
+library COMEVTLOGGERLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(F8C74D83-9A9C-4BD5-9664-256E4836C05B),
+		helpstring("AMTSEvtLogger Class")
+	]
+	coclass AMTSEvtLogger
+	{
+		[default] interface IAMTSEvtLogger;
+	};
+};

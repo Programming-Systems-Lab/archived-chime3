@@ -1,0 +1,112 @@
+// -*- C++ -*-
+//
+//  This file is part of Siena, a wide-area event notification system.
+//  See http://www.cs.colorado.edu/serl/siena/
+//
+//  Author: Antonio Carzaniga <carzanig@cs.colorado.edu>
+//  See the file AUTHORS for full details. 
+//
+//  Copyright (C) 1998-2001  University of Colorado
+//
+//  This program is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU General Public License
+//  as published by the Free Software Foundation; either version 2
+//  of the License, or (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
+//  USA, or send email to serl@cs.colorado.edu.
+//
+//
+// $Id$
+//
+#include <siena/SENP.h>
+
+inline SENPPacket::SENPPacket(): 
+    version(SENP_PROTOCOLVERSION), 
+    method(SENP::NOP),
+    ttl(SENP_DEFAULTTTL),
+    to(), id(), handler(), 
+    param_type(P_Null) {};
+
+inline SENPPacket::SENPPacket(const SENPPacket &p):
+    version(p.version),
+    method(p.method),
+    ttl(p.ttl),
+    to(p.to), id(p.id), handler(p.handler), 
+    param_type(p.param_type),
+    param(p.param) {};
+
+inline void SENPPacket::destroy_param() {
+    switch(param_type) {
+    case P_Notification: if (event != NULL) delete(event); break;
+    case P_Filter: if (filter != NULL) delete(filter); break;
+    case P_Pattern: if(pattern != NULL) delete(pattern); break;
+    case P_NotificationSequence: if (events != NULL) delete(events); break;
+    default: break;
+    }
+    param_type = P_Null;
+}
+
+inline uint8_t SENPPacket::get_param_type() const {
+    return param_type;
+};
+
+inline const Notification * SENPPacket::get_event() const {
+    return event;
+};
+
+inline const Filter * SENPPacket::get_filter() const {
+    return filter;
+};
+
+inline const Pattern * SENPPacket::get_pattern() const {
+    return pattern;
+};
+
+inline const NotificationSequence * SENPPacket::get_eventsequence() const {
+    return events;
+};
+
+inline void SENPPacket::set_param() {
+    switch(param_type) {
+    case P_Notification: if (event != NULL) delete(event); break;
+    case P_Filter: if (filter != NULL) delete(filter); break;
+    case P_Pattern: if(pattern != NULL) delete(pattern); break;
+    case P_NotificationSequence: if (events != NULL) delete(events); break;
+    case P_Null: return;
+    }
+    param = NULL;
+    param_type = P_Null;
+};
+
+inline void SENPPacket::set_param(const Notification * e) {
+    set_param();
+    event = e;
+    param_type = P_Notification;
+};
+
+inline void SENPPacket::set_param(const Filter * f) {
+    set_param();
+    filter = f;
+    param_type = P_Filter;
+};
+
+inline void SENPPacket::set_param(const Pattern * p) {
+    set_param();
+    pattern = p;
+    param_type = P_Pattern;
+    
+};
+
+inline void SENPPacket::set_param(const NotificationSequence * s) {
+    set_param();
+    events = s;
+    param_type = P_NotificationSequence;
+};

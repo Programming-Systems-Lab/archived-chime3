@@ -1,0 +1,130 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MSDocProp - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "midl.exe /tlb ".\MSDocProp.tlb" /h "MSDocProp.h" /iid "MSDocProp_i.c" /Oicf "C:\Programming Projects\Columbia\VC\MSDocProp\MSDocProp.idl""
+Creating command line "rc.exe /l 0x409 /fo"obj/MSDocProp.res" /d "_DEBUG" /d "_AFXDLL" "C:\Programming Projects\Columbia\VC\MSDocProp\MSDocProp.rc"" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP445.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /FR"obj/" /Fp"obj/MSDocProp.pch" /Yu"stdafx.h" /Fo"obj/" /Fd"obj/" /FD /GZ /c 
+"C:\Programming Projects\Columbia\VC\MSDocProp\AMTSSimpleProp.cpp"
+"C:\Programming Projects\Columbia\VC\MSDocProp\MSDocProp.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP445.tmp" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP446.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_AFXDLL" /D "_MBCS" /D "_USRDLL" /FR"obj/" /Fp"obj/MSDocProp.pch" /Yc"stdafx.h" /Fo"obj/" /Fd"obj/" /FD /GZ /c 
+"C:\Programming Projects\Columbia\VC\MSDocProp\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP446.tmp" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP447.tmp" with contents
+[
+..\..\lib\common.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"..\..\lib/MSDocProp.pdb" /debug /machine:I386 /def:".\MSDocProp.def" /out:"..\..\bin/MSDocProp.dll" /implib:"..\..\lib/MSDocProp.lib" /pdbtype:sept 
+".\obj\AMTSSimpleProp.obj"
+".\obj\MSDocProp.obj"
+".\obj\StdAfx.obj"
+".\obj\MSDocProp.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP447.tmp"
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP448.bat" with contents
+[
+@echo off
+regsvr32 /s /c "\Programming Projects\Columbia\bin\MSDocProp.dll"
+echo regsvr32 exec. time > ".\..\..\lib\regsvr32.trg"
+]
+Creating command line "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP448.bat"
+Creating Type Library...
+Microsoft (R) 32b/64b MIDL Compiler Version 6.00.0347 
+Copyright (c) Microsoft Corp 1991-2000. All rights reserved.
+Processing C:\Programming Projects\Columbia\VC\MSDocProp\MSDocProp.idl
+MSDocProp.idl
+Processing C:\Program Files\Microsoft SDK\include\oaidl.idl
+oaidl.idl
+Processing C:\Program Files\Microsoft SDK\include\objidl.idl
+objidl.idl
+Processing C:\Program Files\Microsoft SDK\include\unknwn.idl
+unknwn.idl
+Processing C:\Program Files\Microsoft SDK\include\wtypes.idl
+wtypes.idl
+Processing C:\Program Files\Microsoft SDK\include\basetsd.h
+basetsd.h
+Processing C:\Program Files\Microsoft SDK\include\guiddef.h
+guiddef.h
+Processing C:\Program Files\Microsoft SDK\include\ocidl.idl
+ocidl.idl
+Processing C:\Program Files\Microsoft SDK\include\oleidl.idl
+oleidl.idl
+Processing C:\Program Files\Microsoft SDK\include\servprov.idl
+servprov.idl
+Processing C:\Program Files\Microsoft SDK\include\urlmon.idl
+urlmon.idl
+Processing C:\Program Files\Microsoft SDK\include\msxml.idl
+msxml.idl
+Processing C:\Program Files\Microsoft SDK\include\oaidl.acf
+oaidl.acf
+Processing C:\Program Files\Microsoft SDK\include\ocidl.acf
+ocidl.acf
+64 bit Processing C:\Programming Projects\Columbia\VC\MSDocProp\MSDocProp.idl
+MSDocProp.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\oaidl.idl
+oaidl.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\objidl.idl
+objidl.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\unknwn.idl
+unknwn.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\wtypes.idl
+wtypes.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\basetsd.h
+basetsd.h
+64 bit Processing C:\Program Files\Microsoft SDK\include\guiddef.h
+guiddef.h
+64 bit Processing C:\Program Files\Microsoft SDK\include\ocidl.idl
+ocidl.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\oleidl.idl
+oleidl.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\servprov.idl
+servprov.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\urlmon.idl
+urlmon.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\msxml.idl
+msxml.idl
+64 bit Processing C:\Program Files\Microsoft SDK\include\oaidl.acf
+oaidl.acf
+64 bit Processing C:\Program Files\Microsoft SDK\include\ocidl.acf
+ocidl.acf
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+AMTSSimpleProp.cpp
+MSDocProp.cpp
+Generating Code...
+Linking...
+   Creating library ..\..\lib/MSDocProp.lib and object ..\..\lib/MSDocProp.exp
+<h3>Output Window</h3>
+Performing registration
+Creating command line "bscmake.exe /nologo /o"..\..\lib/MSDocProp.bsc"  ".\obj\StdAfx.sbr" ".\obj\AMTSSimpleProp.sbr" ".\obj\MSDocProp.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP469.bat" with contents
+[
+@echo off
+copy msdocprop.tlb ..\..\bin
+c:\winnt\system32\com\comrereg.exe
+]
+Creating command line "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP469.bat"
+
+        1 file(s) copied.
+          Refresh completed.
+
+
+
+<h3>Results</h3>
+MSDocProp.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -1,0 +1,47 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8447.0 (1cb89a76).
+//
+// MSDocProp.tli
+//
+// Wrapper implementations for Win32 type library MSDocProp.tlb
+// compiler-generated file created 02/05/02 at 18:19:17 - DO NOT EDIT!
+
+#pragma once
+
+//
+// interface IAMTSSimpleProp wrapper method implementations
+//
+
+inline _bstr_t IAMTSSimpleProp::ViewSummaryInfo ( _bstr_t bstrFullQDocPath ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewSummaryInfo(bstrFullQDocPath, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}
+
+inline _bstr_t IAMTSSimpleProp::ViewDocSummaryInfo ( _bstr_t bstrFullQDocPath ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewDocSummaryInfo(bstrFullQDocPath, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}
+
+inline _bstr_t IAMTSSimpleProp::ViewMFSummaryInfo ( _bstr_t bstrFullQDocPath ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewMFSummaryInfo(bstrFullQDocPath, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}
+
+inline _bstr_t IAMTSSimpleProp::ViewUserDefinedProperties ( _bstr_t bstrFullQDocPath ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewUserDefinedProperties(bstrFullQDocPath, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}
+
+inline _bstr_t IAMTSSimpleProp::ViewHyperlinks ( _bstr_t bstrFullQDocPath ) {
+    BSTR _result;
+    HRESULT _hr = raw_ViewHyperlinks(bstrFullQDocPath, &_result);
+    if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
+    return _bstr_t(_result, false);
+}

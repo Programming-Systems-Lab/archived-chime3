@@ -1,0 +1,17 @@
+This Siena API can be compiled on win32 platforms with Visual C++.  
+
+To compile, rename (or copy):
+
+     Makefil-win32 to Makefile
+     and 
+     sienaconf-win32.h to sienaconf.h
+
+then use Microsoft nmake to compile.  You can also compile in a
+seprate directory, which is what I normally do.  Just do:
+
+     cd <where_you_want_to_compile>
+     nmake -f <where_the_sources_are>\Makefile srcdir=<where_the_sources_are>
+
+WARNING: I have done only *minimal* testing on the Visual C++ port.  
+
+-Antonio

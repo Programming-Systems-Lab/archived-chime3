@@ -1,0 +1,91 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8447.0 (1cb89a76).
+//
+// MSDocProp.tlh
+//
+// C++ source equivalent of Win32 type library MSDocProp.tlb
+// compiler-generated file created 02/05/02 at 18:19:17 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct /* coclass */ AMTSSimpleProp;
+struct __declspec(uuid("e4ca377e-7a32-49c5-b0cb-003abef42439"))
+/* dual interface */ IAMTSSimpleProp;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(IAMTSSimpleProp, __uuidof(IAMTSSimpleProp));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("e4920d42-218d-4ae5-bce5-8a6b3b276d80"))
+AMTSSimpleProp;
+    // [ default ] interface IAMTSSimpleProp
+
+struct __declspec(uuid("e4ca377e-7a32-49c5-b0cb-003abef42439"))
+IAMTSSimpleProp : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    _bstr_t ViewSummaryInfo (
+        _bstr_t bstrFullQDocPath );
+    _bstr_t ViewDocSummaryInfo (
+        _bstr_t bstrFullQDocPath );
+    _bstr_t ViewMFSummaryInfo (
+        _bstr_t bstrFullQDocPath );
+    _bstr_t ViewUserDefinedProperties (
+        _bstr_t bstrFullQDocPath );
+    _bstr_t ViewHyperlinks (
+        _bstr_t bstrFullQDocPath );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_ViewSummaryInfo (
+        BSTR bstrFullQDocPath,
+        BSTR * pbstrXMLPropString ) = 0;
+    virtual HRESULT __stdcall raw_ViewDocSummaryInfo (
+        BSTR bstrFullQDocPath,
+        BSTR * pbstrXMLPropString ) = 0;
+    virtual HRESULT __stdcall raw_ViewMFSummaryInfo (
+        BSTR bstrFullQDocPath,
+        BSTR * pbstrXMLPropString ) = 0;
+    virtual HRESULT __stdcall raw_ViewUserDefinedProperties (
+        BSTR bstrFullQDocPath,
+        BSTR * pbstrXMLPropString ) = 0;
+    virtual HRESULT __stdcall raw_ViewHyperlinks (
+        BSTR bstrFullQDocPath,
+        BSTR * pbstrXMLPropString ) = 0;
+};
+
+//
+// Named GUID constants initializations
+//
+
+extern "C" const GUID __declspec(selectany) LIBID_MSDOCPROPLib =
+    {0xa8e91268,0x2919,0x4397,{0xa0,0x99,0x9f,0x4b,0x67,0x2f,0x95,0x83}};
+extern "C" const GUID __declspec(selectany) CLSID_AMTSSimpleProp =
+    {0xe4920d42,0x218d,0x4ae5,{0xbc,0xe5,0x8a,0x6b,0x3b,0x27,0x6d,0x80}};
+extern "C" const GUID __declspec(selectany) IID_IAMTSSimpleProp =
+    {0xe4ca377e,0x7a32,0x49c5,{0xb0,0xcb,0x00,0x3a,0xbe,0xf4,0x24,0x39}};
+
+//
+// Wrapper method implementations
+//
+
+#include "MSDocProp.tli"
+
+#pragma pack(pop)

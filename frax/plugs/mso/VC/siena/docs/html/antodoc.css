@@ -1,0 +1,37 @@
+body { background-color: #f0f0e0 }
+DL.el { margin-left: -1cm }
+DIV.fragment { width: 100%; border: none; background-color: #eaeada }
+DIV.ah { background-color: black; margin-bottom: 3; margin-top: 3 }
+TD.md { background-color: #eeeecc }
+DIV.groupHeader { margin-left: 16; margin-top: 12; margin-bottom: 6; font-weight: bold }
+DIV.groupText { margin-left: 16; font-style: italic; font-size: smaller }
+FONT.keyword       { font-weight: bold; color: #000000 }
+FONT.keywordtype   { color: #008000 }
+FONT.keywordflow   { color: #e08000 }
+FONT.comment       { color: #808080 }
+FONT.preprocessor  { color: #806020 }
+FONT.stringliteral { color: #208000 }
+FONT.charliteral   { color: #809050 }
+
+A:link { color: #802010; } 
+A:visited { color: #701000; }
+A:hover { color:Red; }
+
+A.qindex:link  {color: #802010; }
+A.qindex:visited  {color: #701000; }
+A.qindex:hover  { color:Red; }
+
+A.qindexRef:link  {color: #802010; }
+A.qindexRef:visited  {color: #701000; }
+A.qindexRef:hover  { color:Red; }
+
+A.el:link { text-decoration: none; font-weight: bold; color: #802010; } 
+A.el:visited { text-decoration: none; font-weight: bold; color: #701000; }
+A.el:hover { text-decoration: none; font-weight: bold; color:Red; }
+
+A.elRef:link { font-weight: bold; color: #802010; } 
+A.elRef:visited { font-weight: bold; color: #701000; }
+A.elRef:hover { font-weight: bold; color:Red; }
+
+A.code { text-decoration: none; text-decoration: underline; }
+A.codeRef { font-weight: normal;  }

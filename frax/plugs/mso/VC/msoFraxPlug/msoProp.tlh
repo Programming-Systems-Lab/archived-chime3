@@ -1,0 +1,71 @@
+// Created by Microsoft (R) C/C++ Compiler Version 12.00.8447.0 (1a4bc531).
+//
+// msoProp.tlh
+//
+// C++ source equivalent of Win32 type library msoProp.dll
+// compiler-generated file created 02/05/02 at 21:05:17 - DO NOT EDIT!
+
+#pragma once
+#pragma pack(push, 8)
+
+#include <comdef.h>
+
+//
+// Forward references and typedefs
+//
+
+struct __declspec(uuid("96f862f4-db93-4eb2-a491-3a8b97b8f826"))
+/* dual interface */ _IMsoDocProp;
+struct /* coclass */ IMsoDocProp;
+
+//
+// Smart pointer typedef declarations
+//
+
+_COM_SMARTPTR_TYPEDEF(_IMsoDocProp, __uuidof(_IMsoDocProp));
+
+//
+// Type library items
+//
+
+struct __declspec(uuid("96f862f4-db93-4eb2-a491-3a8b97b8f826"))
+_IMsoDocProp : IDispatch
+{
+    //
+    // Wrapper methods for error-handling
+    //
+
+    _bstr_t ViewHyperlinks (
+        _bstr_t strFullQDoc );
+
+    //
+    // Raw methods provided by interface
+    //
+
+    virtual HRESULT __stdcall raw_ViewHyperlinks (
+        BSTR strFullQDoc,
+        BSTR * _arg2 ) = 0;
+};
+
+struct __declspec(uuid("78652d84-cfe2-461a-b44b-65ae8dcd73a2"))
+IMsoDocProp;
+    // [ default ] interface _IMsoDocProp
+
+//
+// Named GUID constants initializations
+//
+
+extern "C" const GUID __declspec(selectany) LIBID_msoProp =
+    {0x89ee4b48,0x758b,0x4759,{0x85,0x4b,0x41,0xfd,0x43,0xb5,0x31,0xe9}};
+extern "C" const GUID __declspec(selectany) IID__IMsoDocProp =
+    {0x96f862f4,0xdb93,0x4eb2,{0xa4,0x91,0x3a,0x8b,0x97,0xb8,0xf8,0x26}};
+extern "C" const GUID __declspec(selectany) CLSID_IMsoDocProp =
+    {0x78652d84,0xcfe2,0x461a,{0xb4,0x4b,0x65,0xae,0x8d,0xcd,0x73,0xa2}};
+
+//
+// Wrapper method implementations
+//
+
+#include "msoProp.tli"
+
+#pragma pack(pop)

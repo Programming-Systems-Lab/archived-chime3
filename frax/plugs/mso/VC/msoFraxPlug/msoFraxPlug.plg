@@ -1,0 +1,69 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: msoFraxPlug - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"obj/msoFraxPlug.res" /d "_DEBUG" /d "_AFXDLL" "C:\Programming Projects\Columbia\VC\msoFraxPlug\msoFraxPlug.rc"" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47C.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "_AFXDLL" /D "USING_VC6" /FR"obj/" /Fo"obj/" /Fd"obj/" /FD /GZ /c 
+"C:\Programming Projects\Columbia\VC\siena\Comm.cpp"
+"C:\Programming Projects\Columbia\VC\msoFraxPlug\FileGetter.cpp"
+"C:\Programming Projects\Columbia\VC\msoFraxPlug\msoFraxPlug.cpp"
+"C:\Programming Projects\Columbia\VC\siena\SENP.cpp"
+"C:\Programming Projects\Columbia\VC\siena\Siena.cpp"
+"C:\Programming Projects\Columbia\VC\siena\SienaId.cpp"
+"C:\Programming Projects\Columbia\VC\siena\ThinClient.cpp"
+"C:\Programming Projects\Columbia\VC\msoFraxPlug\FRAXFilter.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47C.tmp" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47D.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D "_AFXDLL" /D "USING_VC6" /FR"obj/" /Fp"obj/msoFraxPlug.pch" /Yc"stdafx.h" /Fo"obj/" /Fd"obj/" /FD /GZ /c 
+"C:\Programming Projects\Columbia\VC\msoFraxPlug\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47D.tmp" 
+Creating temporary file "C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47E.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib Ws2_32.lib ..\..\lib\common.lib /nologo /subsystem:console /incremental:yes /pdb:"..\..\bin/msoFraxPlug.pdb" /debug /machine:I386 /out:"..\..\bin/msoFraxPlug.exe" /pdbtype:sept 
+".\obj\Comm.obj"
+".\obj\FileGetter.obj"
+".\obj\msoFraxPlug.obj"
+".\obj\SENP.obj"
+".\obj\Siena.obj"
+".\obj\SienaId.obj"
+".\obj\StdAfx.obj"
+".\obj\ThinClient.obj"
+".\obj\msoFraxPlug.res"
+".\obj\FRAXFilter.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\REANGR~1\LOCALS~1\Temp\RSP47E.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+Comm.cpp
+FileGetter.cpp
+msoFraxPlug.cpp
+SENP.cpp
+Siena.cpp
+SienaId.cpp
+ThinClient.cpp
+FRAXFilter.cpp
+Generating Code...
+Linking...
+Creating command line "bscmake.exe /nologo /o"..\..\bin/msoFraxPlug.bsc"  ".\obj\StdAfx.sbr" ".\obj\Comm.sbr" ".\obj\FileGetter.sbr" ".\obj\msoFraxPlug.sbr" ".\obj\SENP.sbr" ".\obj\Siena.sbr" ".\obj\SienaId.sbr" ".\obj\ThinClient.sbr" ".\obj\FRAXFilter.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+msoFraxPlug.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

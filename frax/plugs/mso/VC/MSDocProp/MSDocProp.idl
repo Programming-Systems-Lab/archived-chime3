@@ -1,0 +1,45 @@
+// MSDocProp.idl : IDL source for MSDocProp.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (MSDocProp.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(E4CA377E-7A32-49C5-B0CB-003ABEF42439),
+		dual,
+		helpstring("IAMTSSimpleProp Interface"),
+		pointer_default(unique)
+	]
+	interface IAMTSSimpleProp : IDispatch
+	{
+		[id(1), helpstring("method ViewSummaryInfo")] HRESULT ViewSummaryInfo([in] BSTR bstrFullQDocPath, 
+																			  [out,retval] BSTR* pbstrXMLPropString);
+		[id(2), helpstring("method ViewDocSummaryInfo")] HRESULT ViewDocSummaryInfo([in] BSTR bstrFullQDocPath, 
+																					[out,retval] BSTR* pbstrXMLPropString);
+		[id(3), helpstring("method ViewMFSummaryInfo")] HRESULT ViewMFSummaryInfo([in] BSTR bstrFullQDocPath, [out,retval] BSTR* pbstrXMLPropString);
+	
+		[id(4), helpstring("method ViewUserDefinedProperties")] HRESULT ViewUserDefinedProperties([in] BSTR bstrFullQDocPath, [out,retval] BSTR* pbstrXMLPropString);
+		[id(5), helpstring("method ViewHyperlinks")] HRESULT ViewHyperlinks([in] BSTR bstrFullQDocPath, [out,retval] BSTR* pbstrXMLPropString);
+	};
+[
+	uuid(A8E91268-2919-4397-A099-9F4B672F9583),
+	version(1.0),
+	helpstring("MSDocProp 1.0 Type Library")
+]
+library MSDOCPROPLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(E4920D42-218D-4AE5-BCE5-8A6B3B276D80),
+		helpstring("AMTSSimpleProp Class")
+	]
+	coclass AMTSSimpleProp
+	{
+		[default] interface IAMTSSimpleProp;
+	};
+};
