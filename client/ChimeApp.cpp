@@ -137,7 +137,7 @@ bool ChimeApp::HandleEvent (iEvent &Event)
     return true;
 
   //see if our system can take care of this...
-  if (Event.Command.Code > 88800 && ((ChimeSystemDriver*)System)->HandleMenuEvent(Event))
+  if (Event.Type == csevCommand && Event.Command.Code > 88800 && ((ChimeSystemDriver*)System)->HandleMenuEvent(Event))
   	  return true;
 
   

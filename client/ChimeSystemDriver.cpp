@@ -404,7 +404,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 		info->GetSienaLocation() == NULL) {
 			info->SetUsername("denis");
 			info->SetPassword("denis");
-			info->SetSienaLocation("grand");
+			info->SetSienaLocation("localhost");
 	}
 
 	info->SetSienaPort(1234);
@@ -960,10 +960,12 @@ bool ChimeSystemDriver::DrawMenu(csVector2 screenPoint) {
 bool ChimeSystemDriver::WipePopupMenu()
 {
 	if (menu_drawn) {
-		menu->Close();
+		//this->SendCommand(cscmdClose);
+		//menu->Close();
 		menu_drawn = false;
 		Start3D();
 		return true;
+
 	} else 
 		return false;
 	
@@ -1285,6 +1287,7 @@ bool ChimeSystemDriver::HandleKeyEvent (iEvent &Event)
 //**********************************************************************
 bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 {
+
 	//Check if the event is for the superclass
 	if (superclass::HandleEvent (Event))
 		return true;
@@ -2004,7 +2007,6 @@ bool ChimeSystemDriver::MoveUser(char *roomUrl, char *username, char *ip_address
 //* Add a specified object in a given room
 //*
 //*********************************************************************************
-
 bool ChimeSystemDriver::AddObject(char *roomUrl, char *objectUrl, char *shape, char *Class, char *subClass,
 							 float x, float y, float z)
 {
@@ -2260,7 +2262,6 @@ bool ChimeSystemDriver::ReadRoom(char *desc)
 //* get the IP address of this machine
 //*
 //*********************************************************************************
-
 char* ChimeSystemDriver::getLocalIP()
 {
 
