@@ -211,6 +211,8 @@ public:
 	//create label
 	bool CreateLabel(csSector *room, csVector3 const &size, csVector3 const &pos, int type, csVector3 const &txtSize);
 
+	//replace a door url with something else
+	bool ReplaceDoorUrl(int doorNum, char *string);
 
 };
 

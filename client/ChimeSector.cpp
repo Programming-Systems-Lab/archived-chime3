@@ -1606,6 +1606,7 @@ ChimeSector* ChimeSector::GetDoorSector(int doorNum)
 	}
 }
 
+//get the door url associated with this doornum
 char* ChimeSector::GetDoorUrl(int doorNum)
 {
 	int numActive = connList.Length();
@@ -1619,6 +1620,25 @@ char* ChimeSector::GetDoorUrl(int doorNum)
 		return NULL;
 	}
 }
+
+//replace the door url with the one provided as an argument
+bool ChimeSector::ReplaceDoorUrl(int doorNum, char *doorUrl) {
+	
+	if (!doorUrl) 
+		return false;
+
+	char *tmp = new char[strlen(doorUrl)+1];
+	strcpy(tmp, doorUrl);
+
+	if( doorNum >= 0 && doorNum < connList.Length()) {
+		connList.Replace(doorNum, tmp);
+		return true;
+	
+	} else {
+		return false;
+	}
+}
+
 // Find  an object in this sector
 csMeshWrapper* ChimeSector::FindObject(char *objectUrl, csSector *&room)
 {

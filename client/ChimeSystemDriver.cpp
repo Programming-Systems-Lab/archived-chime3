@@ -102,21 +102,6 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//strcat(testRoom, "navdeep mdl1 User 192.168.1.103 1\n");
 	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
-/*	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
-	strcat(google, "www.yahoo.com stool LINK LINK 1\n");
-	strcat(google, "www.yahoo.com/test.jpg violin image image 1\n");
-	strcat(google, "www.google.com cube LINK LINK 1\n");
-
-	strcpy(google2, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
-	strcat(google2, "www.yahoo.com stool LINK LINK 1\n");
-	strcat(google2, "www.yahoo.com/test.jpg violin image image 1\n");
-	strcat(google2, "www.google.com cube LINK LINK 1\n");
-
-	strcpy(google3, "www.navy.mil 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
-	strcat(google3, "www.yahoo.com stool LINK LINK 1\n");
-	strcat(google3, "www.yahoo.com/test.jpg violin image image 1\n");
-	strcat(google3, "www.google.com cube LINK LINK 1\n");
-*/
 }
 
 //**********************************************************************
@@ -858,6 +843,42 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
   return true;
 }
 
+
+/**************************************************************************
+/* 
+/*        Update the link to which this door leads
+/*	Also uypdates the physical mesh object which represents the door
+/*			in the room.
+/*
+/**************************************************************************/
+bool ChimeSystemDriver::UpdateDoorLink(ChimeSector *sec, int doorNum, char *new_door_url) {
+	csSector *room;
+
+	char orig_door_url[100];
+	
+	if (!sec->GetDoorUrl(doorNum))
+		return false;
+
+	strcpy(orig_door_url, sec->GetDoorUrl(doorNum));
+
+	if (!new_door_url)
+		return false;
+
+	if (strcmp(new_door_url, orig_door_url) == 0)
+		return false;	
+
+	csMeshWrapper *object = sec -> FindObject(orig_door_url, room);
+
+	if (!object)
+		return false;
+
+	object->SetName(new_door_url);
+	sec ->ReplaceDoorUrl(doorNum, new_door_url);
+
+	return true;
+}
+
+
 /**************************************************************************
 /* 
 /*        Open the indicated door.
@@ -870,13 +891,15 @@ bool ChimeSystemDriver::OpenDoor(char *doorUrl) {
 	char username[50];
 	info->GetUsername(username);
 
+	UpdateDoorLink(reqAtSec, reqAtDoor, doorUrl);
+
 	if (strcmp(username, "") == 0)
 		return false;
 
 	if (reqAtDoor != 0 && reqAtSec != NULL) {
 		if (!doorUrl)
 			doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
-		
+
 		strcpy(reqRoomUrl, doorUrl);
 		comm.SubscribeRoom(doorUrl, username);
 		comm.GetRoom(doorUrl);

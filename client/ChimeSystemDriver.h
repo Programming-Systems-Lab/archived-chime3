@@ -214,6 +214,9 @@ private:
 	//set the contents of the info object
 	void SetInfoObject();
 
+	//update the link on the door
+	bool UpdateDoorLink(ChimeSector *sec, int doorNum, char *new_door_url);
+
 public:
 
 	//handle an event from some window
