@@ -121,8 +121,8 @@ char* SienaPublisher::getFunction(int func) {
 		return NULL;
 }
 
-
-void SienaPublisher::subscribeRoom(char *room) {
+//subscribe to a room
+void SienaPublisher::subscribeRoom(char *room, int option) {
 
 		setupSocket();
 		
@@ -139,8 +139,13 @@ void SienaPublisher::subscribeRoom(char *room) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
-		sprintf (subscribeString, "%s address=\"%s\"", subscribeString, room); 
-		sprintf (subscribeString, "%s username !=\"%s\"}", subscribeString, username); 
+	
+		if (option == EVENTS_FOR_ME_ONLY)
+			sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		else if (option == EVENTS_NOT_FOR_ME)
+			sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+
+		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
@@ -152,6 +157,7 @@ void SienaPublisher::subscribeRoom(char *room) {
 		closesocket(s);
 }
 
+//subscribe all client events
 void SienaPublisher::subscribeClient() {
 		setupSocket();
 		
@@ -181,8 +187,8 @@ void SienaPublisher::subscribeClient() {
 		closesocket (s);
 }
 
-
-void SienaPublisher::subscribeMethod(char *method, bool include_myself) {
+//subscribe to a particular method originating in some room
+void SienaPublisher::subscribeMethod(char *method, char *room, int option) {
 		setupSocket();
 		
 		char subscribeString [1000]; 
@@ -199,11 +205,13 @@ void SienaPublisher::subscribeMethod(char *method, bool include_myself) {
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
 
-		if (include_myself)
+		if (option == EVENTS_FOR_ME_ONLY)
 			sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
-		else
+		else if (option == EVENTS_NOT_FOR_ME)
 			sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);
+		
 
+		sprintf (subscribeString, "%s address=\"%s\"", subscribeString, room); 
 		sprintf (subscribeString, "%s chime_method=\"%s\"}", subscribeString, method);
 		printf("Sending filter request: %s\n\n", subscribeString);
 
@@ -216,7 +224,8 @@ void SienaPublisher::subscribeMethod(char *method, bool include_myself) {
 		closesocket (s);	
 }
 
-void SienaPublisher::unsubscribeRoom(char *room) {
+//unsubscribe from a particular room
+void SienaPublisher::unsubscribeRoom(char *room, int option) {
 		setupSocket();
 		
 		char subscribeString [1000]; 
@@ -232,6 +241,12 @@ void SienaPublisher::unsubscribeRoom(char *room) {
 
 		// Create Filter
 		sprintf (subscribeString, "%s filter{", subscribeString);
+
+		if (option == EVENTS_FOR_ME_ONLY)
+			sprintf (subscribeString, "%s username=\"%s\"", subscribeString, username);
+		else if (option == EVENTS_NOT_FOR_ME)
+			sprintf (subscribeString, "%s username !=\"%s\"", subscribeString, username);		
+
 		sprintf (subscribeString, "%s address=\"%s\"}", subscribeString, room); 
 		printf("Sending filter request: %s\n\n", subscribeString);
 
@@ -244,6 +259,7 @@ void SienaPublisher::unsubscribeRoom(char *room) {
 		closesocket (s);
 }
 
+//unsubscribe all events that are addressed to the client
 void SienaPublisher::unsubscribeClient() {
 		setupSocket();
 		
@@ -265,6 +281,44 @@ void SienaPublisher::unsubscribeClient() {
 		printf("Sending filter request: %s\n\n", subscribeString);
 
 		// Subscribes
+		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
+		{
+			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
+		}
+
+		closesocket (s);
+}
+
+
+//subscribe to all events of a particular room
+void SienaPublisher::subscribeALL(char *room) {
+	subscribeMethod("s_moveObject", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_moveUser", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_addObject", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_enteredRoom", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_leftRoom", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_deleteObject", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_changeClass", room, EVENTS_FOR_ANYONE);
+	subscribeMethod("s_roomInfo", room, EVENTS_FOR_ANYONE);
+}
+
+
+//unsubscribe from all events originating in some room
+void SienaPublisher::unsubscribeALL() {
+		setupSocket();
+		
+		char subscribeString [1000]; 
+
+
+		// Create Header
+		sprintf (subscribeString, "senp{method=\"BYE\" ttl=30 version=1.1 id=\"randomnum.0.dez\" ");
+		sprintf (subscribeString, "%sto=\"senp://", subscribeString);
+		sprintf (subscribeString, "%s%s", subscribeString, host);
+		sprintf (subscribeString, "%s:", subscribeString);
+		sprintf (subscribeString, "%s%d\" ", subscribeString, port);
+		sprintf (subscribeString, "%shandler=\"senp://%s:5000\"}", subscribeString, getLocalIP());
+
+			// Subscribes
 		if (send (s, subscribeString, strlen(subscribeString), 0) == SOCKET_ERROR)
 		{
 			fprintf (stderr, "\n\nWinsock Error: Unable to Send\n\n");
@@ -316,6 +370,7 @@ void SienaPublisher::publish(int function, char *params, char *address, char *pr
 }
 
 
+//get the IP address of this machine
 char* SienaPublisher::getLocalIP()
 {
     char hostname[80];

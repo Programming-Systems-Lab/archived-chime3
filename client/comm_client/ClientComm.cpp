@@ -72,8 +72,8 @@ DWORD WINAPI StartSienaSubscriber(LPVOID lParam)
 
 
 //subscribe to a events in a room
-bool ClientComm::subscribeRoom(char *room) {
-	siena_publisher->subscribeRoom(room);
+bool ClientComm::subscribeRoom(char *room, int option) {
+	siena_publisher->subscribeRoom(room, option);
 	return true;
 }
 
@@ -84,16 +84,31 @@ bool ClientComm::subscribeClient() {
 }
 
 //subscribe to all events of some method
-bool ClientComm::subscribeMethod(char *method, bool include_myself) {
-	siena_publisher->subscribeMethod(method, include_myself);
+bool ClientComm::subscribeMethod(char *method, char *room, int option) {
+	siena_publisher->subscribeMethod(method, room, option);
 	return true;
 }
 
 //unsubscribe from all events of some room
-bool ClientComm::unsubscribeRoom(char *room) {
-	siena_publisher->unsubscribeRoom(room);
+bool ClientComm::unsubscribeRoom(char *room, int option) {
+	siena_publisher->unsubscribeRoom(room, option);
 	return true;
 }
+
+
+//subscribe to ALL Events of that room
+bool ClientComm::subscribeALL(char *room) {
+	siena_publisher->subscribeALL(room);
+	return true;
+}
+
+
+//unsubscribe from ALL events
+bool ClientComm::unsubscribeALL() {
+	siena_publisher->unsubscribeALL();
+	return true;
+}
+
 
 //unsubscribe the client
 bool ClientComm::unsubscribeClient() {

@@ -41,6 +41,12 @@
 								//	ObjectUrl_n shape class subClass default x y x \n"
 
 
+//THESE ARE THE OPTIONS that can be set
+#define EVENTS_FOR_ME_ONLY 0
+#define EVENTS_NOT_FOR_ME 1
+#define EVENTS_FOR_ANYONE 2
+
+
 //this is an equivalent of an interface you need to override
 /*class chimeBrowser {
 	volatile HANDLE hMutex; // Create a Mutex object
@@ -158,19 +164,27 @@ public:
 	char* getFunction(int func);
 
 	//subscribe to all events in a room
-	void subscribeRoom(char *room);
+	void subscribeRoom(char *room, int option);
 
 	//subscribe to all events published by client
 	void subscribeClient();
 
 	//subscribe to all events of some method
-	void subscribeMethod(char *method, bool include_myself);
+	void subscribeMethod(char *method, char *room, int option);
 
 	//unsubscribe from all events of some room
-	void unsubscribeRoom(char *room);
+	void unsubscribeRoom(char *room, int option);
 
 	//unsubscribe the client
 	void unsubscribeClient();
+
+	//subscribe to all interesting events of that room
+	void subscribeALL(char *room);
+
+	//unsubscribe from all events once leaving the room
+	void unsubscribeALL();
+
+
 
 };
 
@@ -189,19 +203,25 @@ class ClientComm {
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 	   //subscribe to all events in a room
-	   bool subscribeRoom(char *room);
+	   bool subscribeRoom(char *room, int option);
 
 	   //subscribe to all events published by client
 	   bool subscribeClient();
 
 	   //subscribe to all events of some method
-	   bool subscribeMethod(char *method, bool include_myself);
+	   bool subscribeMethod(char *method, char *room, int option);
 
 	   //unsubscribe from all events of some room
-	   bool unsubscribeRoom(char *room);
+	   bool unsubscribeRoom(char *room, int option);
 
 	   //unsubscribe the client
 	   bool unsubscribeClient();
+
+		//subscribe to ALL Events of that room
+		bool ClientComm::subscribeALL(char *room);
+
+		//unsubscribe from ALL events
+		bool ClientComm::unsubscribeALL();
 
    private:
 	  int setLocalIP();

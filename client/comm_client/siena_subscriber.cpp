@@ -359,6 +359,7 @@ void SienaSubscriber::startServer() {
 	//subscribeClient();
 
 	//let's just subscribe the client to all the methods that he wants
+	/*
 	subscribeMethod("s_moveObject", true);
 	subscribeMethod("s_moveUser", true);
 	subscribeMethod("s_addObject", true);
@@ -367,6 +368,7 @@ void SienaSubscriber::startServer() {
 	subscribeMethod("s_deleteObject", true);
 	subscribeMethod("s_changeClass", true);
 	subscribeMethod("s_roomInfo", true);
+	*/
 
 	// Infinite loop to keep receiving events for the client 
 	
