@@ -449,7 +449,7 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 
 	// Open the procedural textures after the main texture manager has been prepared
 	//if (!OpenProcTextures ())
-	//	return false;
+	//   return false;
 
 	return true;
 }
