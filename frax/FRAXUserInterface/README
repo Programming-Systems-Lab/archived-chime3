@@ -1,0 +1,12 @@
+notes:
+
+1. the server must be run from its directory(server) since it looks for plug.conf and prot conf 2 directories above the directory it is run from. Of course, this can be changed.
+2. the CLASSPATH=project/:jdom-b7/build/jdom.jar:jdom-b7/lib/xerces.jar:.
+(project contains the FRAXUsrInterface folder)
+3. DEBUG is used for debugging mode
+4. JDOM object are used for XML
+5. Security. The Client/Server comm is not secure. 
+6. main(): server-FRAXUserInterfaceServer.java
+	   client-FRAXClient.java
+7. when running the applet on the web, one cant open a local file (java security) unless the applet is signed. However you can run "appletviewer." look at the "viewer" file and the fraxPremission for a simple way of doing it. 
+7. indent=3

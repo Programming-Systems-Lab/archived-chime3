@@ -1,0 +1,2 @@
+#!/bin/sh
+appletviewer -J-Djava.security.policy=fraxPremission yclient.html
