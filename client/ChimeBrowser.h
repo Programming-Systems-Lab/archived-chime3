@@ -22,11 +22,12 @@
 
 #include "ChimeSector.h"	
 #include "ChimeComm.h"
+#include "comm_client/udp.h"
 
 //Forward declaration for classes
 class csEngine;
 class csView;
-
+class ClientComm;
 
 #define NUM_SECT 5
 
@@ -114,7 +115,14 @@ private:
 	bool chimeBrowser::ReadRoom(char *desc);
 	
 	char testRoom[500], google[500];
-		
+	
+	///Comm section
+	volatile HANDLE hMutex; // Create a Mutex object
+
+	//this is the class which we will use for all communication
+	ClientComm *comm_client;
+
+
 public:
 
 	//Load a mesh object from a file.
@@ -157,6 +165,10 @@ public:
 	chimeBrowser(); 
 	//Destructor to clean up and shutdown the engine.
 	virtual ~chimeBrowser();  
+
+
+	///Comm section
+	void GetFunction(int method, char *received);
 };
 
 

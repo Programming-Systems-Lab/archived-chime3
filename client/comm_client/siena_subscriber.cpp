@@ -1,3 +1,4 @@
+#include "cssysdef.h"
 #include <windows.h>
 #include <stdio.h>
 #include <winsock.h>
@@ -6,9 +7,10 @@
 #include "udp.h"
 #include <iostream.h>
 
+
 //create a subscriber that will create a filter for all packets going to client and having the
 //client's username
-SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, NavCallback *_nav) {
+SienaSubscriber::SienaSubscriber(char *_host, short _port, char *_username, chimeBrowser *_nav) {
 
 	nav = _nav;
 	username = _username;
@@ -230,8 +232,9 @@ SOCKET SienaSubscriber::createSendSocket() {
 //format the response as something which Navdeep is expecting
 void SienaSubscriber::formatResponse(char *string) {
 
-	char *data = (char*) malloc(sizeof string);
-	data = getField("data", string);
+	//char *data = new char[strlen(string)+1];
+	char *data = getField("data", string);
+
 	int method = getMethod(string);
 
 	if (data != NULL && method != -1) { 
@@ -240,33 +243,43 @@ void SienaSubscriber::formatResponse(char *string) {
 		printf("Response couldn't be formatted properly\n Ignoring....\n");
 	}
 
+	//delete[] data;
 }
 
 
 //get a particualr field from the siena string
 char *SienaSubscriber::getField(char *field, char *string) {
-	char *final = (char*) malloc(sizeof(string));
-	char *data = (char*) malloc(sizeof(string));
-	data = strstr(string, field);
+	char *buf = new char[strlen(string)+1];
+	char *data = buf;
+
+	strcpy(data, string);
+	data = strstr(data, field);
 	
 	if (data != NULL)
 	{
 		data = strstr(data, "\"");
-		data = &data[1];	
+		data = &data[1];
+		
 		char *end = strstr(data, "\" ");
-
-		if (end == NULL) 
+		if (end == NULL)
 			return NULL;
+
 		//printf("The end is: %s", end);
 		//printf("The difference is: %d\n", end - data);
+		char *final = new char[(end - data) + 1];
 		strncpy(final, data, end - data);
-		final[end-data] = NULL;
+		final[(end - data)] = NULL;
 		printf("The field \"%s\" is: %s\n", field, final);
-		return data;
+
+		delete [] buf;
+
+		return final;
+		//return data;
 	}
 	else 
 	{
 		printf("Siena Subscriber Error: Incorrectly formatted string - can't get field\n");
+		delete [] data;
 		return NULL;
 	}
 }
@@ -328,7 +341,7 @@ void SienaSubscriber::startServer() {
 	subscribeMethod("s_enteredRoom");
 	subscribeMethod("s_leftRoom");
 	subscribeMethod("s_deleteObject");
-	subscribeMethod("s_changeCLass");
+	subscribeMethod("s_changeClass");
 	subscribeMethod("s_roomInfo");
 
 	// Infinite loop to keep receiving events for the client 
@@ -414,7 +427,7 @@ void SienaSubscriber::startServer() {
 		{
 			//recvString[length] = NULL;
 			//printf("The string is: %s\n", recvString);
-			//formatResponse(finalString);
+			formatResponse(finalString);
 			printf ("%s\n\n", finalString);
 		}
 		

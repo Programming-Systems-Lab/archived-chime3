@@ -1,3 +1,4 @@
+#include "cssysdef.h"
 #include <windows.h>
 #include <stdio.h>
 #include <winsock.h>
@@ -7,7 +8,7 @@
 #include <iostream.h>
 
 
-UDPServer::UDPServer(int port, NavCallback *_nav) {
+UDPServer::UDPServer(int port, chimeBrowser *_nav) {
 
    Port = port;
    nav = _nav;

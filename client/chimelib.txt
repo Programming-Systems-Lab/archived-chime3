@@ -19,7 +19,6 @@ TEXT ninja /lib/chime/mdl1.jpg
 
 ;Load all the necessary 3D objects
 ;OBJ  balloons lib/chime/BALLOONS.3DS brownfabric
-OBJ  balloons lib/chime/BALLOONS.3DS brownfabric
 OBJ  chair lib/chime/chradiro.3ds greywall
 OBJ  table lib/chime/table_of.3ds woodfloor
 OBJ  stool lib/chime/stool.3ds woodfloor

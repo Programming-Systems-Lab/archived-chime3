@@ -1,3 +1,4 @@
+#include "cssysdef.h"
 #include <windows.h>
 #include <stdio.h>
 #include <winsock.h>
@@ -11,7 +12,7 @@ DWORD WINAPI StartUDPListener(LPVOID Lparam);
 DWORD WINAPI StartSienaSubscriber(LPVOID Lparam);
 
 
-ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, NavCallback *nav) {
+ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *nav) {
 	password = _password;
 	username = _username;
 
@@ -81,9 +82,9 @@ bool ClientComm::SendSienaFunction(int function, char *params, char *address, ch
 	return true;
 }
 
-int main(int argc, char *argv[])
+/*int main(int argc, char *argv[])
 {
-	NavCallback *nav = new NavCallback();
+	chimeBrowser *nav = new chimeBrowser();
 	ClientComm *comm = new ClientComm(9999, "localhost", 1234, "denis", "denis", nav);
 	while(1) {
 		comm->SendUDPFunction("192.168.1.100", 2, "room something others");
@@ -92,3 +93,4 @@ int main(int argc, char *argv[])
 	}
 	return 0;
 }
+*/

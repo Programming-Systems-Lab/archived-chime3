@@ -1,8 +1,14 @@
+
+#ifndef __CHIME_UDP_H_
+#define __CHIME_UDP_H_
+
+#include "..\ChimeBrowser.h"
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iostream.h>
+
 
 ////////////////CLIENT SIDE METHODS///////////////////////
 #define c_connect 0				// "server userID password"
@@ -30,16 +36,18 @@
 								//	.
 								//	ObjectUrl_n shape class subClass default x y x \n"
 
+class chimeBrowser;
+
 //this is an equivalent of an interface you need to override
-class NavCallback {
+/*class chimeBrowser {
 	volatile HANDLE hMutex; // Create a Mutex object
 
 public:
 	//just something to test
-	NavCallback();
+	chimeBrowser();
 	void GetFunction(int method, char *received);
 };
-
+*/
 
 class UDPServer {
    long     RetCode;
@@ -58,7 +66,7 @@ class UDPServer {
    char    *MachineName;
    char		*buf;
    char		*Text;
-   NavCallback *nav;
+   chimeBrowser *nav;
    char		*recvString;
    SOCKET	remoteSocket;
 
@@ -67,7 +75,7 @@ class UDPServer {
 	   int getMethod(char *method);
 
    public:
-	   UDPServer(int port, NavCallback *_nav);
+	   UDPServer(int port, chimeBrowser *_nav);
 	   //start the server
 	   int startServer();
 	   
@@ -98,7 +106,7 @@ class UDPClient {
 
 class SienaSubscriber {
 	char subscribeString [1000]; 
-	NavCallback *nav;
+	chimeBrowser *nav;
 	char *username;
 	char *host;
 	int port;
@@ -112,7 +120,7 @@ private:
 	int getMethod(char *method);
 
 public:
-	SienaSubscriber(char *host, short port, char *_username, NavCallback *_nav);
+	SienaSubscriber(char *host, short port, char *_username, chimeBrowser *_nav);
 	void subscribeRoom(char *room);
 	void subscribeClient();
 	void subscribeMethod(char *method);
@@ -156,7 +164,7 @@ class ClientComm {
    char *password;
 
    public:
-	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, NavCallback *nav);
+	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, chimeBrowser *nav);
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
 	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 
@@ -167,5 +175,5 @@ class ClientComm {
 };
 
 
-
+#endif
 

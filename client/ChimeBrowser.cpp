@@ -38,6 +38,10 @@ void Cleanup()
 
 chimeBrowser::chimeBrowser()
 {
+	//create the Mutex object the first time we create this class
+	hMutex=CreateMutex(NULL,FALSE,NULL); // create a mutex object with no name
+
+
 	engine = NULL;
 	curSector = NULL;
 	currentSector = NULL;
@@ -80,6 +84,26 @@ chimeBrowser::chimeBrowser()
 chimeBrowser::~chimeBrowser()
 {
 	 if (collide_system) collide_system->DecRef ();	
+}
+
+void chimeBrowser::GetFunction(int method, char *received) 
+{
+	//keep everyone waiting
+	WaitForSingleObject(hMutex,INFINITE); 
+	char err[100000];
+	char val[5];
+
+
+	FILE *fp = fopen("test.txt", "w");
+	fprintf(fp, "%d %s",method, received);
+	fclose(fp);
+
+	//this is the lucky thread
+	//printf("\n\nIn Navdeep's Receiver\n");
+	//printf("\nThe method was: %d\n", method);
+	//printf("\nThe parameters are: %s\n", received);
+	ReleaseMutex(hMutex);
+	
 }
 
 // Find room corresponding to a given room url
@@ -261,13 +285,17 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	
 	curSector = 0;
 	AddUser("www.yahoo.com", "1.1.1.1", "mdl1", 5, 0, 5);
-	AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
+	//AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
 
 //	view->SetSector (sector[curSector]->GetRoom(0));
 //	view->GetCamera ()->SetPosition (csVector3 (0, 2, 2));
 //	view->SetRectangle (0, 0, FrameWidth, FrameHeight);
 	
 	engine->Prepare ();	
+
+	WaitForSingleObject(hMutex,INFINITE); 
+	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
+	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
 
 	return true;
 }
@@ -387,6 +415,8 @@ void chimeBrowser::NextFrame ()
   G3D->FinishDraw ();
   // Print the final output.
   G3D->Print (NULL);
+
+  ReleaseMutex(hMutex);
 
 }
 

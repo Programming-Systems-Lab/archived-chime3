@@ -1,3 +1,4 @@
+#include "cssysdef.h"
 #include <windows.h>
 #include <stdio.h>
 #include <winsock.h>
@@ -6,6 +7,7 @@
 #include "udp.h"
 #include <iostream.h>
 #include <time.h>
+
 
 //create a publisher object which we can use
 SienaPublisher::SienaPublisher(char *_host, short _port, char *_username, char *_password) {

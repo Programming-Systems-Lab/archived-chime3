@@ -79,7 +79,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 zlib.lib png.lib libjpeg.lib dinput.lib dxguid.lib winmm.lib libcsengine.lib libcsfx.lib libcsgeom.lib libcsgfxldr.lib libcsobject.lib libcsparser.lib libcssys.lib libcsterr.lib libcsutil.lib libcswin32exe.lib libcsws.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib wsock32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -108,6 +108,10 @@ SOURCE=.\ChimeSector.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\comm_client\clientcomm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\connect.cpp
 # End Source File
 # Begin Source File
@@ -120,7 +124,23 @@ SOURCE=.\info_storer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\comm_client\siena_publisher.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\comm_client\siena_subscriber.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\sienadialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\comm_client\udpclient.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\comm_client\udpserver.cpp
 # End Source File
 # Begin Source File
 
@@ -145,6 +165,10 @@ SOURCE=.\ChimeMenu.h
 # Begin Source File
 
 SOURCE=.\ChimeSector.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\comm_client\udp.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

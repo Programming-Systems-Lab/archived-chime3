@@ -1,3 +1,5 @@
+
+#include "cssysdef.h"
 #include <windows.h>
 #include <stdio.h>
 #include <winsock.h>
@@ -5,6 +7,7 @@
 #include <string.h>
 #include "udp.h"
 #include <iostream.h>
+
 
 //this will just setup the socket for communication
 UDPClient::UDPClient(int _port) {
