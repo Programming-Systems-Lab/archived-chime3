@@ -71,14 +71,15 @@ chimeBrowser::chimeBrowser()
 	//DEBUG stuff. FIXIT
 	strcpy(userID, "124.2.12.1");
 
-	strcpy(testRoom, "www.yahoo.com 10 5 20 3\nwww.cnn.com cube txt txt 1\nwww.altavista.com violin image image 0 2 0.0 13.0\n");
-	strcat(testRoom, "www.google.com stool link link 1\n");
-	strcpy(reqRoomUrl, "www.yahoo.com");
+	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 4\nhttp://www.cnn.com/ cube txt txt 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
+	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
+	strcat(testRoom, "http://www.google.com/ stool LINK LINK 1\n");
+	strcpy(reqRoomUrl, "http://www.yahoo.com/");
 
 	strcpy(google, "www.google.com 10 5 10 5\nwww.yahoo.com/test.txt cube txt txt 1\nwww.yahoo.com/test.jpg violin image image 0 2 0.0 2.0\n");
-	strcat(google, "www.yahoo.com stool link link 1\n");
+	strcat(google, "www.yahoo.com stool LINK LINK 1\n");
 	strcat(google, "www.yahoo.com/test.jpg violin image image 1\n");
-	strcat(google, "www.google.com cube link link 1\n");
+	strcat(google, "www.google.com cube LINK LINK 1\n");
 		
 }
 
@@ -200,6 +201,7 @@ void chimeBrowser::UserMoved()
 		newPos = view->GetCamera()->GetOrigin();
 		roomOrigin = sec->GetOrigin();
 		newPos -= roomOrigin;
+		
 		comm.UserEnteredRoom(userID, prevSector->GetUrl(), newPos.x, newPos.y, newPos.z);
 	}
 	else
@@ -266,7 +268,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	/** Set up communication class **/
 	//Comunication thread is initially blocked, until client unblocks it in NextFrame()
 	WaitForSingleObject(hMutex,INFINITE); 
-	comm_client = new ClientComm(9999, "localhost", 1234, "denis", "denis", this);
+	comm_client = new ClientComm(9999, "astor.psl.cs.columbia.edu", 1234, "suhit", "suhit", this);
 	comm.SetChimeCom(comm_client);
 
 //	comm_client->SendSienaFunction(c_getRoom, "http://www.cs.brandeis.edu/", "http://www.cs.brandeis.edu/", "HTTP");
@@ -285,7 +287,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	ReadRoom(testRoom);
 	
 	curSector = 0;
-	AddUser("www.yahoo.com", "1.1.1.1", "mdl1", 5, 0, 5);
+	AddUser("http://www.yahoo.com/", "1.1.1.1", "mdl1", 5, 0, 5);
 	//AddUser("www.yahoo.com", "1.1.1.2", "ninja", 7, 0, 6);
 
 //	view->SetSector (sector[curSector]->GetRoom(0));
@@ -522,13 +524,15 @@ bool chimeBrowser::HandleRightMouseClick(iEvent &Event)
 	  reqAtDoor  = doorNum;
 	  doorUrl = reqAtSec->GetDoorUrl(doorNum);
 	  strcpy(reqRoomUrl, doorUrl);
+	  comm.SubscribeRoom(doorUrl, userID);
 	  comm.GetRoom(doorUrl);
 	
 	  //FIXIT Remove this debug code
-	  if(!strcmp(doorUrl, "www.google.com"))
+	 /* if(!strcmp(doorUrl, "www.google.com"))
 			ReadRoom(google);
 	  else
 		  ReadRoom(testRoom);
+		  */
 	 
   }  
 

@@ -170,7 +170,7 @@ bool chimeComm::SubscribeRoom(char *roomUrl, char *userID)
 	strcpy(command, roomUrl);
 	AppendToken(command, userID);
 
-	client_comm->SendSienaFunction(c_subscribeRoom, command, roomUrl,"HTTP");
+	client_comm->subscribeALL(roomUrl);
 	return true;
 }
 //Unsubscribe for events of this room
@@ -179,7 +179,8 @@ bool chimeComm::UnsubscribeRoom(char *roomUrl, char *userID)
 	strcpy(command, roomUrl);
 	AppendToken(command, userID);
 
-	client_comm->SendSienaFunction(c_unsubscribeRoom, command, roomUrl,"HTTP");
+	client_comm->unsubscribeRoom(roomUrl, EVENTS_FOR_ANYONE);
+	//client_comm->SendSienaFunction(c_unsubscribeRoom, command, roomUrl,"HTTP");
 	return true;
 }
 

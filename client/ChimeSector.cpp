@@ -62,13 +62,36 @@ chimeSector::~chimeSector()
 	
 }
 
+int chimeSector::escapeEndlines(char *buf)
+{
+
+	int len = strlen(buf);
+	int i, j = 0;
+	for(i = 0; i < len; i++)
+	{
+		if(buf[i] == '\\' && buf[i+1] == 'n')
+		{
+			buf[j] = '\n';
+			i++;
+		}
+		else
+		{
+			buf[j] = buf[i];
+		}
+		j++;
+	}
+	buf[j] = '\0';
+
+	return 1;
+}
+
 int chimeSector::getStrLine(const char *buf, char *line)
 {
 	int i = 0;
 	int len = strlen(buf);
 
 	while(i < len && buf[i] != '\n')
-	{
+	{		
 		line[i] = buf[i];
 		i++;
 	}
@@ -522,6 +545,9 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	int numObjects = 0;
 	bool switched = false;
 	
+	//Make \n characters to endline character.
+	escapeEndlines(roomDesc);
+
 	count = getStrLine(buf, line);
 	sscanf(line, "%s %f %f %f %d", roomURL, &roomSize.x, &roomSize.y, &roomSize.z, &numObjects);
 	buf += count;
@@ -600,17 +626,22 @@ bool chimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 		nObj++;
 
 		objPos.z += 2;		
-		location = objPos;
+		
 
 		count = getStrLine(buf, line);
-		sscanf(line, "%s %s %s %s %d", objUrl, shape, Class, subClass, &defaultLoc);
+		//sscanf(line, "%s %s %s %s %d", objUrl, shape, Class, subClass, &defaultLoc);
+		sscanf(line, "%s %s %s %s %d %f %f %f", objUrl, shape, Class, subClass, &defaultLoc, &location.x, &location.y, &location.z);
 		if( !defaultLoc )
 		{
-			sscanf(line, "%s %s %s %s %d %f %f %f", objUrl, shape, Class, subClass, &defaultLoc, &location.x, &location.y, &location.z);
+			//sscanf(line, "%s %s %s %s %d %f %f %f", objUrl, shape, Class, subClass, &defaultLoc, &location.x, &location.y, &location.z);
 			location += roomOrigin;
 		}
+		else
+		{
+			location = objPos;
+		}
 
-		if(!strcmp(Class, "link"))
+		if(!strcmp(Class, "LINK"))
 		{
 			char *tmp = new char[strlen(objUrl)+1];
 			strcpy(tmp, objUrl);

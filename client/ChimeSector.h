@@ -114,6 +114,7 @@ public:
 	csSector* GetConn2() { return connector2; };
 
 	static int  getStrLine(const char *buf, char *line);
+	static int  escapeEndlines(char *buf);
 	bool ReadRoom(char *fileName, iCollideSystem* collide_system);
 	//Build a new room as specified by the data server.
 	bool BuildRoom();

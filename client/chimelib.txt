@@ -30,5 +30,5 @@ OBJ  mdl1 lib/chime/mdl1.3ds mdl1
 OBJ  ninja lib/chime/ninja.mdl ninja
 
 ;Specify path to the browser
-BROWSER	D:\Progra~1\Intern~1\iexplore.exe
+BROWSER	c:\Progra~1\Intern~1\iexplore.exe
 END
