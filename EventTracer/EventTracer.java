@@ -466,6 +466,16 @@ public class EventTracer {
 	obj = obj.toLowerCase();
 
 	try {
+		System.err.println("Executing query: " + "insert into MOVEMENT values ('" +
+				   room + "','" +
+				   obj + "'," +
+				   x0 + "," +
+				   y0 + "," +
+				   z0 + "," +
+				   x1 + "," +
+				   y1 + "," +
+				   z1 + ")");
+
 	    statement.executeQuery("insert into MOVEMENT values ('" +
 				   room + "','" +
 				   obj + "'," +
@@ -480,6 +490,7 @@ public class EventTracer {
 	    return false;
 	}
 
+	printTable("MOVEMENT");
 	return true;
     }
 
