@@ -788,9 +788,6 @@ void ChimeSystemDriver::Start3D ()
 //**********************************************************************
 void ChimeSystemDriver::SetupFrame()
 {
-
-  WaitForSingleObject(hMutex,INFINITE);
-  //Block communication thread after letting it process atleast one event
   
   csTicks elapsed_time, current_time;
   elapsed_time = vc->GetElapsedTicks();
@@ -876,11 +873,16 @@ void ChimeSystemDriver::FinishFrame() {
 	myG2D->FinishDraw ();
 	myG2D->Print (NULL);
 
-  //Give communication thread a chance to update any new events
+
+	//Give communication thread a chance to update any new events
   ReleaseMutex(hMutex);
 
   //NOTE:
   //Get Function is possibly called by ClientComm during this period.
+
+  WaitForSingleObject(hMutex,INFINITE);
+  //Block communication thread after letting it process atleast one event
+
 
 }
 
@@ -1984,6 +1986,9 @@ bool ChimeSystemDriver::LoadMeshObj (char *filename, char *templatename, char* t
     return false;
   }
 
+
+  buf->GetUint8();
+  buf->GetSize();
   iModelData *Model = Sys->ModelConverter->Load (buf->GetUint8 (), buf->GetSize ());
   buf->DecRef ();
   if (!Model)
