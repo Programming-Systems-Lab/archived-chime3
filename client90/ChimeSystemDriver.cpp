@@ -1431,8 +1431,9 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 		csReversibleTransform t;
 		selectedMesh->GetTransformedBoundingBox(selectedMesh->GetMovable()->GetFullTransform().GetInverse() , box);
 
-// From here by Tak for now....
 
+		// From here by Tak for now....
+/*
 		csVector3 origin2 = selectedMeshNewSect->GetOrigin();
 		csVector3 diff(5, 0, -2);
 		csVector3 offset;
@@ -1443,7 +1444,7 @@ bool ChimeSystemDriver::HandleLeftMouseClick(iEvent &Event)
 		objPos = selectedMesh->GetMovable()->GetPosition() - offset;
 
 		DrawSideDoor(objPos, offset, selectedMesh->QueryObject()->GetName()); //FIXIT: Should be selectedMesh->GetName()
-
+*/
 	}
 	else
 	{
