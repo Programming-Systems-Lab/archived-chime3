@@ -282,6 +282,7 @@ public:
 
 	iEngine *engine;
 
+	const char* grafx_3d_mode;        //what is the mode we're using now?
 	iGraphics2D *myG2D;               //pointer to graphics 2D
 	iGraphics3D *myG3D;				  //pointer to 3D graphics
 	csView       *view;				  //View of the curSector.
@@ -308,6 +309,11 @@ public:
 	
 	//reset the local chat buddies list
 	void ResetLocalChatBuddies(ChimeSector *cur_sec);
+
+
+	//get the visible and invisible numbers for different graphics modes
+	int GetVisibleAlpha();
+	int GetInvisibleAlpha();
 
 	//transport to some room
 	bool ChimeSystemDriver::TransportToRoom(char *name); 

@@ -559,7 +559,6 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 		Report (CS_REPORTER_SEVERITY_ERROR, "No iEngine plugin!");
 	}
 
-
 	// Find the level loader plugin
 	LevelLoader = CS_QUERY_REGISTRY (object_reg, iLoader);
 	if (!LevelLoader)
@@ -594,7 +593,6 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	//Turn of light caching
 	engine->SetLightingCacheMode (false);
 
-
 	//create a view and a camera
 	view = new csView (engine, myG3D);
 
@@ -611,6 +609,8 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 
 	// Get the collide system plugin.
 	iConfigManager* cfg = CS_QUERY_REGISTRY (object_reg, iConfigManager);
+	
+	//this configures the settings of the virtual person walking, i.e. the camera
 	const char* p = cfg->GetStr ("Walktest.Settings.CollDetPlugIn",
 		"crystalspace.collisiondetection.rapid");
 	cfg_body_height = cfg->GetFloat ("Walktest.CollDet.BodyHeight", 1.4);
@@ -620,6 +620,11 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	cfg_legs_width = cfg->GetFloat ("Walktest.CollDet.LegsWidth", 0.4);
 	cfg_legs_depth = cfg->GetFloat ("Walktest.CollDet.LegsDepth", 0.4);
 	cfg_legs_offset = cfg->GetFloat ("Walktest.CollDet.LegsOffset", -1.1);
+
+
+	//now we will find the mode of that the graphics 3d loader is running at
+	grafx_3d_mode = cfg->GetStr("System.Plugins.iGraphics3D");
+
 	cfg->DecRef();
 
 	collide_system = CS_LOAD_PLUGIN (plugin_mgr, p, iCollideSystem);
@@ -682,6 +687,34 @@ bool ChimeSystemDriver::Initialize(int argc, const char *const argv[], const cha
 	return true;
 }
 
+//****************************************
+//* Get the alpha for the invisible door
+//*****************************************
+int ChimeSystemDriver::GetInvisibleAlpha() {
+	if (!grafx_3d_mode) 
+		return 100;
+
+	else if (!strstr(grafx_3d_mode, "software"))
+		return 100;
+
+	else if (!strstr(grafx_3d_mode, "opengl"))
+		return 25;
+}
+
+
+//**********************************************
+//* Get the alpha for the active door (visible)
+//**********************************************
+int ChimeSystemDriver::GetVisibleAlpha() {
+	if (!grafx_3d_mode)
+		return 25;
+	
+	else if (!strstr(grafx_3d_mode, "software"))
+		return 25;
+
+	else if (!strstr(grafx_3d_mode, "opengl"))
+		return 100;
+}
 
 //************************************************************************************
 //*
@@ -1150,7 +1183,7 @@ bool ChimeSystemDriver::UpdateDoorLink(ChimeSector *sec, int doorNum, char *new_
 		object->QueryObject()->SetName(new_door_url);
 
 	sec ->ReplaceDoorUrl(doorNum, new_door_url);
-	doorPoly->SetAlpha(25);
+	doorPoly->SetAlpha(GetVisibleAlpha());
 
 	return true;
 }
@@ -1811,7 +1844,6 @@ bool ChimeSystemDriver::HandleEventFromOtherWindow(iEvent &Event) {
 //**********************************************************************
 bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 {
-
 	//see if this is an event sent from some other window
 	if (HandleEventFromOtherWindow(Event)) 
 		goto handled;
@@ -1820,6 +1852,9 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 	if (HandleMenuEvent(Event))
 		goto handled;
 
+	if (HandleKeyEvent(Event))
+		goto handled;
+	
 	switch (Event.Type)
 	{
 	case csevBroadcast:

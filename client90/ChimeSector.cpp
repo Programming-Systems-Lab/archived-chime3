@@ -657,11 +657,11 @@ bool ChimeSector::BuildDynamicRoom2(char *roomDesc, const csVector3 &pos, iColli
 	int numActiveDoors = __min(connList.Length(), 10);
 	for ( i = 0 ; i < numActiveDoors; i++)
 	{
-		hallFrontDoor[i]->SetAlpha(ACTIVE_DOOR_ALPHA);
+		hallFrontDoor[i]->SetAlpha(System->GetVisibleAlpha());
 	}
 	for ( i = numActiveDoors ; i < 10; i++)
 	{
-		hallFrontDoor[i]->SetAlpha(INACTIVE_DOOR_ALPHA);
+		hallFrontDoor[i]->SetAlpha(System->GetInvisibleAlpha());
 	}
 
 	return true;
@@ -1535,10 +1535,10 @@ bool ChimeSector::DisconnectSector()
 
 		linkedSectorDoor->GetPortal()->SetSector(NULL);
 //		linkedSectorDoor->CreateNullPortal();
-		linkedSectorDoor->SetAlpha(ACTIVE_DOOR_ALPHA);
+		linkedSectorDoor->SetAlpha(System->GetVisibleAlpha());
 //		conn1BackDoor[0]->CreateNullPortal();
 		conn1BackDoor[0]->GetPortal()->SetSector(NULL);
-		conn1BackDoor[0]->SetAlpha(ACTIVE_DOOR_ALPHA);
+		conn1BackDoor[0]->SetAlpha(System->GetVisibleAlpha());
 
 		linkedSector->SetDoorSector(linkedDoor, NULL);
 		linkedSector = NULL;
