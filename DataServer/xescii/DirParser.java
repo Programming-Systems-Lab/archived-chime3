@@ -27,7 +27,7 @@ public class DirParser implements Parser {
 	data = s;
     }
     
-    public Tuple parseDoc() {
+    public SourceTuple parseDoc() {
 	String protocol=null;
 	String url=null;
 	int size=-1;
@@ -35,7 +35,7 @@ public class DirParser implements Parser {
 	long created=-1;
 	long last_mod=-1;
 	String src=null;
-	String opt[]= new String[Tuple.NUM_OPT];
+	String opt[]= new String[SourceTuple.NUM_OPT];
 	Element root;
 
 	root = doc.getRootElement();
@@ -70,6 +70,6 @@ public class DirParser implements Parser {
 	}
 	opt[1] = "" + i;
 		
-	return new Tuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
+	return new SourceTuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
     }    
 }

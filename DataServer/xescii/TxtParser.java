@@ -24,7 +24,7 @@ public class TxtParser implements Parser {
 	doc = arg;
     }
     
-    public Tuple parseDoc() {
+    public SourceTuple parseDoc() {
 	String protocol=null;
 	String url=null;
 	int size=-1;
@@ -47,7 +47,7 @@ public class TxtParser implements Parser {
 	    last_mod = Long.parseLong(root.getChild("Last-Modified").getText());
 	} catch (Exception e) {}
 		
-	return new Tuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
+	return new SourceTuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
     }    
 }
 

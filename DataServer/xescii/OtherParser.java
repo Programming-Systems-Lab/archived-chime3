@@ -24,7 +24,7 @@ public class OtherParser implements Parser {
 	doc = arg;
     }
     
-    public Tuple parseDoc() {
+    public SourceTuple parseDoc() {
 	String protocol=null;
 	String url=null;
 	int size=-1;
@@ -48,7 +48,7 @@ public class OtherParser implements Parser {
 	} catch (Exception e) {}
 	
 	System.err.println(url);
-	return new Tuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
+	return new SourceTuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
     
     }    
 }

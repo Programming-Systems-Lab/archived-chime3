@@ -17,5 +17,5 @@ import org.jdom.input.*;
 
 
 public interface Parser {
-    public Tuple parseDoc();
+    public SourceTuple parseDoc();
 }

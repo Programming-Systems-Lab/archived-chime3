@@ -6,7 +6,7 @@
  * (Xml Enabled Server-side Chime Information Integrator)
  *
  * @author Shen Li
- * @version 1.0
+ * @version 1.1
  *
  * The DataServer.
  */
@@ -27,7 +27,7 @@ public class Xescii implements Notifiable {
     
     // SQL statements to create the tables
     private static String[] tableCreationSQL = {		
-	"create table SOURCE (id integer, protocol varchar(255), url varchar(255), size integer, type varchar(20), created varchar(255), last_mod varchar(255), src varchar(255), parent integer, opt1 varchar(255), opt2 varchar(255), opt3 varchar(255), opt4 varchar(255), opt5 varchar(255), PRIMARY KEY (id), UNIQUE (protocol, url) )",
+	"create table SOURCE (id integer, protocol varchar(255), url varchar(255), size integer, type varchar(20), created varchar(255), last_mod varchar(255), src varchar(255), parent integer, shape varchar(255), opt1 varchar(255), opt2 varchar(255), opt3 varchar(255), opt4 varchar(255), opt5 varchar(255), PRIMARY KEY (id), UNIQUE (protocol, url) )",
 
        	"create index id on SOURCE(id)",
 	"create index url on SOURCE(protocol, url)"
@@ -210,27 +210,117 @@ public class Xescii implements Notifiable {
 		System.err.println("I just got this event:");
 		System.err.println(doc);
 		type = doc.getRootElement().getAttribute("type").getValue();
+
 		if (type.equals("dir")) {
 		    p = new DirParser(doc, data);
 		    //p = new DirParser(doc, xmlsample);
-		} else if (type.equals("image")) {
-		    p = new ImageParser(doc);
+		    SourceTuple t = p.parseDoc();
+		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		    
+		    // create a table of links and images
+		    try {
+			String tableName = "table" + tupleID;
+			statement.executeQuery("create table " + 
+					       tableName + 
+					       " (link varchar(255), shape varchar(255) )");
+			data = t.getOpt()[2];
+			StringTokenizer st = new StringTokenizer(data, " \n");
+			while ( st.hasMoreTokens() ) {
+			    statement.executeQuery("insert into " + 
+						   tableName + 
+						   " values ('" + 
+						   st.nextToken() +
+						   "', null)");
+			}
+						
+			printTable(tableName);
+		    
+		    } catch(SQLException e1) {
+			if (e1.getErrorCode() != 0) {
+			    System.err.println("ERROR: FAILS TO CREATE TABLE");
+			    System.exit(1);
+			} 
+			System.err.println(e1);
+		    } catch (Exception e2) {
+			System.err.println(e2);
+		    }
+
 		} else if (type.equals("html")) {
+
 		    p = new HtmlParser(doc,data);
 		    //p = new HtmlParser(doc,xmlsample);
+		    SourceTuple t = p.parseDoc();
+		    int tupleID = addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		    
+		    // create a table of links and images
+		    try {
+			String tableName = "table" + tupleID;
+			statement.executeQuery("create table " + 
+					       tableName + 
+					       " (link varchar(255), shape varchar(255) )");
+			int idx1 = 0;
+			int idx2 = 0;
+			data = t.getOpt()[2];
+			System.err.println("get into loop");
+			while ( idx2<data.length() ) {
+			    idx1 = data.indexOf("<Source>", idx1)+8;
+			    idx2 = data.indexOf("</Source>", idx2);
+			    if (idx1>=data.length() || idx2>=data.length() 
+				|| idx1<=7 || idx2 <=0)
+				break;
+			    statement.executeQuery("insert into " + 
+						   tableName + 
+						   " values ('" + 
+						   data.substring(idx1,idx2) +
+						   "', null)");
+			    System.err.println("one iteration " + idx1 + " " + idx2);
+			}
+			System.err.println("out of loop");
+			data = t.getOpt()[4];
+			StringTokenizer st = new StringTokenizer(data, " \n");
+			while ( st.hasMoreTokens() ) {
+			    statement.executeQuery("insert into " + 
+						   tableName + 
+						   " values ('" + 
+						   st.nextToken() +
+						   "', null)");
+			}
+						
+			printTable(tableName);
+		    
+		    } catch(SQLException e1) {
+			if (e1.getErrorCode() != 0) {
+			    System.err.println("ERROR: FAILS TO CREATE TABLE");
+			    System.exit(1);
+			} 
+			System.err.println(e1);
+		    } catch (Exception e2) {
+			System.err.println(e2);
+		    }
+		    		
+		} else if (type.equals("image")) {
+		    p = new ImageParser(doc);
+		    SourceTuple t = p.parseDoc();
+		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 		} else if (type.equals("txt")) {
 		    p = new TxtParser(doc);
+		    SourceTuple t = p.parseDoc();
+		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 		} else if (type.equals("other")) {
 		    p = new OtherParser(doc);
+		    SourceTuple t = p.parseDoc();
+		    addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
 		} else {
 		    System.err.println("Type Not Found.");
 		}
 	    } catch (Exception ex) {
 		// check if bscw type
 		if (data != null) {
-		    if (-1 != data.indexOf("<BSCW>"))
+		    if (-1 != data.indexOf("<BSCW>")) {
 			p = new BscwParser(data);
-		    else {
+			SourceTuple t = p.parseDoc();
+			addSourceTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
+		    } else {
 			ex.printStackTrace();			
 		    }
 		} else {
@@ -239,115 +329,140 @@ public class Xescii implements Notifiable {
 	    }
 	}
 	
-	if (p != null) {
-	    Tuple t = p.parseDoc();
-	    addTuple(t.getProtocol(), t.getUrl(), t.getSize(), t.getType(), t.getCreated(), t.getLastMod(), t.getSrc(), t.getOpt());
-	}
-	
-	printTable();
+	printTable("SOURCE");
     }
 
-    public void notify(Notification [] s) {}
+
+    public void notify(Notification [] s) {
+	for (int i=0; i<s.length; i++) {
+	    notify(s[i]);
+	}
+    }
     
 
     // insert a tuple into the database, if not already there.
     // all string arguments must be enclosed by '' except url.
-    public boolean addTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String opt0, String opt1, String opt2, String opt3, String opt4) {
+    public int addSourceTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String opt0, String opt1, String opt2, String opt3, String opt4) {
 	
 	protocol = protocol.toLowerCase();
 	url = url.toLowerCase();
 	if (src != null)
 	    src = src.toLowerCase();
-
-	Vector v = findTuple(protocol, url);
+	
+	int tupleID = -1;
+	Vector v = findSourceTuple(protocol, url);
 
 	// tuple already exists in the database
 	if (v != null && v.size() != 0) {
-	    Tuple t = (Tuple) v.elementAt(0);
+	    SourceTuple t = (SourceTuple) v.elementAt(0);
 	    if ( t.getLastMod() >= last_mod ) { 
 		// tuple in the database is newer
 		System.err.println("Newer tuple exists in the database.  Insert failed.");
-		return false;
+		return -1;
 	    } else {
 		// update the tuple
 		
 		int p = t.getParent(); // save parent info 
 		try {
 		    statement.executeQuery("delete from SOURCE where PROTOCOL = '" + protocol + "' AND URL = '" + url + "'");
+		    tupleID = current + 1;
 		    statement.executeQuery("insert into SOURCE values (" + 
-					   ++current + ",'" + protocol + "','" + url + "'," + 
-					   size + "," + type + "," + created + "," +
-					   last_mod + ",'" + src + "'," + p + ",'" + 
-					   opt0 + "','" + opt1 + "','" + opt2 + "','" + 
-					   opt3 + "','" + opt4 + "')");
+					   ++current + ",'" + 
+					   protocol + "','" + 
+					   url + "'," + 
+					   size + "," + 
+					   type + "," + 
+					   created + "," +
+					   last_mod + ",'" + 
+					   src + "'," + 
+					   p + 
+					   ",null,'" + 
+					   opt0 + "','" + 
+					   opt1 + "','" + 
+					   opt2 + "','" + 
+					   opt3 + "','" + 
+					   opt4 + "')");
 		} catch(SQLException e) {
 		    System.err.println(e);
-		    return false;
+		    return -1;
 		} 
 	    }
 	} else {
 	    // tuple does not exist
-	    System.err.println("here" + url);
+	    System.err.println("tuple not exist: " + url);
 	    try {	  
+		tupleID = current + 1;
 		statement.executeQuery("insert into SOURCE values (" + 
-				       ++current + ",'" + protocol + "','" + url + "'," + 
-				       size + ",'" + type + "'," + created + "," +
-				       last_mod + ",'" + src + "'," + 
-				       addParent( protocol, getParentDomain(url) ) + ",'" + 
-				       opt0 + "','" + opt1 + "','" + opt2 + "','" + 
-				       opt3 + "','" + opt4 + "')");
+				       ++current + ",'" + 
+				       protocol + "','" + 
+				       url + "'," + 
+				       size + ",'" + 
+				       type + "'," + 
+				       created + "," +
+				       last_mod + ",'" + 
+				       src + "'," + 
+				       addParent( protocol, getParentDomain(url) ) + 
+				       ",null,'" +
+				       opt0 + "','" + 
+				       opt1 + "','" + 
+				       opt2 + "','" + 
+				       opt3 + "','" + 
+				       opt4 + "')");
 	    } catch(SQLException e) {
 		System.err.println(e);
-		return false;
+		return -1;
 	    } 
 	    
 	}
 	
-	return true;
+	return tupleID;
     }
     
-    public boolean addTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String[] opt) {
-	return addTuple(protocol, url, size, type, created, last_mod, src, opt[0], opt[1], opt[2], opt[3], opt[4]);
+    public int addSourceTuple(String protocol, String url, int size, String type, long created, long last_mod, String src, String[] opt) {
+	return addSourceTuple(protocol, url, size, type, created, last_mod, src, opt[0], opt[1], opt[2], opt[3], opt[4]);
     }
 
     // recursively add the parent directory into the database
-  private int addParent(String protocol, String url) {
-      if (protocol == null || url == null) {
-	  //System.err.println("no parent.");
-	  return -1;
-      } else {
+    private int addParent(String protocol, String url) {
+	if (protocol == null || url == null) {
+	    //System.err.println("no parent.");
+	    return -1;
+	} else {
 	  
-	  Vector v = findTuple(protocol, url);
-	  if (v == null || v.size() == 0) {	      
-	      int tmp = ++ current;
-	      //System.err.println(url + " NOT FOUND IN DB.");
-	      // parent does not exist in the database
-	      try { 
-		  statement.executeQuery("insert into SOURCE values (" + 
-					 tmp + ",'" + protocol + "','" + url + "',-1,'dir',-1,-1,null," +
-					 addParent(protocol, getParentDomain(url)) + 
-					 ",null,null,null,null,null)" );
-	      } catch(SQLException e) {
-		  System.err.println(e);
-	      } 
-	      
-	      return tmp; // return the id of the added parent
-	  } else {
-	      // parent is found in the database
-	      return ((Tuple)v.elementAt(0)).getID();
-	  }
-      }
-  }
+	    Vector v = findSourceTuple(protocol, url);
+	    if (v == null || v.size() == 0) {	      
+		int tmp = ++ current;
+		//System.err.println(url + " NOT FOUND IN DB.");
+		// parent does not exist in the database
+		try { 
+		    statement.executeQuery("insert into SOURCE values (" + 
+					   tmp + ",'" + 
+					   protocol + "','" + 
+					   url + 
+					   "',-1,'dir',-1,-1,null," +
+					   addParent(protocol, getParentDomain(url)) + 
+					   ",null,null,null,null,null,null)" );
+		} catch(SQLException e) {
+		    System.err.println(e);
+		} 
+		
+		return tmp; // return the id of the added parent
+	    } else {
+		// parent is found in the database
+		return ((SourceTuple)v.elementAt(0)).getID();
+	    }
+	}
+    }
 
   // remove the tuple with the specific url from the database
   // if a directory, all subdirectories and files are removed
-  public boolean removeTuple(String protocol, String url) {
+  public boolean removeSourceTuple(String protocol, String url) {
       protocol = protocol.toLowerCase();
       url = url.toLowerCase();
-      Vector v = findTuple(protocol, url);
+      Vector v = findSourceTuple(protocol, url);
     
     if (v == null || v.size() == 0) {
-      System.err.println("Tuple Not Found.  Remove Failed.");
+      System.err.println("SourceTuple Not Found.  Remove Failed.");
       return false; // tuple not found
     }
     
@@ -366,7 +481,7 @@ public class Xescii implements Notifiable {
      * if a file, return a tuple containing the info of file
      * if a directory, return all contents of that directory
      */
-    public Vector findTupleRecur(String protocol, String url) {
+    public Vector findSourceTupleRecur(String protocol, String url) {
 	
 	protocol = protocol.toLowerCase();
 	url = url.toLowerCase();
@@ -382,31 +497,31 @@ public class Xescii implements Notifiable {
 	} 
 	
 	if ( r == null) {
-	    //System.err.println("null Tuple Not FOUND.");
+	    //System.err.println("null SourceTuple Not FOUND.");
 	    return null;
 	}
 
-	Vector tmp = Tuple.parseResultSet(r);
+	Vector tmp = SourceTuple.parseResultSet(r);
 	//System.err.println("vector received: " + tmp.size());
 
 	// check database consistency
 	if ( tmp == null || tmp.size() == 0 ) {
-	    //  System.err.println("vector: Tuple Not Found.");
+	    //  System.err.println("vector: SourceTuple Not Found.");
 	    return null;
 	} else if ( tmp.size() != 1 ) {
 	    System.err.println("ERROR: INCONSISTENT DATABASE.  MULTIPLE ENTRIES WITH SAME URL EXIST.");
 	    System.exit(1);
 	} 
 	
-	if ( ! ((Tuple)tmp.elementAt(0)).getType().toUpperCase().equals("DIR") ) {
+	if ( ! ((SourceTuple)tmp.elementAt(0)).getType().toUpperCase().equals("DIR") ) {
 	  // is file
 	  return tmp; 
 	} else {
 	  
 	  // is directory
 	    try {
-	      r = statement.executeQuery("select * from SOURCE where PARENT="+ ((Tuple)tmp.elementAt(0)).getID() );
-	      tmp = Tuple.parseResultSet(r);
+	      r = statement.executeQuery("select * from SOURCE where PARENT="+ ((SourceTuple)tmp.elementAt(0)).getID() );
+	      tmp = SourceTuple.parseResultSet(r);
 	    } catch(SQLException e) {
 	      return null;
 	    } 
@@ -418,7 +533,7 @@ public class Xescii implements Notifiable {
     /* find the tuples corresponding to the given url
      * treat file and directory in the same way
      */
-    public Vector findTuple(String protocol, String url) {
+    public Vector findSourceTuple(String protocol, String url) {
 	
 	protocol = protocol.toLowerCase();
 	url = url.toLowerCase();
@@ -434,15 +549,15 @@ public class Xescii implements Notifiable {
 	} 
 	
 	if ( r == null) {
-	    //System.err.println("null Tuple Not FOUND.");
+	    //System.err.println("null SourceTuple Not FOUND.");
 	    return null;
 	}
 
-	Vector tmp = Tuple.parseResultSet(r);
+	Vector tmp = SourceTuple.parseResultSet(r);
 
 	// check database consistency
 	if ( tmp == null || tmp.size() == 0 ) {
-	    // System.err.println("vector: Tuple Not Found.");
+	    // System.err.println("vector: SourceTuple Not Found.");
 	    return null;
 	} else if ( tmp.size() != 1 ) {
 	    System.err.println("ERROR: INCONSISTENT DATABASE.  MULTIPLE ENTRIES WITH SAME URL EXIST.");
@@ -452,23 +567,45 @@ public class Xescii implements Notifiable {
 	return tmp;
     }
 
+    
+    /* set the shape field of a tuple in the database */
+    public boolean setShape(String shape, String protocol, String url) {
+	
+	protocol = protocol.toLowerCase();
+	url = url.toLowerCase();
+	ResultSet r = null;
+   
+	try {
+	    //System.err.println("Try to set shape " + url);
+	    statement.executeQuery("update SOURCE set shape='" + shape + 
+				   "' where PROTOCOL='" + protocol + 
+				   "' AND URL = '" + url + "'");
+	} catch(SQLException e) {
+	  System.err.println(e);
+	  return false;
+	}
+	
+	return true;
+    }
+
+
     // find the url corresponding to direct parent of input string
-  public String getParentDomain(String input) {
-      
-      for (int i=input.length()-2; i>0; i--) {
-	  if (input.charAt(i) == '/') {
-	      if (input.charAt(i-1) == '/') {
-		  // protocol delimiter reached.  no more parent
-		  return null; 
-	      } else {
-		  return input.substring(0,i+1);
-	      }
-	  }
-      }
-      
-      // no '/' found
-      return null;   
-  }
+    public String getParentDomain(String input) {
+	
+	for (int i=input.length()-2; i>0; i--) {
+	    if (input.charAt(i) == '/') {
+		if (input.charAt(i-1) == '/') {
+		    // protocol delimiter reached.  no more parent
+		    return null; 
+		} else {
+		    return input.substring(0,i+1);
+		}
+	    }
+	}
+	
+	// no '/' found
+	return null;   
+    }
     
 
     // retrieve the domain of an input url
@@ -501,33 +638,40 @@ public class Xescii implements Notifiable {
 	else
 	    return null;
     }
-  
+    
 
   // add some sample tuples to the data
   public void addTestData() {
     
-      addTuple("http", "http://www.columbia.edu/", -1, "dir", 1999000, 1999001, null, "start node", null, null, null, null);
+      addSourceTuple("http", "http://www.columbia.edu/", -1, "dir", 1999000, 1999001, null, "start node", null, null, null, null);
 	
-	addTuple("http", "http://www.columbia.edu/~shen/", -1, "dir", 1999033, 19991, null, "2nd", null, null, null, null);
+	addSourceTuple("http", "http://www.columbia.edu/~shen/", -1, "dir", 1999033, 19991, null, "2nd", null, null, null, null);
 	
-	addTuple("http", "http://www.columbia.edu/abc.doc", 23, "doc", 1990, 199901, null, "2nd", "file", null, null, null);
+	addSourceTuple("http", "http://www.columbia.edu/abc.doc", 23, "doc", 1990, 199901, null, "2nd", "file", null, null, null);
 	
-	addTuple("http", "http://www.columbia.edu/abc.pdf", 3333, "pdf", 1999000, 1999001, "ftp://122.22.22.2/abc.pdf", "2nd", null, "link", null, null);
+	addSourceTuple("http", "http://www.columbia.edu/abc.pdf", 3333, "pdf", 1999000, 1999001, "ftp://122.22.22.2/abc.pdf", "2nd", null, "link", null, null);
 	
-	addTuple("http", "http://www.columbia.edu/~shen/abc/abc.pdf", 12, "pdf", 1, 2, null, "3rd", null, null, null, null);
+	addSourceTuple("http", "http://www.columbia.edu/~shen/abc/abc.pdf", 12, "pdf", 1, 2, null, "3rd", null, null, null, null);
 	
-	addTuple("ftp", "ftp://www.columbia.edu/~shen/abc/abc.pdf", 12, "pdf", 1, 2, null, "3rd", null, null, null, null);	
+	addSourceTuple("ftp", "ftp://www.columbia.edu/~shen/abc/abc.pdf", 12, "pdf", 1, 2, null, "3rd", null, null, null, null);	
   }
   
  
     // Print the entire source table
-    public void printTable() {
+    public void printTable(String tableName) {
 	
 	try {
-	    Vector v = Tuple.parseResultSet(statement.executeQuery("select * from SOURCE") );
+	    if (tableName.equals("SOURCE")) {
+		Vector v = SourceTuple.parseResultSet(statement.executeQuery("select * from " + tableName ) );
 	    
-	    System.out.println("\nThe current data table is:");
-	    System.out.println(Tuple.tuplesToString(v));
+		System.out.println("\nThe current data table is:");
+		System.out.println(SourceTuple.tuplesToString(v));
+	    } else {
+		Vector v = LinkTuple.parseResultSet(statement.executeQuery("select * from " + tableName ) );
+  
+		System.out.println("\nThe current data table is:");
+		System.out.println(LinkTuple.tuplesToString(v));
+	    }
 	} catch (SQLException e) {
 	    System.err.println(e);
 	}
@@ -577,7 +721,16 @@ public class Xescii implements Notifiable {
     
     // testing function
     public static void main(String argv[]) {
-	Xescii ds = new Xescii("DB", "senp://localhost:1111", "FRAX");
+	if (argv.length != 3) {
+	    System.err.println("3 Command-Line Arguments Expected for the DataServer.");
+	    System.exit(-1);
+	}
+		    
+	//Xescii ds = new Xescii("DB", "senp://localhost:1111", "FRAX");
+	// argv[0] is the database name, ie. "DB"
+        // argv[1] is the siena server IP, ie. "senp://localhost:1111"
+        // argv[2] is the siena event id, ie. "FRAX"
+	Xescii ds = new Xescii(argv[0], argv[1], argv[2]);
 	
 	/* 
 	  System.out.println("");
@@ -594,12 +747,12 @@ public class Xescii implements Notifiable {
 	// ds.printTable();
 	
 	//System.out.println("\nFind File:");
-	//System.out.println(Tuple.tuplesToString(ds.findTupleRecur("http://www.columbia.edu/abc.doc")));
+	//System.out.println(SourceTuple.tuplesToString(ds.findSourceTupleRecur("http://www.columbia.edu/abc.doc")));
 
 	//System.out.println("\nFind Directory:");
-	//System.out.println(Tuple.tuplesToString(ds.findTupleRecur("http://www.columbia.edu/")));
+	//System.out.println(SourceTuple.tuplesToString(ds.findSourceTupleRecur("http://www.columbia.edu/")));
 	//System.out.println("\nAfter Remove Directory:");
-	//ds.removeTuple("http://www.columbia.edu/~shen/");
+	//ds.removeSourceTuple("http://www.columbia.edu/~shen/");
 	//ds.printTable();
 	
 	//	ds.shutDown();
