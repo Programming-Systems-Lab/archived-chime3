@@ -17,8 +17,8 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef CSFEDIT_H
-#define CSFEDIT_H
+#ifndef CHIMEMENU_H
+#define CHIMEMENU_H
 
 #include <stdarg.h>
 #include "cssys/sysdriv.h"
@@ -36,36 +36,6 @@ static int palette [] =
   cs_Color_White			// Start points
 };
 
-
-/*  main app of menu */
-class ChimeMenu : public csApp
-{
-
-  /// reliable fonts, for display
-  iFont *mainfont, *tinyfont;
-  /// menu item to gray or not
-  csMenuItem *saveitem, *closeitem;
-
-public:
-
-  //encapsulate all the engine views
-  csVector engine_views;
-
-  /// Initialize maze editor
-  ChimeMenu (iSystem *SysDriver, csSkin &Skin);
-
-  /// Initialize maze editor
-  virtual ~ChimeMenu ();
-
-  //handle an event
-  virtual bool HandleEvent (iEvent &Event);
-
-  virtual bool Initialize (const char *iConfigName);
-
-  void Refresh3D();
-
-  virtual void Draw ();
-};
 
 
 
@@ -232,25 +202,68 @@ public:
 
 //History Dialog
 class HistoryWindow : public csWindow
-
 {
 
-  csInputLine *username;
-  csInputLine *password;
-  csInputLine *chime_server;
+private:
+	csListBox *lb;
+	int count;
 
-  //void gui ();
+	void InitCount() {
+		count = 1; };
+
+	int ItemCount() {
+		return count; };
+
+	void AddItem() {
+		count++; };
+
+	void RemoveItem() {
+		count--; };
 
 public:
 
   HistoryWindow(csComponent *iParent);
+  bool AddItem(char *item);
+  void RemoveItem(char *item);
   virtual ~HistoryWindow ();
   virtual bool HandleEvent (iEvent &Event);
-  //virtual bool Initialize (const char *iConfigName);
 
+};
+
+/*  main app of menu */
+class ChimeMenu : public csApp
+{
+
+  /// reliable fonts, for display
+  iFont *mainfont, *tinyfont;
+  /// menu item to gray or not
+  csMenuItem *saveitem, *closeitem;
+
+public:
+
+  //pointer to the history window
+  HistoryWindow *historyWindow;
+
+  //encapsulate all the engine views
+  csVector engine_views;
+
+  /// Initialize maze editor
+  ChimeMenu (iSystem *SysDriver, csSkin &Skin);
+
+  /// Initialize maze editor
+  virtual ~ChimeMenu ();
+
+  //handle an event
+  virtual bool HandleEvent (iEvent &Event);
+
+  virtual bool Initialize (const char *iConfigName);
+
+  void Refresh3D();
+
+  virtual void Draw ();
 };
 
 
 
-#endif // CSFEDIT_H
+#endif // CHIMEMENU_H
 

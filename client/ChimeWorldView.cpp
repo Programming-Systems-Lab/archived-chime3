@@ -48,6 +48,7 @@ ChimeWorldView::ChimeWorldView (csComponent *iParent, chimeBrowser *System)
   System->setCoordinateConvertor(this);
   view = System->GetView();
 
+  
   SetState (CSS_SELECTABLE, true);
 
   if (parent)

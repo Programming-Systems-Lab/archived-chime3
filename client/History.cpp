@@ -17,6 +17,9 @@ HistoryWindow::HistoryWindow(csComponent *iParent)
     CSWS_BUTMAXIMIZE)
   {
 
+  InitCount();
+  
+
   SetRect (0, 15, app->bound.Width() / 4, app->bound.Height() / 2);
   SetState(CSS_DISABLED, true);
 
@@ -24,10 +27,20 @@ HistoryWindow::HistoryWindow(csComponent *iParent)
   int labelw = 150;
 
   //////////create the dialog///////////////
-
   csDialog *d = new csDialog(this);
   this->SetDragStyle (this->GetDragStyle () & ~CS_DRAG_SIZEABLE);
   
+  //////////create the list box/////////////
+  lb = new csListBox (d, CSLBS_HSCROLL | CSLBS_VSCROLL, cslfsThinRect);
+  lb->SetRect (bound.Width() / 10, bound.Height() / 5 - TitlebarHeight, bound.Width() / 10 * 9, bound.Height() / 5 * 4);
+
+  AddItem("http://www.yahoo.com");
+}
+
+bool HistoryWindow::AddItem(char *item) {
+	new csListBoxItem (lb, item, ItemCount());
+	AddItem();
+	return true;
 }
 
 

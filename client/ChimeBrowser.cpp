@@ -52,7 +52,7 @@ chimeBrowser::chimeBrowser()
 	//create the Mutex object the first time we create this class
 	hMutex=CreateMutex(NULL,FALSE,NULL); // create a mutex object with no name
 
-
+	chimeBrowser::app = NULL;
 	engine = NULL;
 	curSector = NULL;
 	currentSector = NULL;
@@ -381,7 +381,7 @@ bool chimeBrowser::Initialize(int argc, const char *const argv[], const char *iC
 	//view->GetCamera ()->SetPerspectiveCenter ((0 + FrameWidth) / 2, (0 + FrameHeight) / 2);
 
 	//FIXIT Temporary . Must be removed
-	Printf (MSG_INITIALIZATION, "Building  Sector 1!...\n");
+	//Printf (MSG_INITIALIZATION, "Building  Sector 1!...\n");
 
 	ReadRoom(testRoom);
 
@@ -1945,6 +1945,11 @@ bool chimeBrowser::ReadRoom(char *desc)
 
 		sec2 = new chimeSector(System, engine);
 		sec2->BuildDynamicRoom2(desc, doorPos, collide_system);
+		
+		//add it to the history window
+		if (app != NULL && app->historyWindow != NULL)
+			app->historyWindow->AddItem(sec2->GetUrl());
+
 		comm.SubscribeRoom(sec2->GetUrl(), userID);
 
 		if( sec1 )

@@ -127,7 +127,7 @@ bool ChimeMenu::Initialize (const char *iConfigName)
   (void) new ChatWindow(this);
 
   //put in a history window
-  (void) new HistoryWindow(this);
+  historyWindow = new HistoryWindow(this);
 
   //put in a VEM window
   (void) new ChimeVEM(this);
