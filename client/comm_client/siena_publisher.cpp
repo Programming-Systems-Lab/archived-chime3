@@ -68,9 +68,52 @@ void SienaPublisher::setupSocket() {
 	}
 }
 
+//a convenience method for converting an int function to a char function
+char* SienaPublisher::getFunction(int func) {
+	if (func == -1)
+		return NULL;
+
+	//client side methods
+	if (func == c_connect)
+		return "c_connect";
+	else if (func == c_getRoom)
+		return "c_getRoom";
+	else if (func == c_moveObject) 
+		return "c_moveObject";
+	else if (func == c_moveUser) 
+		return "c_moveUser";
+	else if (func == c_enteredRoom)
+		return "c_enteredRoom";
+	else if (func == c_addObject)
+		return "c_addObject";
+	else if (func == c_deleteObject)
+		return "c_deleteObject";
+	else if (func == c_disconnect) 
+		return "c_disconnect";
+
+	//server side methods
+	else if (func == s_moveObject)
+		return "s_moveObject";
+	else if (func == s_moveUser)
+		return "s_moveUser";
+	else if (func == s_AddObject)
+		return "s_AddObject";
+	else if (func == s_deleteObject) 
+		return "s_deleteObject";
+	else if (func == s_changeClass)
+		return "s_changeClass";
+	else if (func == s_roomInfo)
+		return "s_roomInfo";
+	else
+		return NULL;
+}
+
+
 
 //method to publish an event onto siena bus
-void SienaPublisher::publish(char *method, char *params, char *address, char *prot) {
+void SienaPublisher::publish(int function, char *params, char *address, char *prot) {
+
+	char *method = getFunction(function);
 
 	setupSocket();
 
@@ -79,8 +122,8 @@ void SienaPublisher::publish(char *method, char *params, char *address, char *pr
 	time_t ltime;
 
 	/* Get UNIX-style time and display as number and string. */
-     time( &ltime );
-     printf( "Time in seconds since UTC 1/1/70:\t%ld\n", ltime );
+    time( &ltime );
+    //printf( "Time in seconds since UTC 1/1/70:\t%ld\n", ltime );
    
 	sprintf(publishString, "%sid=\"%ld492", headerString, ltime);
 	sprintf(publishString, "%s.0.%s\"}", publishString, hostname);

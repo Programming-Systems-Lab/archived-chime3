@@ -15,14 +15,12 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
 	password = _password;
 	username = _username;
 
-	/*
+	
 	cl = new UDPClient(port);
-	*/
-
 	
 	siena_publisher = new SienaPublisher(SAddress, Sport, username, password);
 	
-	/*
+	
 	//spawn off a thread for the UDP server
 	uds = new UDPServer(port, nav); 
 
@@ -35,7 +33,7 @@ ClientComm::ClientComm(int port, char *SAddress, int Sport, char *_username, cha
        cout << "Error: UDP Listener Thread can not be created.\n";
 	   exit(1);
     }
-	*/
+	
 	 
 	
 	//spawn off a thread which will listen for Siena Events
@@ -78,7 +76,7 @@ bool ClientComm::SendUDPFunction(char *ip_addr, int function, char *params) {
 	return true;
 }
 
-bool ClientComm::SendSienaFunction(char *function, char *params, char *address, char *prot) {
+bool ClientComm::SendSienaFunction(int function, char *params, char *address, char *prot) {
 	siena_publisher->publish(function, params, address, prot);
 	return true;
 }
@@ -88,8 +86,8 @@ int main(int argc, char *argv[])
 	NavCallback *nav = new NavCallback();
 	ClientComm *comm = new ClientComm(9999, "localhost", 1234, "denis", "denis", nav);
 	while(1) {
-		//comm->SendUDPFunction("192.168.1.100", 2, "room something others");
-		comm->SendSienaFunction("c_connect", "testing", "http://www.cs.brandeis.edu", "HTTP");
+		comm->SendUDPFunction("192.168.1.100", 2, "room something others");
+		comm->SendSienaFunction(c_connect, "testing", "http://www.cs.brandeis.edu", "HTTP");
 		Sleep(10000);
 	}
 	return 0;

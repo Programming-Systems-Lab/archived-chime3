@@ -32,16 +32,12 @@
 
 //this is an equivalent of an interface you need to override
 class NavCallback {
+	volatile HANDLE hMutex; // Create a Mutex object
+
 public:
 	//just something to test
-	NavCallback() {
-	};
-
-	void GetFunction(int method, char *received) {
-		printf("\n\nIn Navdeep's Receiver\n");
-		printf("\nThe method was: %d\n", method);
-		printf("\nThe parameters are: %s\n", received);
-	};
+	NavCallback();
+	void GetFunction(int method, char *received);
 };
 
 
@@ -145,8 +141,8 @@ private:
 
 public:
 	SienaPublisher(char *host, short port, char *username, char *password);
-	void publish(char *method, char *params, char *address, char *prot);
-
+	void publish(int function, char *params, char *address, char *prot);
+	char* getFunction(int func);
 };
 
 
@@ -162,7 +158,7 @@ class ClientComm {
    public:
 	   ClientComm(int port, char *SAddress, int Sport, char *_username, char *_password, NavCallback *nav);
 	   bool SendUDPFunction(char *ip_addr, int function, char *params) ;
-	   bool SendSienaFunction(char *function, char *params, char *address, char *prot);
+	   bool SendSienaFunction(int function, char *params, char *address, char *prot);
 
    private:
 	  int setLocalIP();

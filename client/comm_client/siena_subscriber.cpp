@@ -230,7 +230,8 @@ SOCKET SienaSubscriber::createSendSocket() {
 //format the response as something which Navdeep is expecting
 void SienaSubscriber::formatResponse(char *string) {
 
-	char *data = getField("data", string);
+	char *data = (char*) malloc(sizeof string);
+	data = getField("data", string);
 	int method = getMethod(string);
 
 	if (data != NULL && method != -1) { 
@@ -245,7 +246,8 @@ void SienaSubscriber::formatResponse(char *string) {
 //get a particualr field from the siena string
 char *SienaSubscriber::getField(char *field, char *string) {
 	char *final = (char*) malloc(sizeof(string));
-	char *data = strstr(string, field);
+	char *data = (char*) malloc(sizeof(string));
+	data = strstr(string, field);
 	
 	if (data != NULL)
 	{
@@ -253,6 +255,8 @@ char *SienaSubscriber::getField(char *field, char *string) {
 		data = &data[1];	
 		char *end = strstr(data, "\" ");
 
+		if (end == NULL) 
+			return NULL;
 		//printf("The end is: %s", end);
 		//printf("The difference is: %d\n", end - data);
 		strncpy(final, data, end - data);
@@ -336,9 +340,20 @@ void SienaSubscriber::startServer() {
 	}
 
 		
+	char finalString [100000];
+	char recvString [5000]; 
+
 	while(1)
 	{
-			SOCKET	remoteSocket;
+
+	// Infinite loop to keep receiving events for the client 
+	if (listen (r, SOMAXCONN) == SOCKET_ERROR)
+	{
+		fprintf (stderr, "\n\nWinsock Error: Unable to Listen\n\n");
+		closesocket (r);
+	}
+
+			SOCKET remoteSocket;
 
 			printf("\n\nListening...\n\n");
 			remoteSocket = accept (r, NULL, NULL);
@@ -349,8 +364,7 @@ void SienaSubscriber::startServer() {
 				closesocket (r);
 			}
 
-			char finalString [10000];
-			char recvString [5000]; 
+		
 			int length = 1;
 			memset(finalString, 0, sizeof(finalString));
 	
@@ -358,41 +372,50 @@ void SienaSubscriber::startServer() {
 		{
 				memset(recvString, 0, sizeof(recvString));
 
+			
 				if ((length = recv (remoteSocket, recvString, sizeof(recvString), 0)) == SOCKET_ERROR)
 				{
 					fprintf (stderr, "\n\nWinsock Error: Unable to Recv\n\n");
 					closesocket (r);
 					closesocket (remoteSocket);
 				}
+			
 
 				//concatenate all accepts
 				//because Siena never fills out the buffer completely
 				//would have done blocking until buffer is full but can't find a siena message
 				//terminator to signify message end
+				
+				
 				if (recvString != NULL) 
 				{
 					recvString[length] = NULL;
-					printf("The receive String is: %s\n", recvString);
-					printf("The final String is: %s\n", finalString);
+					//printf("The receive String is: %s\n", recvString);
+					//printf("The final String is: %s\n", finalString);
 
 					//make sure the string received fits in the buffer
 					if (strlen(finalString) + strlen(recvString) > sizeof(finalString)) {
 						printf("Subscriber Error: Siena Message too long - ignoring");
 						*finalString = NULL;
+						break;
 					}
 					else  {
 						strncat(finalString, recvString, length);
+						printf("The length of this packet is %d", length);
 					}
 				}
+				
 		}
 
 		closesocket(remoteSocket);
 
+
 		if (finalString != NULL) 
 		{
-			printf("The string is: %s\n", finalString);
-			formatResponse(finalString);
-			printf ("%s\n\n", recvString);
+			//recvString[length] = NULL;
+			//printf("The string is: %s\n", recvString);
+			//formatResponse(finalString);
+			printf ("%s\n\n", finalString);
 		}
 		
 	}

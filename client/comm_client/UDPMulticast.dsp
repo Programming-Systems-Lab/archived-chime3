@@ -90,42 +90,7 @@ SOURCE=.\clientcomm.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\comm.cpp
-
-!IF  "$(CFG)" == "UDPMulticast - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "UDPMulticast - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\comm2.cpp
-
-!IF  "$(CFG)" == "UDPMulticast - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "UDPMulticast - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\party.c
-
-!IF  "$(CFG)" == "UDPMulticast - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "UDPMulticast - Win32 Debug"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
+SOURCE=.\navcallback.cpp
 # End Source File
 # Begin Source File
 
