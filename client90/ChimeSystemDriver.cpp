@@ -699,6 +699,8 @@ int ChimeSystemDriver::GetInvisibleAlpha() {
 
 	else if (!strstr(grafx_3d_mode, "opengl"))
 		return 25;
+
+	else return 25;
 }
 
 
@@ -714,6 +716,8 @@ int ChimeSystemDriver::GetVisibleAlpha() {
 
 	else if (!strstr(grafx_3d_mode, "opengl"))
 		return 100;
+
+	else return 100;
 }
 
 //************************************************************************************

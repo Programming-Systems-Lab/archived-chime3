@@ -1,6 +1,6 @@
 2
-250 128.59.23.9
-251 localhost
+250 localhost
+251 160.39.244.25
 http://www.cs.columbia.edu/~suhit/ai2tv/1
 frame_index.txt
 -------------------------------------------------------
