@@ -172,6 +172,8 @@ public class DataServer {
 
 	// FRAX Call
 	if (fromComponent.equals("frax")) {
+	    
+	    System.err.println("DS METHOD CALL: FRAX");
 
 	    String type;
 	    Parser p = null;
@@ -363,6 +365,8 @@ public class DataServer {
 	    }
 
 	    printTable("SOURCE");
+	    
+	    System.err.println("END OF DS METHOD CALL PROCESS");
 	}
 
 	// CLIENT CALL
@@ -370,6 +374,9 @@ public class DataServer {
 
 	    // method: c_getRoom
 	    if (method.equals("c_getRoom")) {
+
+		System.err.println("DS METHOD CALL: CLIENT.C_GETROOM");
+
 		Vector v = findSourceTuple(protocol, data);
 
 		// query frax
@@ -420,10 +427,15 @@ public class DataServer {
 			System.err.println(ex);
 		    }
 		}
+		
+		System.err.println("END OF DS METHOD CALL PROCESS");
 	    }
 
 	    // method: c_addObject
 	    else if (method.equals("c_addObject")) {
+		
+		System.err.println("DS METHOD CALL: CLIENT.C_ADDOBJECT");
+
 		st = new StringTokenizer(data, " ");
 		if (st.countTokens() < 5) {
 		    System.err.println("c_addObject Call does not have enough tokens.");
@@ -489,10 +501,15 @@ public class DataServer {
 		    System.err.println(ex);
 		    return;
 		}
+
+		System.err.println("END OF DS METHOD CALL PROCESS");
 	    }
 
 	    // method: c_deleteObject
 	    else if (method.equals("c_deleteObject")) {
+
+		System.err.println("DS METHOD CALL: CLIENT.C_DELETEOBJECT");
+
 		st = new StringTokenizer(data, " ");
 		if (st.countTokens() < 2) {
 		    System.err.println("c_deleteObject Call does not have enough tokens.");
@@ -524,6 +541,8 @@ public class DataServer {
 		    System.err.println(ex);
 		    return;
 		}
+
+		System.err.println("END OF DS METHOD CALL PROCESS");
 	    }
 	}
     }

@@ -199,16 +199,21 @@ public class EventTracer {
 
 	    // method: c_connect
 	    if (method.equals("c_connect")) {
-
+		
+		System.err.println("METHOD CALL: CLIENT.C_CONNECT");
 	       if (st.countTokens() < 3)
 		   return;
 	       st.nextToken();
 	       String user = st.nextToken();
 	       addRoomTuple("default", user);
+
+	       System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: c_moveObject
 	    else if (method.equals("c_moveObject")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_MOVEOBJECT");
 		if (st.countTokens() < 5)
 		    return;
 		String roomUrl = st.nextToken();
@@ -241,10 +246,15 @@ public class EventTracer {
 		    System.err.println(ex);
 		    return;
 		}
+
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: c_enteredRoom
 	    else if (method.equals("c_enteredRoom")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_ENTEREDROOM");
+
 		if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
@@ -305,10 +315,15 @@ public class EventTracer {
 		    System.err.println(ex);
 		    return;
 		}
+
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: c_subscribeRoom
 	    else if (method.equals("c_subscribeRoom")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_SUBSCRIBEROOM");
+
 	    	if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
@@ -316,10 +331,15 @@ public class EventTracer {
 
 		// add user to the new room
 		addRoomTuple(roomUrl, user);
+
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: s_leftRoom
 	    else if (method.equals("c_leftRoom")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_LEFTROOM");
+
 		if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
@@ -350,10 +370,14 @@ public class EventTracer {
 			return;
 		    }
 		}
+
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: c_unsubscribeRoom
 	    else if (method.equals("c_unsubscribeRoom")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_UNSUBSCRIBEROOM");
 	    	if (st.countTokens() < 2)
 		    return;
 		String user = st.nextToken();
@@ -361,10 +385,14 @@ public class EventTracer {
 
 		// remove user from the old room
 		removeUser(roomUrl, user);
+
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 
 	    // method: c_disconnect
 	    else if (method.equals("c_disconnect")) {
+
+		System.err.println("METHOD CALL: CLIENT.C_DISCONNECT");
 		if (st.countTokens() < 1)
 		    return;
 		String user = st.nextToken();
@@ -396,6 +424,8 @@ public class EventTracer {
 
 		// remove user from the old room
 		removeUser(user);
+		
+		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
 	}
     }
