@@ -117,6 +117,10 @@ SOURCE=.\ChimeSystemDriver.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ChimeWindow.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ChimeWorldView.cpp
 # End Source File
 # Begin Source File
@@ -182,6 +186,10 @@ SOURCE=.\ChimeApp.h
 # Begin Source File
 
 SOURCE=.\ChimeComm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ChimeInfoEvent.h
 # End Source File
 # Begin Source File
 

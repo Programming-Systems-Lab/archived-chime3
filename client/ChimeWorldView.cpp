@@ -28,6 +28,7 @@
 
 #include <process.h>
 #include "ChimeWorldView.h"
+#include "ChimeApp.h"
 
 //****************************************************************
 //*

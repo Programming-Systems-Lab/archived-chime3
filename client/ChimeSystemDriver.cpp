@@ -20,6 +20,7 @@
 #include "ChimeSystemDriver.h"
 #include "ChimeWorldView.h"
 #include "ChimeSector.h"
+#include "ChimeInfoEvent.h"
 
 #include "csengine/engine.h"
 #include "csengine/csview.h"
@@ -90,9 +91,7 @@ ChimeSystemDriver::ChimeSystemDriver()
 	//strcpy(username, "denis");
 	//strcpy(userIP, getLocalIP());
 
-	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\n");
-	strcat(testRoom, "http://www.cnn.com/ cube Component Component 1\n");
-	strcat(testRoom, "http://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
+	strcpy(testRoom, "http://www.yahoo.com/ 10 5 20 7\nhttp://www.cnn.com/ cube Component Component 1\nhttp://www.altavista.com/ violin image image 0 2 0.0 13.0\n");
 	strcat(testRoom, "http://www.google.com/ stool Connector Connector 1\n");
 	//strcat(testRoom, "denis mdl1 User 192.168.1.100 1\n");
 	strcat(testRoom, "http://www.cs.brandeis.edu/ stool Connector Connector 1\n");
@@ -866,8 +865,7 @@ bool ChimeSystemDriver::BringUpDoorMenu(int doorNum, csVector2 screenPoint) {
 /*        nothing will happen
 /*
 /**************************************************************************/
-bool ChimeSystemDriver::OpenDoor() {
-	char *doorUrl;
+bool ChimeSystemDriver::OpenDoor(char *doorUrl) {
 
 	char username[50];
 	info->GetUsername(username);
@@ -875,8 +873,10 @@ bool ChimeSystemDriver::OpenDoor() {
 	if (strcmp(username, "") == 0)
 		return false;
 
-	if (reqAtDoor != -1 && reqAtSec != NULL) {
-		doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
+	if (reqAtDoor != 0 && reqAtSec != NULL) {
+		if (!doorUrl)
+			doorUrl = reqAtSec->GetDoorUrl(reqAtDoor);
+		
 		strcpy(reqRoomUrl, doorUrl);
 		comm.SubscribeRoom(doorUrl, username);
 		comm.GetRoom(doorUrl);
@@ -886,6 +886,9 @@ bool ChimeSystemDriver::OpenDoor() {
 	else
 		return false;
 }
+
+
+
 
 //*************************************************************************
 //*
@@ -1367,6 +1370,43 @@ bool ChimeSystemDriver::HandleKeyEvent (iEvent &Event)
 
 //**********************************************************************
 //*
+//* Handle all events that are sent to us from external windows
+//*
+//**********************************************************************
+bool ChimeSystemDriver::HandleEventFromOtherWindow(iEvent &Event) {
+	
+	if (Event.Type == csevCommand && Event.Command.Code == CHIME_EVENT) {
+	
+		ChimeInfoEvent *info_event = (ChimeInfoEvent*)Event.Command.Info;
+		
+		switch (info_event->getIdentifier()) {
+			case CONNECT_IDENTIFIER:
+			
+			
+			case GET_OBJECT_IDENTIFIER:
+					char url[1024];
+					if (info_event->getFirstToken(url))
+						OpenDoor(url);
+					return true;
+
+			case VEM_IDENTIFIER:
+			
+			case SIENA_WINDOW_IDENTIFIER:
+	
+			case CHAT_IDENTIFIER:
+			
+			case HISTORY_IDENTIFIER:
+			
+			return true;
+		}
+	}
+	
+	//just say we can't handle it
+	return false;
+}
+
+//**********************************************************************
+//*
 //* Function responsible for handling all the mouse,
 //* keyboard and broadcast events.
 //*
@@ -1376,11 +1416,15 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 
 	//Check if the event is for the superclass
 	if (superclass::HandleEvent (Event))
-		return true;
+		goto handled;
+
+	//see if this is an event sent from some other window
+	if (HandleEventFromOtherWindow(Event)) 
+		goto handled;
 
 	//see if this is a popup menu command and handle it if it is
 	if (HandleMenuEvent(Event))
-		return true;
+		goto handled;
 
 	switch (Event.Type)
 	{
@@ -1477,7 +1521,7 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 				Transport(room, *camLocation, csVector3(0,0, 1), csVector3(0,-1, 0));
 			}
 
-			return true;
+			goto handled;
 		}
 		if(Event.Key.Code == 117)
 		{
@@ -1485,7 +1529,7 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 
 			Transport(room, csVector3(0,2.5, -3), csVector3(0,0, 1), csVector3(0,-1, 0));
 
-			return true;
+			goto handled;
 		}
 
 		if(Event.Key.Code == 118)
@@ -1499,10 +1543,15 @@ bool ChimeSystemDriver::HandleEvent (iEvent &Event)
 		}
 
 
-
 	}//Switch
+
 	return false;
+
+handled:
+	return true;
+	
 }
+
 
 //**********************************************************************
 //*

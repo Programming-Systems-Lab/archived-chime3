@@ -1,3 +1,6 @@
+#ifndef WINDOW_TOOLKIT_H
+#define WINDOW_TOOLKIT_H
+
 //this is going to be the window that all chime windows which need to be on
 //when animation occurs will have to extend
 //it will be like a normal csWindow but will deal with events a little differently
@@ -7,6 +10,24 @@ class AlwaysVisibleWindow : public csWindow
 		AlwaysVisibleWindow(csComponent *iParent, const char *iTitle, int iWindowStyle=CSWS_DEFAULTVALUE, csWindowFrameStyle iFrameStyle=cswfs3D);
 		virtual bool HandleEvent(iEvent &Event);
 };
+
+
+
+//all chimeWindows not extending AlwaysVisibleWindow should extend this class
+//it takes care of the problem of closing windows and restarting animation
+class ChimeWindow : public csWindow
+{
+	public:
+		//stop the animation when creating a window
+		ChimeWindow(csComponent *iParent, const char *iTitle, int iWindowStyle=CSWS_DEFAULTVALUE, csWindowFrameStyle iFrameStyle=cswfs3D);
+
+		//start the animation when closing the window
+		virtual void Close();
+			
+};
+
+
+
 
 //this is just the plain chat area
 class ChatArea : public csListBox
@@ -53,3 +74,6 @@ public:
 	const char* GetUsername() { return username; };
 	const char* GetIPAddress() { return ip_address; };
 };
+
+
+#endif

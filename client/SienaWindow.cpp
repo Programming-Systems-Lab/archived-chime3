@@ -12,7 +12,7 @@ SienaWindow::~SienaWindow() {}
 
 
 SienaWindow::SienaWindow(csComponent *iParent)
-  : csWindow(iParent, "Siena Settings", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : ChimeWindow(iParent, "Siena Settings", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 

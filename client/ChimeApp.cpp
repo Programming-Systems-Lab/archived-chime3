@@ -13,6 +13,8 @@
 #include "ChimeSystemDriver.h"
 #include "ChimeWorldView.h"
 #include "ChimeSector.h"
+#include "ChimeInfoEvent.h"
+
 
 // Scroll bar class default palette
 static int palette_CsfEdit[] =
@@ -64,38 +66,38 @@ bool ChimeApp::Initialize (const char *iConfigName, InfoStorer *info)
   (void)new csMenuItem (menu, "~Connection", submenu);
 
 	//popup the connection dialog box
-    (void)new csMenuItem (submenu, "~New Connection\tCtrl+N", 66600);
+    (void)new csMenuItem (submenu, "~New Connection\tCtrl+N", CONNECT_WINDOW);
 
   ////////////////////////////////SUBMENU of FIRST COLUMN//////////////////////////
   (void)new csMenuItem(submenu);
 
     //get the object menu
-	(void)new csMenuItem (submenu, "~Get Object\tCtrl+G", 66601);
-    ka->Command ('g', CSMASK_CTRL, 66601);
+	(void)new csMenuItem (submenu, "~Get Object\tCtrl+G", GET_OBJECT_WINDOW);
+    ka->Command ('g', CSMASK_CTRL, GET_OBJECT_WINDOW);
 
 	//the VEM console
-	(void)new csMenuItem (submenu, "~VEM Console\tCtrl+C", 66602);
-	ka->Command ('v', CSMASK_CTRL, 66602);
+	(void)new csMenuItem (submenu, "~VEM Console\tCtrl+C", VEM_WINDOW);
+	ka->Command ('v', CSMASK_CTRL, VEM_WINDOW);
 
   ////////////////////////////////LAST SUBMENU OF FIRST COLUMN////////////////////////
 
 	(void)new csMenuItem(submenu);
 
-		csMenuItem *mi = new csMenuItem (submenu, "~Quit\tCtrl+Q", 66698);
+		csMenuItem *mi = new csMenuItem (submenu, "~Quit\tCtrl+Q", QUIT_CHIME);
 		HintAdd ("Choose this menu item to quit the program", mi);
-		ka->Command ('q', CSMASK_CTRL, 66698);
+		ka->Command ('q', CSMASK_CTRL, QUIT_CHIME);
 
   /////////////////////////////CREATE SECOND COLUMN/////////////////////////////////
   submenu = new csMenu (NULL);
   (void)new csMenuItem (menu, "~Settings", submenu);
 
 	//some crystal space specific setting if needed
-    (void)new csMenuItem (submenu, "C~rystal Space Settings\tCtrl+R", 66700);
-	 ka->Command ('r', CSMASK_CTRL, 66700);
+    (void)new csMenuItem (submenu, "C~rystal Space Settings\tCtrl+R", CRYSTAL_SPACE_WINDOW);
+	 ka->Command ('r', CSMASK_CTRL, CRYSTAL_SPACE_WINDOW);
 
 	 //some siena settings
-	(void)new csMenuItem (submenu, "~Siena Settings\tCtrl+S", 66701);
-	ka->Command ('s', CSMASK_CTRL, 66701);
+	(void)new csMenuItem (submenu, "~Siena Settings\tCtrl+S", SIENA_WINDOW);
+	ka->Command ('s', CSMASK_CTRL, SIENA_WINDOW);
 
 
   int fh; menu->GetTextSize("", &fh);
@@ -128,10 +130,20 @@ bool ChimeApp::Initialize (const char *iConfigName, InfoStorer *info)
 }
 
 
+//start 3D rendering
+void ChimeApp::Start3D() {
+	((ChimeSystemDriver*)System)->Start3D();
+}
 
+//stop 3D rendering
+void ChimeApp::Stop3D() {
+	((ChimeSystemDriver*)System)->Stop3D();
+}
+
+//this handles all events
 bool ChimeApp::HandleEvent (iEvent &Event)
 {
-  
+ 
   //handle an event from the application
   if (csApp::HandleEvent (Event))
     return true;
@@ -147,14 +159,15 @@ bool ChimeApp::HandleEvent (iEvent &Event)
 
 		  if(Event.Key.Code == CSKEY_ESC)
 		  {
-			  ((ChimeSystemDriver*)System)->Stop3D();
+			  Stop3D();
 			  Invalidate(true);
 			  return true;
 		  }
 
 		  if(Event.Key.Code == 'w')
 		  {
-			  ((ChimeSystemDriver*)System)->Start3D();
+			  Start3D();
+			  Invalidate(true);
 			  return true;
 		  }
 
@@ -162,36 +175,41 @@ bool ChimeApp::HandleEvent (iEvent &Event)
 		  switch (Event.Command.Code)
 		  {
 
-			  //a new connection has been opened
-		  case 66600:
+		  case CHIME_EVENT:
+			  {
+				 int i = 1;
+				 return ((ChimeSystemDriver*)System)->HandleEventFromOtherWindow(Event);
+			  }
+		  
+		  //a new connection has been opened
+		  case CONNECT_WINDOW:
 			  {
 				  (void)new ConnectWindow(this);
 				  return true;
 			  }
 
-			  //get a Certain Object dialog is opened
-
-		  case 66601:
+		  //get a Certain Object dialog is opened
+		  case GET_OBJECT_WINDOW:
 			  {
 				  (void)new GetObjectWindow(this);
 				  return true;
 			  }
 
 			  //a VEM console is requested
-		  case 66602:
+		  case VEM_WINDOW:
 			  {
 				  (void)new VEMWindow(this);
 				  return true;
 			  }
 
 		//Siena settings need to be updated
-        case 66701:
+        case SIENA_WINDOW:
         {
 			(void)new SienaWindow(this);
 			return true;
         }
 
-        case 66698:
+        case QUIT_CHIME:
         {
 		  ShutDown();
           return true;
@@ -237,10 +255,6 @@ int main (int argc, char* argv[])
 
   if (!System.Initialize (argc, argv, "/config/chime.cfg", &info))
     return -1;
-
-  /*if (!System.Open ("CHIME (Columbia Hypermedia Immersion Environment)"))
-    return -1;
-	*/
 
   // Look for skin variant from config file
   DefaultSkin.Prefix = System.GetOptionCL ("skin");

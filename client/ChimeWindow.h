@@ -8,6 +8,8 @@
 #include "csws/csws.h"
 #include "WindowToolkit.h"
 
+
+
 // Scroll bar class default palette
 static int palette [] =
 {
@@ -16,8 +18,6 @@ static int palette [] =
   cs_Color_Red_L,			// lines
   cs_Color_White			// Start points
 };
-
-
 
 
 //VEM stuff
@@ -79,8 +79,7 @@ class VeM : public csDialog
 
 
 //Connect stuff
-
-class ConnectWindow : public csWindow
+class ConnectWindow : public ChimeWindow
 
 {
 
@@ -101,7 +100,7 @@ public:
 
 
 //ObjectToRetrieve
-class GetObjectWindow : public csWindow
+class GetObjectWindow : public ChimeWindow
 {
   csInputLine *object;
   csInputLine *protocol;
@@ -119,7 +118,7 @@ public:
 
 //Siena Setting dialog
 //Connect stuff
-class SienaWindow : public csWindow
+class SienaWindow : public ChimeWindow
 {
   csListBox *lbFile;
   csListBox *lbType;
@@ -139,9 +138,8 @@ public:
 
 
 //Chat Dialog
-#define LOCAL_USER 0;
-#define GLOBAL_USER 1;
-
+#define LOCAL_USER 0
+#define GLOBAL_USER 1
 class ChatWindow : public AlwaysVisibleWindow
 
 {
@@ -235,7 +233,6 @@ public:
 
 #define GO_PRESSED 10000
 #define STOP_PRESSED 10001
-
 class StartStopWindow : public AlwaysVisibleWindow
 {
 

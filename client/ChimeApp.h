@@ -9,6 +9,15 @@
 
 #include "ChimeWindow.h"
 #include "InfoStorer.h"
+#include "ChimeSystemDriver.h"
+
+#define CONNECT_WINDOW 66000
+#define GET_OBJECT_WINDOW 66001
+#define VEM_WINDOW 66002
+#define QUIT_CHIME 66698
+#define CRYSTAL_SPACE_WINDOW 66700
+#define SIENA_WINDOW 66701
+
 
 /*  main app of menu */
 class ChimeApp : public csApp
@@ -37,6 +46,12 @@ public:
   /// Initialize maze editor
   ChimeApp (iSystem *SysDriver, csSkin &Skin);
 
+  //start 3d rendering
+  void Start3D();
+
+  //stop 3d rendering
+  void Stop3D();
+  
   /// Initialize maze editor
   virtual ~ChimeApp ();
 

@@ -30,8 +30,9 @@ class ChimeSystemDriver;
 class ChimeSector;
 struct iCollideSystem;
 class InfoStorer;
+class ChimeApp;
 
-#include "ChimeApp.h"
+//#include "ChimeApp.h"
 #include "ChimeWindow.h"
 #include "ChimeComm.h"
 #include "comm_client/ClientComm.h"
@@ -107,6 +108,7 @@ private:
 	char reqRoomUrl[MAX_URL];
 	ChimeSector *reqAtSec;
 	int		   reqAtDoor;
+
 
 	//Collision detection plugin.
 	iCollideSystem* collide_system;
@@ -198,7 +200,7 @@ private:
 	
 	//open the door
 	//will work if reqAtDoor has been set otherwise will not do anything
-	bool OpenDoor();
+	bool OpenDoor(char *doorUrl=NULL);
 
 	//do all the necessary steps to setup the menu
 	bool SetupMenu();
@@ -214,6 +216,9 @@ private:
 
 public:
 
+	//handle an event from some window
+	bool HandleEventFromOtherWindow(iEvent &Event);
+	
 	//reset the local chat buddies list
 	void ResetLocalChatBuddies(ChimeSector *cur_sec);
 

@@ -6,14 +6,14 @@
 #include "ifontsrv.h"
 #include "icfgnew.h"
 #include "ChimeWindow.h"
-
+#include "ChimeInfoEvent.h"
 
 // Scroll bar class default palette
 GetObjectWindow::~GetObjectWindow() {}
 
 
 GetObjectWindow::GetObjectWindow(csComponent *iParent)
-  : csWindow(iParent, "Retrieve Object", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : ChimeWindow(iParent, "Retrieve Object", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 
@@ -77,18 +77,23 @@ bool GetObjectWindow::HandleEvent (iEvent &Event)
   if (csWindow::HandleEvent (Event))
     return true;
 
+  ChimeInfoEvent info_event(GET_OBJECT_IDENTIFIER);
+
   switch (Event.Type)
   {
     case csevCommand:
       switch (Event.Command.Code)
       {
 
-	    //Retrieve button was pressed
-        case 66800:
-
+	  //Retrieve button was pressed
+	  case 66800: 
+		  info_event.AppendToken(object->GetText());
+		  info_event.AppendToken(protocol->GetText());
+		  app->SendCommand(CHIME_EVENT, (void*)&info_event);
 		  Close();
 		  return true;
-
+		  
+				  
 		 //Cancel Button has been pressed
 		case 66801:
 		  Close();

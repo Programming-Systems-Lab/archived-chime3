@@ -14,7 +14,7 @@ ConnectWindow::~ConnectWindow() {}
 
 
 ConnectWindow::ConnectWindow(csComponent *iParent)
-  : csWindow(iParent, "Connection Box", CSWS_TITLEBAR | CSWS_BUTCLOSE |
+  : ChimeWindow(iParent, "Connection Box", CSWS_TITLEBAR | CSWS_BUTCLOSE |
     CSWS_BUTMAXIMIZE)
   {
 
@@ -122,8 +122,8 @@ bool ConnectWindow::HandleEvent (iEvent &Event)
 				info->SetPassword(password->GetText());
 				info->SetSienaLocation(chime_server->GetText());
 			}
-
 			Close();
+				
 			return true;
 
 
