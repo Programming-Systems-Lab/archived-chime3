@@ -221,8 +221,10 @@ public class EventTracer {
 	    else if (method.equals("c_moveObject")) {
 
 		System.err.println("METHOD CALL: CLIENT.C_MOVEOBJECT");
-		if (st.countTokens() < 5)
+		if (st.countTokens() < 5) {
+			System.err.println("Not enough tokens supplied to c_moveObject");
 		    return;
+		}
 		String roomUrl = st.nextToken();
 		String url = st.nextToken();
 		double x = 0;
@@ -460,6 +462,7 @@ public class EventTracer {
     // insert a tuple into the database, if not already there.
     public boolean addMovementTuple(String room, String obj, double x0, double y0, double z0, double x1, double y1, double z1) {
 
+	System.err.println("Adding movement tuple with args: " + room + " " + obj + " " + x0 + " " + y0 + " " + z0 + " " + x1 + " " + y1 + " " + z1);
 	obj = obj.toLowerCase();
 
 	try {
@@ -670,14 +673,14 @@ public class EventTracer {
 
 
     public static void main(String argv[]) {
-	
+
 	// DataServer ds = DataServer.getInstance();
 	EventTracer et = EventTracer.getInstance();
-	
+
 	/* TEST 3
 	et.addRoomTuple("http://www.columbia.edu", "128.59.220.1");
 	et.addRoomTuple("http://www.columbia.edu", "128.59.220.2");
-	
+
 	et.addMovementTuple("http://www.columbia.edu", "http://www.columbia.edu/a.txt", 1, 2, 3, 1.1, 2.2, 3.3);
 	et.addMovementTuple("http://www.columbia.edu", "http://www.columbia.edu/a.txt", 1.1, 2.2, 3.3, 1.2, 2.4, 3.6);
 	System.err.println("Is Room Found? " + et.findRoomTuple("http://www.columbia.edu"));
