@@ -13,7 +13,7 @@ public class Authorization {
     Hashtable hash;
 
     public Authorization(HierarchicalDispatcher hd, SienaObject s) {
-        siena = hd;
+    siena = hd;
 	readFile("passwd.txt");
 	authorize(s);
     }
@@ -39,7 +39,7 @@ public class Authorization {
 	    e.printStackTrace();
 	}
     }
-    
+
 
     /**
      * Check the username and password
@@ -47,36 +47,36 @@ public class Authorization {
     public String checkUserPass(SienaObject obj) {
 	System.out.println("Checking username and pass");
 	AuthObject auth = (AuthObject) hash.get(obj.getUsername());
-	
+
 	//username not found
 	if (auth == null)
 	    return null;
-	
+
 	if (auth.getPassword().equals(obj.getPassword()))
 	    return auth.getUserType();
 	else
 	    return null;
     }
-    
-    
+
+
     /**
      * Read the password file into memory
      */
     public void readFile(String filename) {
-	
+
 	File file = findFile(filename);
 	try {
 	    hash = new Hashtable();
 	    BufferedReader in = new BufferedReader(new FileReader(file));
 	    String line;
-	    
+
 	    while((line = in.readLine()) != null) {
 		StringTokenizer st = new StringTokenizer(line,":");
 		if (st.countTokens() == 3) {
 		    AuthObject auth = new AuthObject(st.nextToken().trim(), st.nextToken().trim(), st.nextToken().trim());
 		    hash.put(auth.getUsername(), auth);
 		}
-	    }	    
+	    }
 	} catch (Exception e) {
 	    System.err.println("Password File not found");
 	    System.exit(0);
@@ -89,7 +89,7 @@ public class Authorization {
     private File findFile(String file) {
 	String classpath = System.getProperty("java.class.path");
 	StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
-	
+
 	while (st.hasMoreTokens()) {
 	    String path = st.nextToken();
 	    System.out.println(path + File.separatorChar + file);
@@ -97,9 +97,9 @@ public class Authorization {
 	    if (pathf.exists()) {
 		return pathf;
 	    }
-	    
+
 	}
-	
+
 	return null;
     }
 }
