@@ -12,5 +12,5 @@ SET CLASSPATH=%ROOT%;%JARS%;%FRAX%;%AUTH%;%SIENAUTILS%;%SHEN%;%DATASERVER%;%EVEN
 
 
 cd %SIENAUTILS%
-java Tester senp://localhost:1234
+java Tester senp://localhost:1234 %1 %2
 cd %CHIME%

@@ -95,51 +95,51 @@ public class DataServerSubscriber {
     public void dataServerSubscriber() throws Exception {
 
 	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "frax");
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "frax");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-
-	//the c_getroom method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_getroom");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
 
 
-	//the c_getroom method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
+		//the c_getRoom method
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_getRoom");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
 
-	//the c_deleteObject method
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_addObject");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
+		//the c_addObject method
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_addObject");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
+
+		//the c_deleteObject method
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_deleteObject");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertDataServer(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
 	    });
     }
 

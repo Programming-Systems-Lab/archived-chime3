@@ -92,101 +92,112 @@ public class EventTracerSubscriber {
 
     public void eventTracerSubscriber() throws Exception {
 	//subscribe for all message from VEM
-	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "vem");
+		Filter f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "vem");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
 
-	//subscribe for all messages from client where the method is: c_connect
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_connect");
+		//subscribe for all messages from client where the method is: c_connect
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_connect");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
 
-	//subscribe for all messages from client where the method is: c_moveObject
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_moveObject");
+		//subscribe for all messages from client where the method is: c_moveObject
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_moveObject");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
 
-	//subscribe for all messages from client where the method is: c_enteredRoom
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_enteredRoom");
+		//subscribe for all messages from client where the method is: c_moveUser
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_moveUser");
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-	//subscribe for all messages from client where the method is: c_subscribeRoom
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_subscribeRoom");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-	//subscribe for all messages from client where the method is: c_leftRoom
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_leftRoom");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-	//subscribe for all messages from client where the method is: c_unsubscribeRoom
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_unsubscribeRoom");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
-
-	//subscribe for all messages from client where the method is: c_disconnect
-	f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	f.addConstraint("method", Op.EQ, "c_disconnect");
-
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
-	    });
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		   });
 
 
+		//subscribe for all messages from client where the method is: c_enteredRoom
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_enteredRoom");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
+
+		//subscribe for all messages from client where the method is: c_subscribeRoom
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_subscribeRoom");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
+
+		//subscribe for all messages from client where the method is: c_leftRoom
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_leftRoom");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
+
+		//subscribe for all messages from client where the method is: c_unsubscribeRoom
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_unsubscribeRoom");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
+
+		//subscribe for all messages from client where the method is: c_disconnect
+		f = new Filter();
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "client");
+		f.addConstraint("chime_method", Op.EQ, "c_disconnect");
+
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
+		    });
     }
 
     /**

@@ -250,10 +250,11 @@ public class EventTracer {
 				System.err.println("Room tuple not found");
 				return;
 			}
-		    for (int idx=0; idx < v.size(); idx++) {
-			e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
+
+			//commenting this out... no need to publish for every user to see
+		    //for (int idx=0; idx < v.size(); idx++) {
+			//e.setUsername(((RoomTuple)(v.elementAt(idx))).getUser());
 			e.publish();
-		    }
 		} catch (Exception ex) {
 		    System.err.println(ex);
 		    return;
@@ -439,6 +440,49 @@ public class EventTracer {
 
 		System.err.println("END OF METHOD CALL PROCESS.");
 	    }
+
+	    else if (method.equals("c_moveUser")) {
+			System.err.println("METHOD CALL: CLIENT.C_MOVEUSER");
+				if (st.countTokens() < 5) {
+					System.err.println("Not enough args");
+					return;
+				}
+
+			String roomUrl = st.nextToken();
+			String user = st.nextToken();
+			double x = 0;
+			double y = 0;
+			double z = 0;
+			try {
+			    x = Double.parseDouble(st.nextToken());
+			    y = Double.parseDouble(st.nextToken());
+			    z = Double.parseDouble(st.nextToken());
+			} catch (Exception ex) {
+			    System.err.println(ex);
+			}
+
+			addMovementTuple(roomUrl, user, 0, 0, 0, x, y, z);
+
+			// propagate the info
+			e.setFromComponent("event_tracer");
+			e.setMethod("s_moveUser");
+
+			try {
+			    Vector v = findRoomTuple(roomUrl);
+			    if (v == null) {
+					System.err.println("Room tuple not found");
+					return;
+				}
+
+				e.publish();
+			} catch (Exception ex) {
+			    System.err.println(ex);
+			    return;
+			}
+
+			System.err.println("END OF METHOD CALL PROCESS.");
+	    }
+
 	}
     }
 

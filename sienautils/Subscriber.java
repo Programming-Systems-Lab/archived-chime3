@@ -93,7 +93,7 @@ public class Subscriber {
 	    fraxSubscriber();
 	    dataServerSubscriber();
 	    vemSubscriber();
-	    eventPackagerSubscriber();
+	    eventTracerSubscriber();
 	    //loop forever until we shutdown
 	    while(true);
 
@@ -204,10 +204,10 @@ public class Subscriber {
 
 
     /**
-     * Theme Subscriber
+     * Event Tracer
      */
 
-    public void eventPackagerSubscriber() throws Exception {
+    public void eventTracerSubscriber() throws Exception {
 	//subscribe for all message from VEM
 	Filter f = new Filter();
 	f.addConstraint("auth", Op.EQ, "false");
@@ -242,6 +242,19 @@ public class Subscriber {
 		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
 		public void notify(Notification [] s) { }
 	    });
+
+	//subscribe for all messages from client where the method is: c_moveUser
+	f = new Filter();
+	f.addConstraint("auth", Op.EQ, "false");
+	f.addConstraint("from_component", Op.EQ, "client");
+	f.addConstraint("chime_method", Op.EQ, "c_moveUser");
+
+	System.out.println("subscribing for " + f.toString());
+	siena.subscribe(f, new Notifiable() {
+		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
+		public void notify(Notification [] s) { }
+	   });
+
 
 	//subscribe for all messages from client where the method is: c_enteredRoom
 	f = new Filter();
@@ -302,7 +315,6 @@ public class Subscriber {
 		public void notify(Notification e) { alertEventPackager(new SienaObject(e)); }
 		public void notify(Notification [] s) { }
 	    });
-
 
     }
 

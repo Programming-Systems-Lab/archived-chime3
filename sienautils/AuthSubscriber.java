@@ -99,7 +99,6 @@ public class AuthSubscriber {
 		public void notify(Notification e) { alertAuth(new SienaObject(e)); }
 		public void notify(Notification [] s) { }
 	    });
-
     }
 
     /**

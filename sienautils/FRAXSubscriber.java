@@ -93,15 +93,15 @@ public class FRAXSubscriber {
 
     public void fraxSubscriber() throws Exception {
 	Filter f = new Filter();
-	f.addConstraint("auth", Op.EQ, "false");
-	f.addConstraint("from_component", Op.EQ, "client");
-	//f.addConstraint("from_component", Op.EQ, "data_server");
+		f.addConstraint("auth", Op.EQ, "false");
+		f.addConstraint("from_component", Op.EQ, "data_server");
+		f.addConstraint("chime_method", Op.EQ, "s_queryFrax");
 
 
-	System.out.println("subscribing for " + f.toString());
-	siena.subscribe(f, new Notifiable() {
-		public void notify(Notification e) { alertFrax(new SienaObject(e)); }
-		public void notify(Notification [] s) { }
+		System.out.println("subscribing for " + f.toString());
+		siena.subscribe(f, new Notifiable() {
+			public void notify(Notification e) { alertFrax(new SienaObject(e)); }
+			public void notify(Notification [] s) { }
 	    });
     }
 
