@@ -48,7 +48,7 @@ public class Vem extends Thread
     {
 		Filter f = new Filter ();
 		f.addConstraint ("component", Op.EQ, "VEM");
-	  	VemNotif sn = new VemNotif (siena);
+	  	VemNotif sn = VemNotif.getInstance (siena);
 
 		try
 		{
@@ -56,7 +56,9 @@ public class Vem extends Thread
 
 		    try
 		    {
-				Thread.sleep (1000000000);
+				//wait infinitely
+				while(true)
+					Thread.sleep(1000000000);
 		    }
 		    catch (java.lang.InterruptedException ex)
 		    	{System.out.println ("interrupted");}

@@ -12,14 +12,75 @@ class VemNotif implements Notifiable
 {
     public static VemNode Default [];
     VemUtil util;
-    Siena siena;
+    public Siena siena;
+	private static VemNotif myself;
 
-    public VemNotif (Siena s)
-    {
+	//create the Vem Notification buffer
+	public static synchronized VemNotif getInstance() {
+		if (myself == null)
+		    myself = new VemNotif();
+		return myself;
+	}
+
+
+	//create the Vem Notification buffer from Christian's Subscriber
+	public static synchronized VemNotif getInstance(Siena s) {
+			if (myself == null)
+			    myself = new VemNotif();
+
+			myself.setSiena(s);
+			return myself;
+	}
+
+	//create a VEM object - the Singleton object we're going to keep around
+	private VemNotif()
+	{
 		util = new VemUtil ();
 		Default = util.GetDefault ();
-	 	siena = s;
-    }
+	}
+
+
+	//set the siena of this notification
+	private void setSiena(Siena s) {
+		siena = s;
+	}
+
+	//get the shape associated with some object
+	//otherwise you will get null
+	public VemObject getShape(String protocol, String url) {
+		for (int i = 0; i < Default.length; i++) {
+			if (url.indexOf(Default[i].type) != -1) {
+				VemObject obj = new VemObject();
+				obj.setUrl(url);
+				obj.setProtocol(protocol);
+				obj.setShape(Default[i].object);
+				obj.setClasstype(Default[i].type);
+				obj.setSubclass(Default[i].sub);
+				return obj;
+			}
+		}
+
+		return null;
+	}
+
+
+	//get the shape description associated with this object url
+	public VemObject getLinkShape(String roomUrl, String objUrl) {
+		for (int i = 0; i < Default.length; i++) {
+			if (objUrl.indexOf(Default[i].type) != -1) {
+				VemObject obj = new VemObject();
+				obj.setRoomUrl(roomUrl);
+				obj.setObjUrl(objUrl);
+				obj.setShape(Default[i].object);
+				obj.setClasstype(Default[i].type);
+				obj.setSubclass(Default[i].sub);
+				return obj;
+			}
+		}
+		return null;
+	}
+
+
 
     // Recieves the incoming events from the client
     public void notify (Notification e)
