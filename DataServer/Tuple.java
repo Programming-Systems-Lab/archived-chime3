@@ -9,7 +9,7 @@
  * The interface of a tuple in the database.
  */
 
-package xescii;
+package psl.chime.DataServer;
 
 import java.util.*;
 import java.sql.*;

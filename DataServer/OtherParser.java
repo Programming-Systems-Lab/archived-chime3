@@ -2,25 +2,26 @@
  * Copyright (c) 2001: The Trustees of Columbia University 
  * in the City of New York.  All Rights Reserved.
  *
- * TxtParser.java
+ * OtherParser.java
  *
  * @author Shen Li
  * @version 1.0
  *
- * Text Parser.
+ * Other Parser.
  */
 
-package xescii;
+
+package psl.chime.DataServer;
 
 import org.jdom.*;
 import org.jdom.input.*;
 
 
-public class TxtParser implements Parser {
+public class OtherParser implements Parser {
     
     private Document doc;
     
-    public TxtParser(Document arg) {
+    public OtherParser(Document arg) {
 	doc = arg;
     }
     
@@ -32,7 +33,7 @@ public class TxtParser implements Parser {
 	long created=-1;
 	long last_mod=-1;
 	String src=null;
-	String opt[]= null;
+	String opt[] = null;
 	Element root;
 
 	root = doc.getRootElement();
@@ -46,8 +47,13 @@ public class TxtParser implements Parser {
 	    size = Integer.parseInt(root.getChild("Size").getText());
 	    last_mod = Long.parseLong(root.getChild("Last-Modified").getText());
 	} catch (Exception e) {}
-		
+	
+	System.err.println(url);
 	return new SourceTuple(-1, protocol, url, size, type, created, last_mod, src, -1, opt);
+    
     }    
 }
+
+
+
 
